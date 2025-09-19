@@ -3,7 +3,7 @@
 A thesis project built with Expo and React Native.
 
 ### Overview
-Convora is a mobile application developed as a university thesis. This README is a living document being updated throughout the project to track setup, architecture, features, research decisions, and milestones.
+Convora is a mobile application developed as a university thesis project. This README is a living document being updated throughout the project to track setup, architecture, features, research decisions, and milestones.
 
 ### Tech Stack
 - React Native 0.81 (Expo SDK 54)
