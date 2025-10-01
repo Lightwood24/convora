@@ -31,7 +31,11 @@ Convora/
 │  ├─ components/
 │  ├─ navigation/
 │  ├─ screens/
-│  │  └─ HomeScreen.js
+│  │  ├─ CalendarScreen.js
+│  │  ├─ EventCreateScreen.js
+│  │  ├─ EventDetailScreen.js
+│  │  ├─ HomeScreen.js
+│  │  └─ LoginScreen.js
 │  ├─ services/
 │  └─ utils/
 ```
