@@ -35,7 +35,8 @@ Convora/
 │  │  ├─ EventCreateScreen.js
 │  │  ├─ EventDetailScreen.js
 │  │  ├─ HomeScreen.js
-│  │  └─ LoginScreen.js
+│  │  ├─ LoginScreen.js
+│  │  └─ ProfileScreen.js
 │  ├─ services/
 │  └─ utils/
 ```
