@@ -32,29 +32,29 @@ Convora/
 ├─ App.js
 ├─ app.json
 ├─ index.js
-├─ assets/                      # App images/assets
+├─ assets/                              # App images/assets
 │  ├─ icon.png
 │  ├─ splash-icon.png
 │  ├─ adaptive-icon.png
 │  └─ favicon.png
 ├─ src/
-│  ├─ components/               # UI components (currently empty)
-│  ├─ navigation/               # Navigation setup (currently empty)
-│  ├─ screens/                  # Screen components
+│  ├─ components/                       # UI components (currently empty)
+│  ├─ navigation/                       # Navigation setup (currently empty)
+│  ├─ screens/                          # Screen components
 │  │  ├─ CalendarScreen.js
 │  │  ├─ EventCreateScreen.js
 │  │  ├─ EventDetailScreen.js
 │  │  ├─ HomeScreen.js
 │  │  ├─ LoginScreen.js
 │  │  └─ ProfileScreen.js
-│  ├─ services/                 # Business logic & Firebase services
-│  │  ├─ firebase.ts            # Firebase app/init
-│  │  └─ auth.ts                # Auth helpers (register/login/logout)
-│  └─ utils/                    # Utilities (currently empty)
+│  ├─ services/                         # Business logic & Firebase services
+│  │  ├─ firebase.ts            
+│  │  └─ auth.ts                
+│  └─ utils/                            # Utilities (currently empty)
 ├─ test/
-│  └─ testFirestore.js          # Firebase Firestore testing utilities
-├─ tsconfig.json                # TypeScript config
-├─ package.json                 # NPM dependencies/scripts
+│  └─ testFirestore.js          
+├─ tsconfig.json                
+├─ package.json                 
 ├─ .gitignore
 └─ README.md
 ```
