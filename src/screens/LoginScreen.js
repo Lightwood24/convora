@@ -12,10 +12,16 @@ import {
   Animated,
 } from "react-native";
 import { registerWithEmail, loginWithEmail } from "../services/auth";
-import styles from "./LoginScreen.styles";
+import styles from "../style/LoginScreen.styles";
+import { useNavigation } from "@react-navigation/native";
+import passwordShowIcon from "../../assets/pictures/password_show.png";
+import passwordHideIcon from "../../assets/pictures/password_hide.png";
+import convoraLogo from "../../assets/pictures/convora_logo.png";
+import { Image } from "react-native";
 
 
 export default function LoginScreen() {
+  const navigation = useNavigation();
   const [activeCard, setActiveCard] = useState("login");
   const [loading, setLoading] = useState(false);
   const headerOffset = useRef(new Animated.Value(0)).current;
@@ -23,18 +29,20 @@ export default function LoginScreen() {
   // login state
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   // register state
   const [regName, setRegName] = useState("");
   const [regEmail, setRegEmail] = useState("");
   const [regPassword, setRegPassword] = useState("");
+  const [showRegPassword, setShowRegPassword] = useState(false);
 
   const toggleCard = (type) => {
     setActiveCard(activeCard === type ? null : type);
   };
 
   useEffect(() => {
-    const toValue = activeCard ? -20 : 0; // lift header slightly when a card is open
+    const toValue = activeCard ? -20 : 0;
     Animated.timing(headerOffset, {
       toValue,
       duration: 200,
@@ -47,6 +55,7 @@ export default function LoginScreen() {
       setLoading(true);
       await loginWithEmail(loginEmail.trim(), loginPassword);
       Alert.alert("Success", "Logged in successfully");
+      navigation.navigate("Profile");
     } catch (e) {
       Alert.alert("Login failed", e?.message ?? "Unknown error");
     } finally {
@@ -59,6 +68,7 @@ export default function LoginScreen() {
       setLoading(true);
       await registerWithEmail(regEmail.trim(), regPassword, regName.trim());
       Alert.alert("Success", "Account created & signed in");
+      navigation.navigate("Profile");
     } catch (e) {
       Alert.alert("Register failed", e?.message ?? "Unknown error");
     } finally {
@@ -78,7 +88,7 @@ export default function LoginScreen() {
         {/* HEADER (top) */}
         <View style={styles.headerSection}>
           <Animated.View style={[styles.header, { transform: [{ translateY: headerOffset }] }]}>
-            <View style={styles.logoBox} />
+            <Image source={convoraLogo} style={styles.logo} resizeMode="contain" />
             <Text style={styles.appName}>Convora</Text>
           </Animated.View>
         </View>
@@ -108,14 +118,25 @@ export default function LoginScreen() {
                 style={styles.input}
                 placeholderTextColor="#888"
               />
-              <TextInput
-                placeholder="Password"
-                secureTextEntry
-                value={loginPassword}
-                onChangeText={setLoginPassword}
-                style={styles.input}
-                placeholderTextColor="#888"
-              />
+              <View style={{ position: "relative" }}>
+                <TextInput
+                  placeholder="Password"
+                  secureTextEntry={!showLoginPassword}
+                  value={loginPassword}
+                  onChangeText={setLoginPassword}
+                  style={styles.input}
+                  placeholderTextColor="#888"
+                />
+                <TouchableOpacity
+                  onPress={() => setShowLoginPassword(!showLoginPassword)}
+                  style={styles.passwordIcon}
+                >
+                  <Image
+                    source={showLoginPassword ? passwordHideIcon : passwordShowIcon}
+                    style={{ width: 20, height: 20, tintColor: "#3b82f6" }}
+                  />
+                </TouchableOpacity>
+              </View>
               <TouchableOpacity
                 style={[styles.button, loginDisabled && styles.buttonDisabled]}
                 onPress={onLogin}
@@ -161,14 +182,25 @@ export default function LoginScreen() {
                 style={styles.input}
                 placeholderTextColor="#888"
               />
-              <TextInput
-                placeholder="Password"
-                secureTextEntry
-                value={regPassword}
-                onChangeText={setRegPassword}
-                style={styles.input}
-                placeholderTextColor="#888"
-              />
+              <View style={{ position: "relative" }}>
+                <TextInput
+                  placeholder="Password"
+                  secureTextEntry={!showRegPassword}
+                  value={regPassword}
+                  onChangeText={setRegPassword}
+                  style={styles.input}
+                  placeholderTextColor="#888"
+                />
+                <TouchableOpacity
+                  onPress={() => setShowRegPassword(!showRegPassword)}
+                  style={styles.passwordIcon}
+                >
+                  <Image
+                    source={showRegPassword ? passwordHideIcon : passwordShowIcon}
+                    style={{ width: 20, height: 20, tintColor: "#3b82f6" }}
+                  />
+                </TouchableOpacity>
+              </View>
               <TouchableOpacity
                 style={[styles.button, regDisabled && styles.buttonDisabled]}
                 onPress={onRegister}

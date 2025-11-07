@@ -1,23 +1,20 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import HomeScreen from './src/screens/HomeScreen';
-import LoginScreen from './src/screens/LoginScreen';
-import ProfileScreen from './src/screens/ProfileScreen';
-import { useEffect } from 'react';
-import { testUsers, testEvents, testInvites, testLinks, testAttendees } from './test/testFirestore';
-
+import React from "react";
+import { useFonts } from "expo-font";
+import { View, ActivityIndicator } from "react-native";
+import AppNavigator from "./src/navigation/AppNavigator";
 
 export default function App() {
-  // return <LoginScreen />;
-  return <ProfileScreen />;
+  const [fontsLoaded] = useFonts({
+    Anta: require("./assets/fonts/Anta-Regular.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#3b82f6" />
+      </View>
+    );
+  }
+
+  return <AppNavigator />;
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

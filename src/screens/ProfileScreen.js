@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,11 @@ import {
   Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import styles from "./ProfileScreen.style";
+import styles from "../style/ProfileScreen.style";
+import basePic from "../../assets/pictures/base_prof_pic.jpg";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../services/firebase";
 
 export default function ProfileScreen() {
   const [avatarUri, setAvatarUri] = useState(null);
@@ -19,7 +23,45 @@ export default function ProfileScreen() {
   const [phone, setPhone] = useState("");
   const [saving, setSaving] = useState(false);
 
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setEmail("");
+        setUsername("");
+        setAvatarUri(null);
+        return;
+      }
+      try { await user.reload(); } catch {}
+
+      const authEmail = user.email ?? "";
+      const authName  = user.displayName ?? "";
+      const authPhoto = user.photoURL ?? null;
+
+      let fsName = authName;
+      let fsPhoto = authPhoto;
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()) {
+          const d = snap.data();
+          if (d?.displayName) fsName = d.displayName;
+          if (d?.photoURL)    fsPhoto = d.photoURL;
+        }
+      } catch (e) {
+        console.warn("Firestore read error", e);
+      }
+
+      setEmail(authEmail);
+      setUsername(fsName);
+      if (fsPhoto) setAvatarUri(fsPhoto);
+    });
+
+    return unsub;
+  }, []);
+
   const pickAvatar = async () => {
+    if (!isEditing) return; // csak Edit módban engedélyezett
     try {
       const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (perm.status !== "granted") {
@@ -43,6 +85,7 @@ export default function ProfileScreen() {
       setSaving(true);
       // TODO: ide jön a tényleges mentés (Firebase / saját API)
       await new Promise((r) => setTimeout(r, 600));
+      setIsEditing(false);
       Alert.alert("Siker", "Profil frissítve.");
     } catch (e) {
       Alert.alert("Mentés sikertelen", e?.message ?? "Ismeretlen hiba");
@@ -51,7 +94,17 @@ export default function ProfileScreen() {
     }
   };
 
-  const disabled = saving || (!email.trim() && !username.trim() && !phone.trim());
+  // a fő gomb viselkedése: Edit -> Save
+  const onPrimaryPress = () => {
+    if (!isEditing) {
+      setIsEditing(true);
+    } else {
+      onSave();
+    }
+  };
+
+  // ha éppen mentünk, tiltjuk a gombot
+  const primaryDisabled = saving;
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -59,12 +112,7 @@ export default function ProfileScreen() {
         {/* HEADER */}
         <View style={styles.headerSection}>
           <View style={styles.header}>
-            <Text style={styles.screenTitle}>ProfileScreen</Text>
-            <Text style={styles.subtitle}>
-              A felhasználó ezen a képernyőn tudja szerkeszteni a profilját. Felhasználónevet
-              és email-címet tud változtatni, valamint itt tud telefonszámot és profilképet
-              beállítani.
-            </Text>
+            <Text style={styles.screenTitle}>Profile Screen</Text>
           </View>
         </View>
 
@@ -72,17 +120,22 @@ export default function ProfileScreen() {
         <View style={styles.bodySection}>
           <View style={styles.card}>
             {/* Avatar */}
-            <TouchableOpacity onPress={pickAvatar} activeOpacity={0.85} style={styles.avatarBtn}>
+            <TouchableOpacity
+              onPress={pickAvatar}
+              activeOpacity={isEditing ? 0.85 : 1}
+              style={styles.avatarBtn}
+              disabled={!isEditing}
+            >
               <View style={styles.avatar}>
                 {avatarUri ? (
                   <Image source={{ uri: avatarUri }} style={styles.avatarImg} />
                 ) : (
-                  <View style={styles.avatarPlaceholder}>
-                    <Text style={styles.avatarIcon}>🖼️</Text>
-                  </View>
+                  <Image source={basePic} style={styles.avatarImg} />
                 )}
               </View>
-              <Text style={styles.changePhotoText}>Kép kiválasztása</Text>
+              <Text style={styles.changePhotoText}>
+                {isEditing ? "Choose a profile picture" : "Tap on 'Edit' to choose a new profile picture"}
+              </Text>
             </TouchableOpacity>
 
             {/* Form */}
@@ -95,6 +148,8 @@ export default function ProfileScreen() {
                 autoCapitalize="none"
                 value={email}
                 onChangeText={setEmail}
+                editable={isEditing}          
+                selectTextOnFocus={isEditing} // UX: Edit módban egyből kijelöli
               />
               <TextInput
                 style={styles.input}
@@ -103,6 +158,8 @@ export default function ProfileScreen() {
                 autoCapitalize="none"
                 value={username}
                 onChangeText={setUsername}
+                editable={isEditing}
+                selectTextOnFocus={isEditing}
               />
               <TextInput
                 style={styles.input}
@@ -111,14 +168,20 @@ export default function ProfileScreen() {
                 keyboardType="phone-pad"
                 value={phone}
                 onChangeText={setPhone}
+                editable={isEditing}
+                selectTextOnFocus={isEditing}
               />
 
               <TouchableOpacity
-                style={[styles.button, disabled && styles.buttonDisabled]}
-                disabled={disabled}
-                onPress={onSave}
+                style={[styles.button, primaryDisabled && styles.buttonDisabled]}
+                disabled={primaryDisabled}
+                onPress={onPrimaryPress}
               >
-                {saving ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Edit</Text>}
+                {saving ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.buttonText}>{isEditing ? "Save" : "Edit"}</Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
