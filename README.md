@@ -5,16 +5,22 @@ A thesis project built with Expo and React Native.
 ### Overview
 Convora is a mobile application developed as a university thesis project. This README is a living document being updated throughout the project to track setup, architecture, features, research decisions, and milestones.
 
+---
+
 ### Tech Stack
-- React Native 0.81 (Expo SDK 54)
-- React 19
-- TypeScript 5.9
-- Expo (Managed workflow)
-- Firebase JS SDK (auth & firestore)
+- *React Native 0.81* (Expo SDK 54)
+- *React 19*
+- *TypeScript 5.9*
+- *Expo (Managed workflow)*
+- *Firebase JS SDK 11 — authentication & Firestore database*
 
 #### Dev Dependencies
-- @types/react
-- typescript
+- `@types/react`
+- `typescript`
+- `expo-font`
+- `expo-image-picker`
+
+---
 
 ### Getting Started
 1. Install dependencies:
@@ -33,13 +39,12 @@ Convora/
 ├─ app.json
 ├─ index.js
 ├─ assets/                              # App images/assets
-│  ├─ icon.png
-│  ├─ splash-icon.png
-│  ├─ adaptive-icon.png
-│  └─ favicon.png
+│  ├─ pictures/
+│  └─ fonts/
 ├─ src/
 │  ├─ components/                       # UI components (currently empty)
-│  ├─ navigation/                       # Navigation setup (currently empty)
+│  ├─ navigation/                       # Navigation setup
+│  │  └─ AppNavigator.js   
 │  ├─ screens/                          # Screen components
 │  │  ├─ CalendarScreen.js
 │  │  ├─ EventCreateScreen.js
@@ -49,7 +54,11 @@ Convora/
 │  │  └─ ProfileScreen.js
 │  ├─ services/                         # Business logic & Firebase services
 │  │  ├─ firebase.ts            
-│  │  └─ auth.ts                
+│  │  └─ auth.ts            
+│  ├─ style/                            # Centralized stylesheets
+│  │  ├─ LoginScreen.styles.js
+│  │  ├─ ProfileScreen.style.js
+│  │  └─ Theme.js                       # Global theme system (colors, typography)
 │  └─ utils/                            # Utilities (currently empty)
 ├─ test/
 │  └─ testFirestore.js          
@@ -59,14 +68,8 @@ Convora/
 └─ README.md
 ```
 
-### Folder Descriptions
-- **assets/**: App images and icons registered with Expo.
-- **src/services/**: All Firebase and backend communication, authentication helpers, and database setup logic.
-- **test/**: Scripts for interacting with Firestore (see `testFirestore.js` for test queries on DB collections).
-- **src/components/**, **src/navigation/**, **src/utils/**: Reserved for UI, navigation logic, utility code – currently empty or to be expanded.
-
 ### App Entry
-- `App.js` renders `HomeScreen` from `src/screens/HomeScreen.js`.
+- `App.js` renders `LoginScreen` from `src/screens/LoginScreen.js`.
 - Expo configuration is in `app.json`.
 
 ### TypeScript
@@ -77,6 +80,8 @@ Convora/
 - Firestore collections in use for tests: `users`, `events`, `invites`, `links`, and subcollection `attendees` under `events`.
 
 ### Changelog
+- v1.3.0: Added navigation between the Login and Profile screens, UI improvements with global system theme
+- v1.2.0: Added Firebase Authentication & Firestore user registration logic, connected login/register forms to Firebase backend
 - v1.1.0: Added Firebase service integration, TypeScript configuration, Firestore test utilities in `/test`.
 - v1.0.0: Project initialization (Expo 54, RN 0.81, React 19). Added `HomeScreen` scaffold.
 
