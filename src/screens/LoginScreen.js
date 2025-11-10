@@ -12,7 +12,7 @@ import {
   Animated,
 } from "react-native";
 import { registerWithEmail, loginWithEmail } from "../services/auth";
-import styles from "../style/LoginScreen.styles";
+import styles from "../style/LoginScreen.style";
 import { useNavigation } from "@react-navigation/native";
 import passwordShowIcon from "../../assets/pictures/password_show.png";
 import passwordHideIcon from "../../assets/pictures/password_hide.png";
