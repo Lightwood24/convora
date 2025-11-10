@@ -12,12 +12,21 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import styles from "../style/ProfileScreen.style";
 import basePic from "../../assets/pictures/base_prof_pic.jpg";
-import { onAuthStateChanged, updateProfile } from "firebase/auth";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { useNavigation } from "@react-navigation/native";
+import {
+  onAuthStateChanged,
+  updateProfile,
+  signOut,
+  deleteUser,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+} from "firebase/auth";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { doc, getDoc, setDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
 
 export default function ProfileScreen() {
+  const navigation = useNavigation();
   const [avatarUri, setAvatarUri] = useState(null);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -32,6 +41,7 @@ export default function ProfileScreen() {
         setEmail("");
         setUsername("");
         setAvatarUri(null);
+        setPhone("");
         return;
       }
       try { await user.reload(); } catch {}
@@ -42,12 +52,14 @@ export default function ProfileScreen() {
 
       let fsName = authName;
       let fsPhoto = authPhoto;
+      let fsPhone = "";
       try {
         const snap = await getDoc(doc(db, "users", user.uid));
         if (snap.exists()) {
           const d = snap.data();
           if (d?.displayName) fsName = d.displayName;
           if (d?.photoURL)    fsPhoto = d.photoURL;
+          if (d?.phone)       fsPhone = d.phone;
         }
       } catch (e) {
         console.warn("Firestore read error", e);
@@ -56,6 +68,7 @@ export default function ProfileScreen() {
       setEmail(authEmail);
       setUsername(fsName);
       if (fsPhoto) setAvatarUri(fsPhoto);
+      setPhone(fsPhone);
     });
 
     return unsub;
@@ -157,6 +170,72 @@ export default function ProfileScreen() {
   // ha éppen mentünk, tiltjuk a gombot
   const primaryDisabled = saving;
 
+  const onSignOut = async () => {
+    try {
+      await signOut(auth);
+      navigation.reset({
+        index: 0,
+        routes: [{name: "Login"}],
+      });
+    } catch (e) {
+      Alert.alert("Sign out failed", e?.message ?? "Unknown error");
+    }
+  };
+
+  
+  const onDeleteAccount = () => {
+    Alert.alert(
+      "Delete account",
+      "This will permanently remove your profile, avatar and data. Continue?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const user = auth.currentUser;
+              if (!user) return;
+
+              const uid = user.uid;
+
+              // 1) Töröljük az avatart a Storage-ból (ha létezik)
+              try {
+                const storage = getStorage();
+                await deleteObject(ref(storage, `users/${uid}/avatar.jpg`));
+              } catch (_) { /* ha nincs meg, nem baj */ }
+
+              // 2) Töröljük a users/{uid} doksit
+              try {
+                await deleteDoc(doc(db, "users", uid));
+              } catch (_) {}
+
+              // 3) Auth fiók törlése (lehet, hogy friss bejelentkezés kell)
+              try {
+                await deleteUser(user);
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: "Login"}],
+                });
+              } catch (err) {
+                if (String(err?.code) === "auth/requires-recent-login") {
+                  Alert.alert(
+                    "Re-authentication required",
+                    "Please sign in again, then retry deleting your account."
+                  );
+                } else {
+                  throw err;
+                }
+              }
+            } catch (e) {
+              Alert.alert("Delete failed", e?.message ?? "Unknown error");
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <View style={styles.content}>
@@ -240,6 +319,18 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             </View>
           </View>
+
+          {/* Secondary actions */}
+          <View style={styles.actionsRow}>
+            <TouchableOpacity style={[styles.buttonSecondary, styles.actionBtn]} onPress={onSignOut}>
+              <Text style={styles.buttonText}>Sign out</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.buttonDanger, styles.actionBtn]} onPress={onDeleteAccount}>
+              <Text style={styles.buttonText}>Delete account</Text>
+            </TouchableOpacity>
+          </View>
+
         </View>
 
         {/* FOOTER */}

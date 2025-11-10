@@ -25,7 +25,7 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
-    marginTop: -100,
+    marginTop: -50,
   },
   footerSection: {
     flex: 1,
@@ -36,7 +36,7 @@ export default StyleSheet.create({
   // == HEADER ==
   header: {
     alignItems: "center",
-    marginBottom: theme.spacing.xs,
+    marginBottom: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
   },
   screenTitle: {
@@ -115,6 +115,31 @@ export default StyleSheet.create({
     color: theme.colors.textPrimary,
     fontWeight: "600",
     fontFamily: "Anta", 
+  },
+  actionsRow: {
+    width: "86%",              
+    flexDirection: "row",
+    columnGap: 12,             
+    marginTop: theme.spacing.lg,
+    alignSelf: "center",
+  },
+  
+  actionBtn: {
+    flex: 1,
+  },
+  buttonSecondary: {
+    height: 44,
+    borderRadius: theme.radius.md,
+    backgroundColor: "#374151",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonDanger: {
+    height: 44,
+    borderRadius: theme.radius.md,
+    backgroundColor: "#ef4444",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   // == FOOTER ==
