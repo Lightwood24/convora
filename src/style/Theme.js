@@ -44,7 +44,7 @@ const colors = {
   const typography = {
     h1: {
       fontFamily: "Anta",
-      fontSize: 20,
+      fontSize: 25,
       fontWeight: "400",
     },
     small: {
@@ -53,7 +53,7 @@ const colors = {
     },
     base: {
       fontFamily: "Anta",
-      fontSize: 14,
+      fontSize: 15,
     },
   };
   

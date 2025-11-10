@@ -65,7 +65,7 @@ export default function ProfileScreen() {
     try {
       const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (perm.status !== "granted") {
-        Alert.alert("Engedély szükséges", "A fotók eléréséhez engedély kell.");
+        Alert.alert("Permission needed", "Permission needed to open Galery");
         return;
       }
       const res = await ImagePicker.launchImageLibraryAsync({
@@ -76,7 +76,7 @@ export default function ProfileScreen() {
       });
       if (!res.canceled) setAvatarUri(res.assets[0].uri);
     } catch (e) {
-      Alert.alert("Hiba", e?.message ?? "Ismeretlen hiba a kép kiválasztásakor.");
+      Alert.alert("Error", e?.message ?? "Unknown error occurred while selecting the image.");
     }
   };
 
@@ -86,9 +86,9 @@ export default function ProfileScreen() {
       // TODO: ide jön a tényleges mentés (Firebase / saját API)
       await new Promise((r) => setTimeout(r, 600));
       setIsEditing(false);
-      Alert.alert("Siker", "Profil frissítve.");
+      Alert.alert("Success", "Prifile successfully updated");
     } catch (e) {
-      Alert.alert("Mentés sikertelen", e?.message ?? "Ismeretlen hiba");
+      Alert.alert("Save failed", e?.message ?? "Unknown error");
     } finally {
       setSaving(false);
     }
@@ -114,6 +114,9 @@ export default function ProfileScreen() {
           <View style={styles.header}>
             <Text style={styles.screenTitle}>Profile Screen</Text>
           </View>
+          <View>
+            <Text style={styles.subtitle}>Tap on 'Edit' to update your profile info or to change your profile picture.</Text>
+          </View>
         </View>
 
         {/* BODY (center) */}
@@ -133,9 +136,10 @@ export default function ProfileScreen() {
                   <Image source={basePic} style={styles.avatarImg} />
                 )}
               </View>
-              <Text style={styles.changePhotoText}>
-                {isEditing ? "Choose a profile picture" : "Tap on 'Edit' to choose a new profile picture"}
-              </Text>
+
+              {isEditing && (
+                <Text style={styles.changePhotoText}>Choose a profile picture</Text>
+              )}
             </TouchableOpacity>
 
             {/* Form */}

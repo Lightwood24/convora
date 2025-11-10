@@ -36,16 +36,22 @@ export default StyleSheet.create({
   // == HEADER ==
   header: {
     alignItems: "center",
-    marginBottom: theme.spacing.md,
+    marginBottom: theme.spacing.xs,
     paddingHorizontal: theme.spacing.lg,
   },
   screenTitle: {
     color: theme.colors.textPrimary,
-    fontSize: 20,
-    fontWeight: "600",
+    ...theme.typography.h1, 
     marginBottom: theme.spacing.xs,
     textAlign: "center",
-    fontFamily: "Anta",
+  },
+  subtitle: {
+    color: theme.colors.textMuted,
+    ...theme.typography.base,
+    textAlign: "center",
+    marginTop: theme.spacing.xs,
+    marginRight: theme.spacing.lg,
+    marginLeft: theme.spacing.lg,
   },
 
   // == CARD ==
@@ -83,7 +89,6 @@ export default StyleSheet.create({
   changePhotoText: {
     color: theme.colors.primaryMuted,
     marginTop: theme.spacing.sm,
-    fontFamily: "Anta",
   },
 
   // == INPUT / BUTTONS ==
