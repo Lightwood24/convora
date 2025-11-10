@@ -1,9 +1,16 @@
-import { Text, View } from 'react-native';
+import styles from "../style/HomeScreen.style";
+import {Text, KeyboardAvoidingView, Platform, View} from "react-native";
 
 export default function HomeScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Home Screen</Text>
-    </View>
-  );
+    return (
+        <KeyboardAvoidingView 
+            style={styles.container}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+            <View style={styles.content}>
+                <Text style={{fontFamily:'Anta', color: 'white',}}>Home Screen</Text>
+            </View>
+
+        </KeyboardAvoidingView>
+    );
 }
