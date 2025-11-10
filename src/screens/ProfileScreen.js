@@ -12,8 +12,9 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import styles from "../style/ProfileScreen.style";
 import basePic from "../../assets/pictures/base_prof_pic.jpg";
-import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged, updateProfile } from "firebase/auth";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
 
 export default function ProfileScreen() {
@@ -60,6 +61,23 @@ export default function ProfileScreen() {
     return unsub;
   }, []);
 
+  async function uploadAvatarIfNeeded(uri, uid) {
+    if (!uri) return null;
+  
+    // Ha már egy http(s) URL (pl. korábban feltöltött), nem kell újra feltölteni
+    if (typeof uri === "string" && uri.startsWith("http")) return uri;
+  
+    // Expo: a helyi file URI-t blobbá alakítjuk és feltöltjük
+    const res = await fetch(uri);
+    const blob = await res.blob();
+  
+    const storage = getStorage();
+    const objectRef = ref(storage, `users/${uid}/avatar.jpg`);
+    await uploadBytes(objectRef, blob);
+    const downloadURL = await getDownloadURL(objectRef);
+    return downloadURL;
+  }  
+  
   const pickAvatar = async () => {
     if (!isEditing) return; // csak Edit módban engedélyezett
     try {
@@ -83,16 +101,49 @@ export default function ProfileScreen() {
   const onSave = async () => {
     try {
       setSaving(true);
-      // TODO: ide jön a tényleges mentés (Firebase / saját API)
-      await new Promise((r) => setTimeout(r, 600));
+  
+      const user = auth.currentUser;
+      if (!user) {
+        Alert.alert("Not signed in", "Please log in again.");
+        return;
+      }
+  
+      const uid = user.uid;
+  
+      // 1) Avatar feltöltése (ha új képet választottál a galériából)
+      const photoURL = await uploadAvatarIfNeeded(avatarUri, uid);
+  
+      // 2) Auth profil frissítése (csak displayName / photoURL)
+      const profileUpdate = {};
+      if (username?.trim() && username.trim() !== (user.displayName ?? "")) {
+        profileUpdate.displayName = username.trim();
+      }
+      if (photoURL && photoURL !== (user.photoURL ?? "")) {
+        profileUpdate.photoURL = photoURL;
+      }
+      if (Object.keys(profileUpdate).length > 0) {
+        await updateProfile(user, profileUpdate);
+      }
+  
+      // 3) Firestore users/{uid} frissítés (merge)
+      const userDoc = {
+        displayName: username?.trim() ?? "",
+        photoURL: photoURL ?? user.photoURL ?? null,
+        phone: phone?.trim() ?? "",
+        updatedAt: serverTimestamp(),
+      };
+      await setDoc(doc(db, "users", uid), userDoc, { merge: true });
+  
       setIsEditing(false);
-      Alert.alert("Success", "Prifile successfully updated");
+      Alert.alert("Success", "Profile successfully updated");
     } catch (e) {
+      console.warn("Profile save error", e);
       Alert.alert("Save failed", e?.message ?? "Unknown error");
     } finally {
       setSaving(false);
     }
   };
+  
 
   // a fő gomb viselkedése: Edit -> Save
   const onPrimaryPress = () => {
@@ -115,7 +166,7 @@ export default function ProfileScreen() {
             <Text style={styles.screenTitle}>Profile Screen</Text>
           </View>
           <View>
-            <Text style={styles.subtitle}>Tap on 'Edit' to update your profile info or to change your profile picture.</Text>
+            <Text style={styles.subtitle}>Tap on 'Edit' to update your name, phone number or to change your profile picture.</Text>
           </View>
         </View>
 
@@ -138,7 +189,7 @@ export default function ProfileScreen() {
               </View>
 
               {isEditing && (
-                <Text style={styles.changePhotoText}>Choose a profile picture</Text>
+                <Text style={styles.changePhotoText}>Choose a new profile picture</Text>
               )}
             </TouchableOpacity>
 
@@ -152,8 +203,8 @@ export default function ProfileScreen() {
                 autoCapitalize="none"
                 value={email}
                 onChangeText={setEmail}
-                editable={isEditing}          
-                selectTextOnFocus={isEditing} // UX: Edit módban egyből kijelöli
+                editable={false}          
+                selectTextOnFocus={false}
               />
               <TextInput
                 style={styles.input}
