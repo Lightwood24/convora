@@ -5,9 +5,9 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  KeyboardAvoidingView,
   Image,
   Alert,
+  ScrollView
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import styles from "../style/ProfileScreen.style";
@@ -237,7 +237,12 @@ export default function ProfileScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
+    <ScrollView
+      contentContainerStyle={{flexGrow: 1}}
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
+      style={styles.container}
+    >
       <View style={styles.content}>
         {/* HEADER */}
         <View style={styles.headerSection}>
@@ -338,6 +343,6 @@ export default function ProfileScreen() {
           <Text style={styles.footer}>Navigation</Text>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </ScrollView>
   );
 }

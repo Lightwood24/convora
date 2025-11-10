@@ -6,10 +6,9 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   Animated,
+  ScrollView
 } from "react-native";
 import { registerWithEmail, loginWithEmail } from "../services/auth";
 import styles from "../style/LoginScreen.style";
@@ -80,9 +79,11 @@ export default function LoginScreen() {
   const regDisabled = !regName || !regEmail || !regPassword || loading;
 
   return (
-    <KeyboardAvoidingView
+    <ScrollView
+      contentContainerStyle={{flexGrow: 1}}
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
       style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <View style={styles.content}>
         {/* HEADER (top) */}
@@ -222,6 +223,6 @@ export default function LoginScreen() {
           <Text style={styles.footer}>A Thesis app made by Daniel Kiss</Text>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </ScrollView>
   );
 }

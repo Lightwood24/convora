@@ -6,13 +6,9 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-    alignItems: "center",
-    justifyContent: "center",
   },
   content: {
     flex: 1,
     width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
   },
 });
