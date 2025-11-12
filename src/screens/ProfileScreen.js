@@ -165,6 +165,25 @@ export default function ProfileScreen() {
     }
   };
 
+  const onCancelEdit = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+  
+    try {
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (snap.exists()) {
+        const d = snap.data();
+        setUsername(d?.displayName ?? user.displayName ?? "");
+        setPhone(d?.phone ?? "");
+        setAvatarUri(d?.photoURL ?? user.photoURL ?? null);
+      }
+    } catch (e) {
+      console.warn("Failed to reset fields", e);
+    }
+  
+    setIsEditing(false);
+  };
+
   // ha éppen mentünk, tiltjuk a gombot
   const primaryDisabled = saving;
 
@@ -310,17 +329,35 @@ export default function ProfileScreen() {
                 selectTextOnFocus={isEditing}
               />
 
-              <TouchableOpacity
-                style={[styles.button, primaryDisabled && styles.buttonDisabled]}
-                disabled={primaryDisabled}
-                onPress={onPrimaryPress}
-              >
-                {saving ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.buttonText}>{isEditing ? "Save" : "Edit"}</Text>
-                )}
-              </TouchableOpacity>
+              {isEditing ? (
+                <View style={styles.actionsRowWithoutMarginChange}>
+                  <TouchableOpacity
+                    style={[styles.button, styles.buttonDanger, styles.actionBtn]}
+                    onPress={onCancelEdit}
+                  >
+                    <Text style={styles.buttonText}>Cancel</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[styles.button, primaryDisabled && styles.buttonDisabled, styles.actionBtn]}
+                    disabled={primaryDisabled}
+                    onPress={onSave}
+                  >
+                    {saving ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <Text style={styles.buttonText}>Save</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={[styles.button]}
+                  onPress={() => setIsEditing(true)}
+                >
+                  <Text style={styles.buttonText}>Edit</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 

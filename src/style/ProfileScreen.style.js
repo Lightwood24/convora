@@ -117,6 +117,12 @@ export default StyleSheet.create({
     marginTop: theme.spacing.lg,
     alignSelf: "center",
   },
+  actionsRowWithoutMarginChange: {
+    width: "75%",
+    flexDirection: "row",
+    columnGap: theme.spacing.xxl,
+    alignSelf: "center",
+  },
   button: {
     height: 44,
     borderRadius: theme.radius.md,
