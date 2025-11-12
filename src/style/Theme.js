@@ -3,6 +3,7 @@ const colors = {
     background: "#0d0d0d",
     surface: "#161616",
     surfaceElevated: "#1e1e1e",
+    secondaryBackground: "#111827",
   
     // borders
     border: "#1f2937",
@@ -21,6 +22,8 @@ const colors = {
     // brand / state
     primary: "#2563eb",      // blue-600
     primaryMuted: "#3b82f6", // blue-500
+    secondary: "#374151",
+    navigation: "#0ea5e9",
     success: "#22c55e",
     warning: "#f59e0b",
     danger:  "#ef4444",

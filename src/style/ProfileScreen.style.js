@@ -17,19 +17,28 @@ export default StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "flex-start",
-    marginTop: 100,
+    marginTop: 60,
+    
   },
   bodySection: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
-    marginTop: -50,
+    paddingBottom: 150,
   },
   footerSection: {
-    flex: 1,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 80,
     alignItems: "center",
-    justifyContent: "flex-end",
+    justifyContent: "felx-start",
+    backgroundColor: theme.colors.secondaryBackground,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.borderMuted,
+    paddingBottom: 100,
   },
 
   // == HEADER ==
@@ -94,12 +103,19 @@ export default StyleSheet.create({
   input: {
     backgroundColor: theme.colors.inputBg,
     borderRadius: theme.radius.md,
-    paddingHorizontal: 14,
+    paddingHorizontal: theme.spacing.sm,
     height: 44,
     color: theme.colors.textPrimary,
     borderWidth: 1,
     borderColor: theme.colors.inputBorder,
     fontFamily: "Anta", 
+  },
+  actionsRow: {
+    width: "86%",              
+    flexDirection: "row",
+    columnGap: theme.spacing.sm,             
+    marginTop: theme.spacing.lg,
+    alignSelf: "center",
   },
   button: {
     height: 44,
@@ -109,44 +125,23 @@ export default StyleSheet.create({
     justifyContent: "center",
     marginTop: theme.spacing.sm,
   },
+  actionBtn: {
+    flex: 1,
+  },
+  buttonSecondary: {
+    backgroundColor: theme.colors.secondary,
+  },
+  buttonNavi: {
+    backgroundColor: theme.colors.navigation, 
+  },
+  buttonDanger: {
+    backgroundColor: theme.colors.danger,
+  },
   buttonDisabled: { opacity: 0.5 },
   buttonText: {
     color: theme.colors.textPrimary,
     fontWeight: "600",
     fontFamily: "Anta", 
   },
-  actionsRow: {
-    width: "86%",              
-    flexDirection: "row",
-    columnGap: 12,             
-    marginTop: theme.spacing.lg,
-    alignSelf: "center",
-  },
-  
-  actionBtn: {
-    flex: 1,
-  },
-  buttonSecondary: {
-    height: 44,
-    borderRadius: theme.radius.md,
-    backgroundColor: "#374151",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buttonDanger: {
-    height: 44,
-    borderRadius: theme.radius.md,
-    backgroundColor: "#ef4444",
-    alignItems: "center",
-    justifyContent: "center",
-  },
 
-  // == FOOTER ==
-  footer: {
-    color: theme.colors.textMuted,
-    marginTop: theme.spacing.sm,
-    marginBottom: 50,
-    fontStyle: "italic",
-    fontFamily: "Anta", 
-  },
 });

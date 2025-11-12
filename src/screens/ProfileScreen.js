@@ -18,8 +18,6 @@ import {
   updateProfile,
   signOut,
   deleteUser,
-  reauthenticateWithCredential,
-  EmailAuthProvider,
 } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { doc, getDoc, setDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
@@ -244,6 +242,7 @@ export default function ProfileScreen() {
       style={styles.container}
     >
       <View style={styles.content}>
+
         {/* HEADER */}
         <View style={styles.headerSection}>
           <View style={styles.header}>
@@ -327,11 +326,11 @@ export default function ProfileScreen() {
 
           {/* Secondary actions */}
           <View style={styles.actionsRow}>
-            <TouchableOpacity style={[styles.buttonSecondary, styles.actionBtn]} onPress={onSignOut}>
+            <TouchableOpacity style={[styles.button, styles.buttonSecondary, styles.actionBtn]} onPress={onSignOut}>
               <Text style={styles.buttonText}>Sign out</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.buttonDanger, styles.actionBtn]} onPress={onDeleteAccount}>
+            <TouchableOpacity style={[styles.button, styles.buttonDanger, styles.actionBtn]} onPress={onDeleteAccount}>
               <Text style={styles.buttonText}>Delete account</Text>
             </TouchableOpacity>
           </View>
@@ -340,7 +339,26 @@ export default function ProfileScreen() {
 
         {/* FOOTER */}
         <View style={styles.footerSection}>
-          <Text style={styles.footer}>Navigation</Text>
+          <View style={styles.actionsRow}>
+                <TouchableOpacity 
+                  style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+                  onPress={() => navigation.navigate("Profile")}
+                >
+                  <Text style={styles.buttonText}>Profile</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+                  onPress={() => navigation.navigate("Home")}
+                >
+                  <Text style={styles.buttonText}>Home</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+                  onPress={() => navigation.navigate("Calendar")}
+                >
+                  <Text style={styles.buttonText}>Calendar</Text>
+                </TouchableOpacity>
+          </View>
         </View>
       </View>
     </ScrollView>

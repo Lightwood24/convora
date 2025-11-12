@@ -54,7 +54,10 @@ export default function LoginScreen() {
       setLoading(true);
       await loginWithEmail(loginEmail.trim(), loginPassword);
       Alert.alert("Success", "Logged in successfully");
-      navigation.navigate("Profile");
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "AppTabs" }], // Tab root
+      });
     } catch (e) {
       Alert.alert("Login failed", e?.message ?? "Unknown error");
     } finally {
@@ -67,7 +70,10 @@ export default function LoginScreen() {
       setLoading(true);
       await registerWithEmail(regEmail.trim(), regPassword, regName.trim());
       Alert.alert("Success", "Account created & signed in");
-      navigation.navigate("Profile");
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "AppTabs" }], // Tab root
+      });
     } catch (e) {
       Alert.alert("Register failed", e?.message ?? "Unknown error");
     } finally {
