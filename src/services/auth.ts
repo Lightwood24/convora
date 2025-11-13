@@ -3,6 +3,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  sendEmailVerification
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -16,6 +17,14 @@ export async function registerWithEmail(email: string, password: string, display
     email,
     createdAt: serverTimestamp(),
   });
+
+  // VERIFIKÁCIÓS EMAIL
+  try {
+    await sendEmailVerification(cred.user);
+  } catch (e) {
+    console.warn("sendEmailVerification failed", e);
+  }
+
 
   return cred.user;
 }

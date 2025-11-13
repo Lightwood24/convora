@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 import theme from "./Theme";
 
 export default StyleSheet.create({
-  // === LAYOUT ===
+  // == LAYOUT ==
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
@@ -12,7 +12,7 @@ export default StyleSheet.create({
     width: "100%",
   },
 
-  // === HEADER ===
+  // == HEADER ==
   headerSection: {
     flex: 1,
     alignItems: "center",
@@ -34,7 +34,7 @@ export default StyleSheet.create({
     ...theme.typography.h1,          
   },
 
-  // === BODY ===
+  // == BODY ==
   bodySection: {
     flex: 1,
     alignItems: "center",
@@ -77,7 +77,7 @@ export default StyleSheet.create({
     gap: 10,
   },
 
-  // === INPUTS ===
+  // == INPUTS ==
   input: {
     backgroundColor: theme.colors.inputBg,
     borderRadius: theme.radius.md,
@@ -95,8 +95,15 @@ export default StyleSheet.create({
     transform: [{ translateY: -12 }],
     padding: 4,
   },
+  errorText: {
+    color: theme.colors.danger,
+    marginTop: 4,
+    fontSize: 12,
+    fontFamily: "Anta",
+  },
+  
 
-  // === BUTTON ===
+  // == BUTTON ==
   button: {
     height: 46,
     borderRadius: theme.radius.md,
@@ -115,7 +122,7 @@ export default StyleSheet.create({
     fontFamily: "Anta",              
   },
 
-  // === FOOTER ===
+  // == FOOTER ==
   footerSection: {
     flex: 1,
     alignItems: "center",
