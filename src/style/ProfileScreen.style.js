@@ -110,6 +110,11 @@ export default StyleSheet.create({
     borderColor: theme.colors.inputBorder,
     fontFamily: "Anta", 
   },
+  disabledInput: {
+    opacity: 0.5,    
+    backgroundColor: "#2a2a2a", 
+  },
+  
   actionsRow: {
     width: "86%",              
     flexDirection: "row",
@@ -149,5 +154,12 @@ export default StyleSheet.create({
     fontWeight: "600",
     fontFamily: "Anta", 
   },
+  errorText: {
+    color: theme.colors.danger,
+    marginTop: 4,
+    fontSize: 12,
+    fontFamily: "Anta",
+  },
+  
 
 });
