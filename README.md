@@ -1,28 +1,32 @@
 # Convora
 
-A thesis project built with Expo and React Native.
+Convora is a mobile application developed as part of a university thesis project.  
+The goal of the app is to provide a modern, intuitive, iOS-focused event–organizing tool built with **React Native** and **Expo**, supported by **Firebase Authentication**, **Cloud Firestore**, and **Cloud Storage**.
 
-### Overview
-Convora is a mobile application developed as a university thesis project. This README is a living document being updated throughout the project to track setup, architecture, features, research decisions, and milestones.
+This README documents the project’s architecture, setup, implemented features, and development progress.
 
----
+## 📱 Tech Stack
 
-### Tech Stack
-- *React Native 0.81* (Expo SDK 54)
-- *React 19*
-- *TypeScript 5.9*
-- *Expo (Managed workflow)*
-- *Firebase JS SDK 11 — authentication & Firestore database*
+- **React Native 0.81** (Expo SDK 54 — Managed Workflow)
+- **React 19**
+- **JavaScript (with partial TypeScript support for services)**
+- **Expo Modules**
+  - `expo-image-picker`
+  - `expo-font`
+  - `expo-status-bar`
+- **Firebase (v12)**
+  - Authentication
+  - Firestore Database
+  - Cloud Storage
+- **Navigation**
+  - `@react-navigation/native`
+  - `@react-navigation/native-stack`
+  - `@react-navigation/bottom-tabs`
 
-#### Dev Dependencies
-- `@types/react`
-- `typescript`
-- `expo-font`
-- `expo-image-picker`
+### Platform focus
+Although React Native supports both iOS and Android, **Convora is developed specifically for iOS**, and no Android-specific development or testing is planned.
 
----
-
-### Getting Started
+## 🚀 Getting Started
 1. Install dependencies:
 ```bash
 npm install
@@ -32,58 +36,81 @@ npm install
 npm run start
 ```
 
-### Project Structure
+## 📂 Project Structure
 ```
 Convora/
 ├─ App.js
 ├─ app.json
 ├─ index.js
-├─ assets/                              # App images/assets
+├─ assets/
 │  ├─ pictures/
 │  └─ fonts/
 ├─ src/
-│  ├─ components/                       # UI components (currently empty)
-│  ├─ navigation/                       # Navigation setup
-│  │  └─ AppNavigator.js   
-│  ├─ screens/                          # Screen components
-│  │  ├─ CalendarScreen.js
-│  │  ├─ EventCreateScreen.js
-│  │  ├─ EventDetailScreen.js
-│  │  ├─ HomeScreen.js
+│  ├─ navigation/
+│  │  ├─ AppNavigator.js 
+│  │  └─ AppTabs.js
+│  ├─ screens/
 │  │  ├─ LoginScreen.js
-│  │  └─ ProfileScreen.js
-│  ├─ services/                         # Business logic & Firebase services
+│  │  ├─ ProfileScreen.js
+│  │  └─ (...)
+│  ├─ services/
 │  │  ├─ firebase.ts            
 │  │  └─ auth.ts            
-│  ├─ style/                            # Centralized stylesheets
+│  ├─ style/
 │  │  ├─ LoginScreen.styles.js
 │  │  ├─ ProfileScreen.style.js
-│  │  └─ Theme.js                       # Global theme system (colors, typography)
-│  └─ utils/                            # Utilities (currently empty)
+│  │  ├─ (...)
+│  │  └─ Theme.js
 ├─ test/
-│  └─ testFirestore.js          
-├─ tsconfig.json                
-├─ package.json                 
+│  └─ testFirestore.js                      
+├─ .env             
 ├─ .gitignore
-└─ README.md
+├─ package-lock.json
+├─ package.json   
+├─ README.md 
+└─ tsconfig.json
 ```
+Only implemented screens are listed
 
-### App Entry
-- `App.js` renders `LoginScreen` from `src/screens/LoginScreen.js`.
-- Expo configuration is in `app.json`.
+## ✨ Implemented Features
+### 🔐 Authentication System
+- Email + password login
+- Registration with:
+  - username validation
+  - email validation
+  - password strength rules
+- Duplicate username & email detection (Firestore / Auth check)
+- Email verification handling
 
-### TypeScript
-- The project uses TypeScript for maintainable app logic (`*.ts` files under services, etc.). Ensure TypeScript is set up before starting development.
+### 👤 Profile Management
+- Avatar upload (Expo Image Picker → Firebase Storage)
+- Display name & phone number editing
+- Automatic Firestore syncing (users/{uid})
+- Delete account:
+  - deletes Firestore user doc
+  - deletes profile avatar from Storage
+  - deletes Firebase Auth user
+- Sign out and navigation reset
 
-### Testing (Firebase/Firestore)
-- The `test/testFirestore.js` file is for testing Firestore access; it imports helpers from `src/services/firebase.ts`.
-- Firestore collections in use for tests: `users`, `events`, `invites`, `links`, and subcollection `attendees` under `events`.
+### 🌐 Navigation
+- Stack navigation for Login → AppTabs
+- Bottom tabs (hidden UI) for:
+  - Profile Screen
+  - Home Screen
+  - Calendar Screen
 
-### Changelog
-- v1.3.0: Added navigation between the Login and Profile screens, UI improvements with global system theme
-- v1.2.0: Added Firebase Authentication & Firestore user registration logic, connected login/register forms to Firebase backend
-- v1.1.0: Added Firebase service integration, TypeScript configuration, Firestore test utilities in `/test`.
-- v1.0.0: Project initialization (Expo 54, RN 0.81, React 19). Added `HomeScreen` scaffold.
+### 🎨 UI / UX
+- Centralized theme system
+- Custom typography & color palette
+- Card-style expanding sections
+- Clean iOS-focused design
 
-### Author
-- Daniel Kiss (Thesis project owner)
+## 📜 Changelog
+- v1.4.0: Added full validation in registration and in profile editing, improved styling consistency
+- v1.3.0: Added navigation between main screens, implemented a globan theme
+- v1.2.0: Added user registration / login logic, implemented profile edit / delete and sign out option
+- v1.1.0: Initial login and profile screen structure
+- v1.0.0: Initial Expo project setup, added base skeleton
+
+### 👨‍💻 Author
+Daniel Kiss (Thesis project owner)
