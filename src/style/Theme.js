@@ -1,9 +1,11 @@
 const colors = {
     // base
     background: "#0d0d0d",
+    secondaryBackground: "#111827",
+    avatarBackground: "#e5e5e5",
+    avatarPlaceholderBackground: "#d4d4d4",
     surface: "#161616",
     surfaceElevated: "#1e1e1e",
-    secondaryBackground: "#111827",
   
     // borders
     border: "#1f2937",
@@ -18,6 +20,7 @@ const colors = {
     // inputs
     inputBg: "#1f2937",
     inputBorder: "#374151",
+    disabledInput: "#2a2a2a",
   
     // brand / state
     primary: "#2563eb",      // blue-600

@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 import theme from "./Theme";
 
 export default StyleSheet.create({
-  // === LAYOUT ===
+  // == LAYOUT ==
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,

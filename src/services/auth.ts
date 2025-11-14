@@ -7,7 +7,7 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
-// registráció
+// regisztráció
 export async function registerWithEmail(email: string, password: string, displayName: string) {
   const cred = await createUserWithEmailAndPassword(auth, email, password);
 
@@ -18,7 +18,7 @@ export async function registerWithEmail(email: string, password: string, display
     createdAt: serverTimestamp(),
   });
 
-  // VERIFIKÁCIÓS EMAIL
+  // visszaigazoló email
   try {
     await sendEmailVerification(cred.user);
   } catch (e) {

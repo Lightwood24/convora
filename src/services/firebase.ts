@@ -15,7 +15,6 @@ const firebaseConfig = {
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-// React Native perzisztencia
 export const auth =
   Platform.OS === "web"
     ? getAuth(app)

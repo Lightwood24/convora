@@ -1,25 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  Animated,
-  ScrollView,
-  Image,
-} from "react-native";
-import { registerWithEmail, loginWithEmail } from "../services/auth";
-import styles from "../style/LoginScreen.style";
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, Pressable, Animated, ScrollView, Image, } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { fetchSignInMethodsForEmail } from "firebase/auth";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { registerWithEmail, loginWithEmail } from "../services/auth";
+import { auth, db } from "../services/firebase";
 import passwordShowIcon from "../../assets/pictures/password_show.png";
 import passwordHideIcon from "../../assets/pictures/password_hide.png";
 import convoraLogo from "../../assets/pictures/convora_logo.png";
-import { fetchSignInMethodsForEmail } from "firebase/auth";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { auth, db } from "../services/firebase";
+import styles from "../style/LoginScreen.style";
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -27,39 +16,16 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const headerOffset = useRef(new Animated.Value(0)).current;
 
-  // login state
+  // login konstansok
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  // register state
+  // register konstansok
   const [regName, setRegName] = useState("");
   const [regEmail, setRegEmail] = useState("");
   const [regPassword, setRegPassword] = useState("");
   const [showRegPassword, setShowRegPassword] = useState(false);
-
-  // inline errorok a regisztrációs mezőkhöz
-  const [regNameError, setRegNameError] = useState("");
-  const [regEmailError, setRegEmailError] = useState("");
-  const [regPasswordError, setRegPasswordError] = useState("");
-
-  // validátorok
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
-  const strongPw = (pw) => /^(?=.*[A-Z])(?=.*\d).{9,}$/.test(pw); // min 9, 1 nagybetű, 1 szám
-  const validUsername = (name) => /^[A-Za-z0-9_]+$/.test(name);   // csak betű/szám/_
-
-  // email ellenőrző (Firebase Auth: csak azt tudja, hogy nálad használják-e már)
-  async function isEmailAvailable(email) {
-    const methods = await fetchSignInMethodsForEmail(auth, email);
-    return methods.length === 0;
-  }
-
-  // felhasználónév ellenőrző (Firestore users/displayName)
-  async function isUsernameAvailable(name) {
-    const q = query(collection(db, "users"), where("displayName", "==", name));
-    const snap = await getDocs(q);
-    return snap.empty;
-  }
 
   const toggleCard = (type) => {
     setActiveCard(activeCard === type ? null : type);
@@ -74,7 +40,28 @@ export default function LoginScreen() {
     }).start();
   }, [activeCard, headerOffset]);
 
-  // === LOGIN ===
+  // == VALIDATION ==
+  // inline errorok
+  const [regNameError, setRegNameError] = useState("");
+  const [regEmailError, setRegEmailError] = useState("");
+  const [regPasswordError, setRegPasswordError] = useState("");
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[A-Za-z]{2,}$/;
+  const strongPw = (pw) => /^(?=.*[A-Z])(?=.*\d).{9,}$/.test(pw);   // min 9, 1 nagybetű, 1 szám
+  const validUsername = (name) => /^[A-Za-z0-9_]+$/.test(name);     // csak betű, szám, és underscore
+
+  async function isEmailAvailable(email) {
+    const methods = await fetchSignInMethodsForEmail(auth, email);
+    return methods.length === 0;
+  }
+
+  async function isUsernameAvailable(name) {
+    const q = query(collection(db, "users"), where("displayName", "==", name));
+    const snap = await getDocs(q);
+    return snap.empty;
+  }
+
+  // == LOGIN ==
   const onLogin = async () => {
     try {
       setLoading(true);
@@ -100,7 +87,7 @@ export default function LoginScreen() {
     }
   };
 
-  // === REGISTER ===
+  // == REGISTER ==
   const onRegister = async () => {
     try {
       setLoading(true);
@@ -109,13 +96,11 @@ export default function LoginScreen() {
       const name = regName.trim();
       const pw = regPassword;
 
-      // ha valami szintaktikus hiba van, elvileg már invalid a gomb,
-      // de safety-ből még egyszer ellenőrizhetünk
       if (!emailRegex.test(email) || !validUsername(name) || !strongPw(pw)) {
         return;
       }
 
-      // Foglaltság ellenőrzés (async)
+      // Foglaltság ellenőrzés
       const [emailFree, nameFree] = await Promise.all([
         isEmailAvailable(email),
         isUsernameAvailable(name),
@@ -149,7 +134,7 @@ export default function LoginScreen() {
     }
   };
 
-  // gomb disable logika
+  // button disable logika
   const loginDisabled = !loginEmail || !loginPassword || loading;
   const regDisabled =
     !regName ||
@@ -178,7 +163,7 @@ export default function LoginScreen() {
           </Animated.View>
         </View>
 
-        {/* BODY (middle) */}
+        {/* BODY */}
         <View style={styles.bodySection}>
           {/* LOGIN CARD */}
           <View style={styles.card}>
@@ -349,7 +334,7 @@ export default function LoginScreen() {
           </View>
         </View>
 
-        {/* FOOTER (bottom) */}
+        {/* FOOTER */}
         <View style={styles.footerSection}>
           <Text style={styles.footer}>A Thesis app made by Daniel Kiss</Text>
         </View>

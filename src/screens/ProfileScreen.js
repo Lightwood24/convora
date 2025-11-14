@@ -1,46 +1,16 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-  Image,
-  Alert,
-  ScrollView,
-} from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import styles from "../style/ProfileScreen.style";
-import basePic from "../../assets/pictures/base_prof_pic.jpg";
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Image, Alert, ScrollView, } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import {
-  onAuthStateChanged,
-  updateProfile,
-  signOut,
-  deleteUser,
-} from "firebase/auth";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-} from "firebase/storage";
-import {
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp,
-  deleteDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
+import * as ImagePicker from "expo-image-picker";
+import { onAuthStateChanged, updateProfile, signOut, deleteUser, } from "firebase/auth";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject, } from "firebase/storage";
+import { doc, getDoc, setDoc, serverTimestamp, deleteDoc, collection, query, where, getDocs, } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
+import basePic from "../../assets/pictures/base_prof_pic.jpg";
+import styles from "../style/ProfileScreen.style";
 
-// --- VALIDÁTOROK ---
-// ugyanaz usernévre, mint a login képernyőn
+// == VALIDÁTOROK ==
+
 const validUsername = (name) => /^[A-Za-z0-9_]+$/.test(name);
 
 // telefonszám: csak számok, +, 7–15 számjegy
@@ -49,8 +19,6 @@ const validPhone = (value) => {
   return /^\+?[0-9]{7,15}$/.test(value);
 };
 
-
-// username foglaltság ellenőrzés szerkesztéskor
 async function isUsernameAvailableForUpdate(name, uid) {
   const q = query(collection(db, "users"), where("displayName", "==", name));
   const snap = await getDocs(q);
@@ -58,7 +26,6 @@ async function isUsernameAvailableForUpdate(name, uid) {
 
   for (const d of snap.docs) {
     if (d.id !== uid) {
-      // más user is használja
       return false;
     }
   }
@@ -74,7 +41,7 @@ export default function ProfileScreen() {
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  // inline hibaüzenetek
+  // inline errorok
   const [usernameError, setUsernameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
 
@@ -144,11 +111,11 @@ export default function ProfileScreen() {
     try {
       const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (perm.status !== "granted") {
-        Alert.alert("Permission needed", "Permission needed to open Galery");
+        Alert.alert("Permission needed", "Permission needed to open Gallery");
         return;
       }
       const res = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ["images"],
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.9,
@@ -160,9 +127,7 @@ export default function ProfileScreen() {
         e?.message ?? "Unknown error occurred while selecting the image."
       );
     }
-  };
-
-  // --- onChange handlerek validációval ---
+  }; 
 
   const handleUsernameChange = (value) => {
     setUsername(value);
@@ -200,7 +165,6 @@ export default function ProfileScreen() {
     const trimmedName = username.trim();
     const trimmedPhone = phone.trim();
 
-    // utolsó szinkron check – ha itt gáz van, csak error state-et állítunk
     if (!trimmedName) {
       setUsernameError("Username cannot be empty.");
       return;
@@ -229,7 +193,6 @@ export default function ProfileScreen() {
 
       const uid = user.uid;
 
-      // username foglaltság ellenőrzés
       const nameAvailable = await isUsernameAvailableForUpdate(trimmedName, uid);
       if (!nameAvailable) {
         setUsernameError("This username is already taken.");
@@ -290,7 +253,7 @@ export default function ProfileScreen() {
     setIsEditing(false);
   };
 
-  // Save gomb disable logika
+  // Save disable logika
   const trimmedUsername = username.trim();
   const hasValidationError = !!usernameError || !!phoneError;
   const primaryDisabled = saving || hasValidationError || !trimmedUsername;
@@ -378,7 +341,7 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* BODY (center) */}
+        {/* BODY */}
         <View style={styles.bodySection}>
           <View style={styles.card}>
             {/* Avatar */}

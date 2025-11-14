@@ -27,7 +27,7 @@ export default StyleSheet.create({
     height: 80,
     resizeMode: "contain",
     marginBottom: theme.spacing.sm,
-    borderRadius: 9,
+    borderRadius: theme.radius.md,
   },
   appName: {
     color: theme.colors.textPrimary,
@@ -64,20 +64,18 @@ export default StyleSheet.create({
   cardTitle: {
     color: theme.colors.textSecondary,
     fontWeight: "600",
-    fontSize: 16,
-    fontFamily: "Anta",              
+    ...theme.typography.base,              
   },
   arrow: {
     color: theme.colors.textMuted,
-    fontSize: 16,
-    fontFamily: "Anta",              
+    ...theme.typography.base,              
   },
   cardBody: {
     padding: theme.spacing.lg,
-    gap: 10,
+    gap: theme.spacing.md,
   },
 
-  // == INPUTS ==
+  // == INPUTS / BUTTONS ==
   input: {
     backgroundColor: theme.colors.inputBg,
     borderRadius: theme.radius.md,
@@ -90,7 +88,7 @@ export default StyleSheet.create({
   },
   passwordIcon: {
     position: "absolute",
-    right: 12,
+    right: theme.spacing.md,
     top: "50%",
     transform: [{ translateY: -12 }],
     padding: 4,
@@ -98,12 +96,9 @@ export default StyleSheet.create({
   errorText: {
     color: theme.colors.danger,
     marginTop: 4,
-    fontSize: 12,
-    fontFamily: "Anta",
+    ...theme.typography.small,
   },
   
-
-  // == BUTTON ==
   button: {
     height: 46,
     borderRadius: theme.radius.md,

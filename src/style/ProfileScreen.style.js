@@ -84,16 +84,16 @@ export default StyleSheet.create({
     height: 96,
     borderRadius: theme.radius.lg,
     overflow: "hidden",
-    backgroundColor: "#e5e5e5",
+    backgroundColor: theme.colors.avatarBackground,
   },
   avatarImg: { width: "100%", height: "100%", opacity: 0.85 },
   avatarPlaceholder: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#d4d4d4",
+    backgroundColor: theme.colors.avatarPlaceholderBackground,
   },
-  avatarIcon: { fontSize: 28, fontFamily: "Anta" }, 
+  avatarIcon: { ...theme.typography.h1 }, 
   changePhotoText: {
     color: theme.colors.primaryMuted,
     marginTop: theme.spacing.sm,
@@ -112,7 +112,7 @@ export default StyleSheet.create({
   },
   disabledInput: {
     opacity: 0.5,    
-    backgroundColor: "#2a2a2a", 
+    backgroundColor: theme.colors.disabledInput, 
   },
   
   actionsRow: {
@@ -157,8 +157,7 @@ export default StyleSheet.create({
   errorText: {
     color: theme.colors.danger,
     marginTop: 4,
-    fontSize: 12,
-    fontFamily: "Anta",
+    ...theme.typography.small,
   },
   
 
