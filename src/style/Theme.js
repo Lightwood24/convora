@@ -22,7 +22,7 @@ const colors = {
     inputBorder: "#374151",
     disabledInput: "#2a2a2a",
   
-    // brand / state
+    // buttons
     primary: "#2563eb",      // blue-600
     primaryMuted: "#3b82f6", // blue-500
     secondary: "#374151",

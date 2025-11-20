@@ -18,7 +18,6 @@ export async function registerWithEmail(email: string, password: string, display
     createdAt: serverTimestamp(),
   });
 
-  // visszaigazoló email
   try {
     await sendEmailVerification(cred.user);
   } catch (e) {

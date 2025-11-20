@@ -9,29 +9,6 @@ import { auth, db } from "../services/firebase";
 import basePic from "../../assets/pictures/base_prof_pic.jpg";
 import styles from "../style/ProfileScreen.style";
 
-// == VALIDÁTOROK ==
-
-const validUsername = (name) => /^[A-Za-z0-9_]+$/.test(name);
-
-// telefonszám: csak számok, +, 7–15 számjegy
-const validPhone = (value) => {
-  if (!value) return true; // üresen hagyható
-  return /^\+?[0-9]{7,15}$/.test(value);
-};
-
-async function isUsernameAvailableForUpdate(name, uid) {
-  const q = query(collection(db, "users"), where("displayName", "==", name));
-  const snap = await getDocs(q);
-  if (snap.empty) return true;
-
-  for (const d of snap.docs) {
-    if (d.id !== uid) {
-      return false;
-    }
-  }
-  return true;
-}
-
 export default function ProfileScreen() {
   const navigation = useNavigation();
   const [avatarUri, setAvatarUri] = useState(null);
@@ -44,6 +21,29 @@ export default function ProfileScreen() {
   // inline errorok
   const [usernameError, setUsernameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
+
+  // == VALIDÁTOROK ==
+
+  const validUsername = (name) => /^[A-Za-z0-9_]+$/.test(name);
+
+  // telefonszám: csak számok, +, 7–15 számjegy
+  const validPhone = (value) => {
+    if (!value) return true; // üresen hagyható
+    return /^\+?[0-9]{7,15}$/.test(value);
+  };
+
+  async function isUsernameAvailableForUpdate(name, uid) {
+    const q = query(collection(db, "users"), where("displayName", "==", name));
+    const snap = await getDocs(q);
+    if (snap.empty) return true;
+
+    for (const d of snap.docs) {
+      if (d.id !== uid) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -93,7 +93,6 @@ export default function ProfileScreen() {
   async function uploadAvatarIfNeeded(uri, uid) {
     if (!uri) return null;
 
-    // ha már http(s) URL, nem töltjük újra
     if (typeof uri === "string" && uri.startsWith("http")) return uri;
 
     const res = await fetch(uri);
@@ -199,10 +198,9 @@ export default function ProfileScreen() {
         return;
       }
 
-      // 1) Avatar feltöltése (ha új képet választottál)
       const photoURL = await uploadAvatarIfNeeded(avatarUri, uid);
 
-      // 2) Auth profil frissítés
+      // Auth profil frissítés
       const profileUpdate = {};
       if (trimmedName && trimmedName !== (user.displayName ?? "")) {
         profileUpdate.displayName = trimmedName;
@@ -214,7 +212,7 @@ export default function ProfileScreen() {
         await updateProfile(user, profileUpdate);
       }
 
-      // 3) Firestore users/{uid} frissítés
+      // Firestore users/{uid} frissítés
       const userDoc = {
         displayName: trimmedName,
         photoURL: photoURL ?? user.photoURL ?? null,
