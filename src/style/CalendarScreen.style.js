@@ -17,14 +17,15 @@ export default StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "flex-start",
-    marginTop: 60,
+    marginTop: 100,
     
   },
   bodySection: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     width: "100%",
+    paddingBottom: theme.spacing.xl,
   },
   footerSection: {
     position: "absolute",
@@ -33,7 +34,7 @@ export default StyleSheet.create({
     right: 0,
     height: 80,
     alignItems: "center",
-    justifyContent: "felx-start",
+    justifyContent: "flex-start",
     backgroundColor: theme.colors.secondaryBackground,
     borderTopWidth: 1,
     borderTopColor: theme.colors.borderMuted,

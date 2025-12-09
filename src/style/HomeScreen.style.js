@@ -17,14 +17,15 @@ export default StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "flex-start",
-    marginTop: 60,
+    marginTop: 100,
     
   },
   bodySection: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     width: "100%",
+    paddingBottom: 90,
   },
   footerSection: {
     position: "absolute",
@@ -33,7 +34,7 @@ export default StyleSheet.create({
     right: 0,
     height: 80,
     alignItems: "center",
-    justifyContent: "felx-start",
+    justifyContent: "flex-start",
     backgroundColor: theme.colors.secondaryBackground,
     borderTopWidth: 1,
     borderTopColor: theme.colors.borderMuted,
@@ -48,14 +49,65 @@ export default StyleSheet.create({
   },
   screenTitle: {
     color: theme.colors.textPrimary,
-    ...theme.typography.h1, 
+    ...theme.typography.h1,
     marginBottom: theme.spacing.xs,
     textAlign: "center",
   },
 
-  // == INPUT / BUTTONS ==
+  // == EVENT LIST / CARDS ==
+  eventList: {
+    width: "86%",
+    marginTop: theme.spacing.md,
+  },
+  eventCard: {
+    flexDirection: "row",
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.radius.lg,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    marginBottom: theme.spacing.sm,
+    overflow: "hidden",
+  },
+  dateColumn: {
+    width: 80,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRightWidth: 1,
+    borderRightColor: theme.colors.borderMuted,
+    backgroundColor: theme.colors.surfaceElevated,
+  },
+  dateBox: {
+    width: 56,
+    height: 56,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.borderMuted,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  dateText: {
+    ...theme.typography.small,
+    color: theme.colors.textMuted,
+  },
+  eventContent: {
+    flex: 1,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    justifyContent: "center",
+  },
+  eventTitle: {
+    ...theme.typography.base,
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.xs,
+  },
+  eventSnippet: {
+    ...theme.typography.small,
+    color: theme.colors.textMuted,
+  },
+
+  // == BUTTONS ==
   actionsRow: {
-    width: "86%",              
+    width: "86%",
     flexDirection: "row",
     columnGap: theme.spacing.sm,             
     marginTop: theme.spacing.lg,
@@ -73,12 +125,18 @@ export default StyleSheet.create({
     flex: 1,
   },
   buttonNavi: {
-    backgroundColor: theme.colors.navigation, 
+    backgroundColor: theme.colors.navigation,
+  },
+  newEventButton: {
+    width: "60%",
+    alignSelf: "center",
+    marginTop: theme.spacing.xl,
+    marginBottom: theme.spacing.xl,
+    backgroundColor: theme.colors.primary,
   },
   buttonText: {
     color: theme.colors.textPrimary,
     fontWeight: "600",
-    fontFamily: "Anta", 
+    fontFamily: "Anta",
   },
-
 });
