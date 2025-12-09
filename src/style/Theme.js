@@ -53,6 +53,11 @@ const colors = {
       fontSize: 25,
       fontWeight: "400",
     },
+    h2: {
+      fontFamily: "Anta",
+      fontSize: 20,
+      fontWeight: "400",
+    },
     small: {
       fontFamily: "Anta",
       fontSize: 12,
