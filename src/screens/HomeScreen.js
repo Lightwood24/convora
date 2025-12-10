@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import { Text, ScrollView, View, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+
 import styles from "../style/HomeScreen.style";
 import {LinearGradient} from "expo-linear-gradient";
 import theme from "../style/Theme"; 
@@ -70,6 +71,7 @@ export default function HomeScreen() {
           {MOCK_EVENTS.map((event) => (
             <View key={event.id} style={styles.eventCard}>
               <Text style={styles.eventTitle}>{event.title}</Text>
+              <Text style={styles.eventDate}>{event.dateLabel}</Text>
               <Text style={styles.eventDescription}>{event.description}</Text>
             </View>
           ))}
@@ -82,7 +84,10 @@ export default function HomeScreen() {
         />
 
         </View>
-        <TouchableOpacity style={styles.newEventButton}>
+        <TouchableOpacity 
+          style={styles.newEventButton} 
+          onPress={() => navigation.navigate("EventCreate")}
+        >
           <Text style={styles.newEventButtonText}>New event</Text>
         </TouchableOpacity>
         </View>

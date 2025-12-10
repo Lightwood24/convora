@@ -78,11 +78,6 @@ export default StyleSheet.create({
     padding: theme.spacing.md,
     marginBottom: theme.spacing.sm,
   },
-  eventCardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: theme.spacing.xs,
-  },
   eventTitle: {
     ...theme.typography.base,
     color: theme.colors.textPrimary,

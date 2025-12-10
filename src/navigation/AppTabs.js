@@ -13,7 +13,7 @@ export default function AppTabs() {
         headerShown: false,
         tabBarStyle: {display: "none"},
       }}
-      initialRouteName="Profile"
+      initialRouteName="Home"
     >
       <Tab.Screen name="Profile" component={ProfileScreen} />
       <Tab.Screen name="Home" component={HomeScreen} />
