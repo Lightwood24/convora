@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, Pressable, Animated, ScrollView, Image, } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, Pressable, Animated, Image, } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
 import { fetchSignInMethodsForEmail } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
@@ -146,7 +147,7 @@ export default function LoginScreen() {
     loading;
 
   return (
-    <ScrollView
+    <KeyboardAwareScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
@@ -339,6 +340,6 @@ export default function LoginScreen() {
           <Text style={styles.footer}>A Thesis app made by Daniel Kiss</Text>
         </View>
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }

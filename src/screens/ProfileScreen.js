@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Image, Alert, ScrollView, } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Image, Alert } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { onAuthStateChanged, updateProfile, signOut, deleteUser, } from "firebase/auth";
@@ -319,7 +320,7 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView
+    <KeyboardAwareScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
@@ -485,6 +486,6 @@ export default function ProfileScreen() {
           </View>
         </View>
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
