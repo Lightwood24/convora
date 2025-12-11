@@ -1,28 +1,74 @@
-import React, {useState} from "react";
-import { Text, ScrollView, View, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text, ScrollView, View, TouchableOpacity, ImageBackground, } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
+import { LinearGradient } from "expo-linear-gradient";
+import { auth, db } from "../services/firebase";
+import { collection, query, where, orderBy, onSnapshot, } from "firebase/firestore";
 import styles from "../style/HomeScreen.style";
-import {LinearGradient} from "expo-linear-gradient";
-import theme from "../style/Theme"; 
+import theme from "../style/Theme";
 
-const MOCK_EVENTS = [
-  { id: "1", title: "Event 1", dateLabel: "Date", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { id: "2", title: "Event 2", dateLabel: "Date", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { id: "3", title: "Event 3", dateLabel: "Date", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { id: "4", title: "Event 4", dateLabel: "Date", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { id: "5", title: "Event 5", dateLabel: "Date", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { id: "6", title: "Event 6", dateLabel: "Date", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-  { id: "7", title: "Event 7", dateLabel: "Date", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit." },
-];
+const TEMPLATE_BACKGROUNDS = {
+  grim: require("../../assets/pictures/grim_card.png"),
+  love: require("../../assets/pictures/love_card.png"),
+  nature: require("../../assets/pictures/nature_card.png"),
+  office: require("../../assets/pictures/office_card.png"),
+  party: require("../../assets/pictures/party_card.png"),
+  theatre: require("../../assets/pictures/theatre_card.png"),
+};
 
 export default function HomeScreen() {
   const navigation = useNavigation();
   const [isAtTop, setIsAtTop] = useState(true);
+  const [events, setEvents] = useState([]);
 
   const handleScroll = (e) => {
     const offset = e.nativeEvent.contentOffset.y;
     setIsAtTop(offset <= 2);
+  };
+
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (!user) {
+      setEvents([]);
+      return;
+    }
+
+    const eventsCol = collection(db, "events");
+    const q = query(
+      eventsCol,
+      where("ownerId", "==", user.uid),
+      orderBy("startAt", "asc")
+    );
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const list = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return {
+            id: docSnap.id,
+            ...data,
+          };
+        });
+        setEvents(list);
+      },
+      (error) => {
+        console.error("Error listening events:", error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  const formatDateLabel = (startAt) => {
+    if (!startAt) return "";
+    const d = startAt.toDate ? startAt.toDate() : new Date(startAt);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
   };
 
   return (
@@ -42,54 +88,114 @@ export default function HomeScreen() {
 
         {/* BODY */}
         <View style={styles.bodySection}>
-        <Text style={styles.sectionTitle}>Upcoming events</Text>
-        <View style={styles.eventsListContainer}>
+          <Text style={styles.sectionTitle}>Upcoming events</Text>
 
-        {!isAtTop && (
-          <LinearGradient
-            colors={[theme.colors.background, "transparent"]}
-            style={styles.fadeTop}
-            pointerEvents="none"
-          />
-        )}
+          <View style={styles.eventsListContainer}>
+            {!isAtTop && (
+              <LinearGradient
+                colors={[theme.colors.background, "transparent"]}
+                style={styles.fadeTop}
+                pointerEvents="none"
+              />
+            )}
 
-        {!isAtTop && (
-          <LinearGradient
-            colors={["transparent", theme.colors.background]}
-            style={styles.fadeBottom}
-            pointerEvents="none"
-          />
-        )}
+            {!isAtTop && (
+              <LinearGradient
+                colors={["transparent", theme.colors.background]}
+                style={styles.fadeBottom}
+                pointerEvents="none"
+              />
+            )}
 
-        <ScrollView
-          style={styles.eventsList}
-          contentContainerStyle={styles.eventsListContent}
-          showsVerticalScrollIndicator={false}
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
-        >
-          {MOCK_EVENTS.map((event) => (
-            <View key={event.id} style={styles.eventCard}>
-              <Text style={styles.eventTitle}>{event.title}</Text>
-              <Text style={styles.eventDate}>{event.dateLabel}</Text>
-              <Text style={styles.eventDescription}>{event.description}</Text>
-            </View>
-          ))}
-        </ScrollView>
+            <ScrollView
+              style={styles.eventsList}
+              contentContainerStyle={styles.eventsListContent}
+              showsVerticalScrollIndicator={false}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+            >
+              {events.length === 0 ? (
+                <Text
+                  style={{
+                    ...theme.typography.small,
+                    color: theme.colors.textMuted,
+                    textAlign: "center",
+                    marginTop: theme.spacing.md,
+                  }}
+                >
+                  You have no events yet.
+                </Text>
+              ) : (
+                events.map((event) => {
+                  const bgSource =
+                    TEMPLATE_BACKGROUNDS[event.templateId] ||
+                    TEMPLATE_BACKGROUNDS["party"];
 
-        <LinearGradient
-          colors={['transparent', theme.colors.background]}
-          style={styles.fadeBottom}
-          pointerEvents="none"
-        />
+                  const fontFamily = event.fontFamily || "Anta";
+                  const dateLabel = formatDateLabel(event.startAt);
+                  const description =
+                    event.description && event.description.trim().length > 0
+                      ? event.description
+                      : "No description provided.";
 
-        </View>
-        <TouchableOpacity 
-          style={styles.newEventButton} 
-          onPress={() => navigation.navigate("EventCreate")}
-        >
-          <Text style={styles.newEventButtonText}>New event</Text>
-        </TouchableOpacity>
+                  return (
+                    <ImageBackground
+                      key={event.id}
+                      source={bgSource}
+                      style={styles.eventCard}
+                      imageStyle={styles.eventCardImage}
+                    >
+                      <View style={styles.eventCardOverlay}>
+                        <Text
+                          style={[
+                            styles.eventTitle,
+                            { fontFamily: fontFamily },
+                          ]}
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                        >
+                          {event.title}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.eventDate,
+                            { fontFamily: fontFamily },
+                          ]}
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                        >
+                          {dateLabel}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.eventDescription,
+                            { fontFamily: fontFamily },
+                          ]}
+                          numberOfLines={2}
+                          ellipsizeMode="tail"
+                        >
+                          {description}
+                        </Text>
+                      </View>
+                    </ImageBackground>
+                  );
+                })
+              )}
+            </ScrollView>
+
+            <LinearGradient
+              colors={["transparent", theme.colors.background]}
+              style={styles.fadeBottom}
+              pointerEvents="none"
+            />
+          </View>
+
+          <TouchableOpacity
+            style={styles.newEventButton}
+            onPress={() => navigation.navigate("EventCreate")}
+          >
+            <Text style={styles.newEventButtonText}>New event</Text>
+          </TouchableOpacity>
         </View>
 
         {/* FOOTER */}

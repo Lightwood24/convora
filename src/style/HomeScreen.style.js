@@ -25,7 +25,7 @@ export default StyleSheet.create({
     justifyContent: "flex-start",
     width: "100%",
     marginTop: theme.spacing.lg,
-  },  
+  },
   footerSection: {
     position: "absolute",
     bottom: 0,
@@ -70,13 +70,23 @@ export default StyleSheet.create({
   eventsListContent: {
     paddingBottom: theme.spacing.md,
   },
+
   eventCard: {
-    backgroundColor: theme.colors.surface,
     borderRadius: theme.radius.lg,
     borderWidth: 1,
     borderColor: theme.colors.border,
     padding: theme.spacing.md,
     marginBottom: theme.spacing.sm,
+    overflow: "hidden",
+  },
+  eventCardImage: {
+    borderRadius: theme.radius.lg,
+    resizeMode: "cover",
+  },
+  eventCardOverlay: {
+    backgroundColor: "rgba(0,0,0,0.35)",
+    padding: theme.spacing.sm,
+    borderRadius: theme.radius.md,
   },
   eventTitle: {
     ...theme.typography.base,
@@ -85,10 +95,12 @@ export default StyleSheet.create({
   eventDate: {
     ...theme.typography.small,
     color: theme.colors.textMuted,
+    marginTop: 2,
   },
   eventDescription: {
     ...theme.typography.small,
     color: theme.colors.textSecondary,
+    marginTop: 4,
   },
   fadeTop: {
     position: "absolute",
@@ -100,7 +112,6 @@ export default StyleSheet.create({
     borderTopLeftRadius: theme.radius.lg,
     borderTopRightRadius: theme.radius.lg,
   },
-  
   fadeBottom: {
     position: "absolute",
     bottom: 0,
@@ -111,7 +122,6 @@ export default StyleSheet.create({
     borderBottomLeftRadius: theme.radius.lg,
     borderBottomRightRadius: theme.radius.lg,
   },
-  
 
   // == BUTTONS ==
   actionsRow: {
