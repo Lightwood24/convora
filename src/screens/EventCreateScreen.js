@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import {
   Text,
-  ScrollView,
+  TextInput,
   View,
   TouchableOpacity,
   ImageBackground,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
 import styles from "../style/EventCreateScreen.style";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const TEMPLATE_OPTIONS = [
   {
@@ -57,75 +59,227 @@ export default function EventCreateScreen() {
   const [selectedTemplateId, setSelectedTemplateId] = useState("party");
   const [templatesOpen, setTemplatesOpen] = useState(false);
 
+  const [eventDate, setEventDate] = useState("");
+  const [eventTime, setEventTime] = useState("");
+  const [eventTitle, setEventTitle] = useState("");
+  const [eventUser, setEventUser] = useState("");
+  const [eventDescription, setEventDescription] = useState("");
+  const [eventAddress, setEventAddress] = useState("");
+
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
   const goToTab = (tabName) => {
     navigation.navigate("AppTabs", { screen: tabName });
   };
 
-  const selectedTemplate = TEMPLATE_OPTIONS.find(
-    (t) => t.id === selectedTemplateId
-  );
-  const selectedBg = selectedTemplate?.image;
-  const currentFontFamily = TEMPLATE_FONTS[selectedTemplateId] ?? "Anta";
+  const selectedTemplate =
+    TEMPLATE_OPTIONS.find((t) => t.id === selectedTemplateId) ||
+    TEMPLATE_OPTIONS[0];
+
+  const selectedBg = selectedTemplate.image;
+  const cardFontFamily = TEMPLATE_FONTS[selectedTemplateId] || "Anta";
 
   const handleSelectTemplate = (id) => {
     setSelectedTemplateId(id);
     setTemplatesOpen(false);
   };
 
-  const renderCardInnerMock = (fontFamily) => (
+  const showDatePicker = () => setDatePickerVisibility(true);
+  const hideDatePicker = () => setDatePickerVisibility(false);
+
+  const handleConfirm = (date) => {
+    const d = new Date(date);
+
+    // YYYY-MM-DD
+    const dateStr = d.toISOString().split("T")[0];
+
+    // HH:MM
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    const timeStr = `${hours}:${minutes}`;
+
+    setEventDate(dateStr);
+    setEventTime(timeStr);
+    hideDatePicker();
+  };
+
+  // city, street, number
+  const validateAddress = (address) => {
+    const regex =
+      /^[A-ZÁÉÍÓÖŐÚÜŰa-záéíóöőúüű\s.-]+,\s*[A-ZÁÉÍÓÖŐÚÜŰa-záéíóöőúüű0-9\s.-]+,\s*\d+[A-Za-z]?$/;
+    return regex.test(address.trim());
+  };
+
+  const isRequiredFilled = (value) =>
+    value !== null && value !== undefined && value.toString().trim().length > 0;
+
+  const validateForm = () => {
+    const errors = [];
+
+    if (!isRequiredFilled(eventTitle)) {
+      errors.push("Event name is required.");
+    }
+
+    if (!isRequiredFilled(eventUser)) {
+      errors.push("Username is required.");
+    }
+
+    if (!isRequiredFilled(eventDate)) {
+      errors.push("Date is required.");
+    }
+
+    if (!isRequiredFilled(eventTime)) {
+      errors.push("Time is required.");
+    }
+
+    if (!isRequiredFilled(eventAddress)) {
+      errors.push("Location is required (city, street, number).");
+    } else if (!validateAddress(eventAddress)) {
+      errors.push("Invalid address. Use: city, street, number.");
+    }
+
+    if (errors.length > 0) {
+      alert(errors.join("\n"));
+      return false;
+    }
+
+    return true;
+  };
+
+  const renderCardForm = () => (
     <View style={styles.cardInnerContent}>
       <View style={styles.topRow}>
-        <View style={styles.dateBox}>
-          <Text style={[styles.dateText, { fontFamily }]}>
-            Select{"\n"}Date
-          </Text>
+        {/* date */}
+        <View style={[styles.dateBox]}>
+          <TouchableOpacity
+            onPress={showDatePicker}
+            style={[styles.cardInput, styles.dateInput]}
+          >
+            <Text
+              style={{
+                color: eventDate ? "white" : "rgba(245,245,245,0.75)",
+                fontFamily: cardFontFamily,
+                fontSize: cardFontFamily === "Tangerine" ? 24 : 15,
+              }}
+            >
+              {eventDate || "Date"}
+            </Text>
+
+            <Text
+              style={{
+                color: eventTime ? "white" : "rgba(245,245,245,0.75)",
+                fontFamily: cardFontFamily,
+                fontSize: cardFontFamily === "Tangerine" ? 24 : 15,
+              }}
+            >
+              {eventTime || "Time"}
+            </Text>
+          </TouchableOpacity>
+
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="datetime"
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
+          />
         </View>
-  
+
+        {/* event name */}
         <View style={styles.titleColumn}>
-          <View style={styles.inputMockLarge}>
-            <Text style={[styles.inputMockText, { fontFamily }]}>
-              Event Name
-            </Text>
+          <View style={styles.inputLargeWrapper}>
+            <TextInput
+              value={eventTitle}
+              onChangeText={setEventTitle}
+              placeholder="Event name"
+              placeholderTextColor="rgba(245,245,245,0.75)"
+              style={[
+                styles.cardInput,
+                styles.titleInput,
+                {
+                  fontFamily: cardFontFamily,
+                  fontSize: cardFontFamily === "Tangerine" ? 24 : 15,
+                },
+              ]}
+            />
           </View>
-          <View style={styles.inputMockSmall}>
-            <Text style={[styles.inputMockText, { fontFamily }]}>
-              Username
-            </Text>
+
+          {/* username */}
+          <View style={styles.inputSmallWrapper}>
+            <TextInput
+              value={eventUser}
+              onChangeText={setEventUser}
+              placeholder="Username"
+              placeholderTextColor="rgba(245,245,245,0.75)"
+              style={[
+                styles.cardInput,
+                styles.usernameInput,
+                {
+                  fontFamily: cardFontFamily,
+                  fontSize: cardFontFamily === "Tangerine" ? 24 : 15,
+                },
+              ]}
+            />
           </View>
         </View>
       </View>
-  
+
+      {/* description (optional) */}
       <View style={styles.descriptionBox}>
-        <Text
-          style={[styles.descriptionPlaceholder, { fontFamily }]}
-        >
-          Event Description
-        </Text>
+        <TextInput
+          value={eventDescription}
+          onChangeText={setEventDescription}
+          placeholder="Event description"
+          placeholderTextColor="rgba(245,245,245,0.75)"
+          multiline
+          style={[
+            styles.cardInput,
+            styles.descriptionInput,
+            {
+              fontFamily: cardFontFamily,
+              fontSize: cardFontFamily === "Tangerine" ? 24 : 15,
+            },
+          ]}
+        />
       </View>
-  
+
+      {/* address / map */}
       <View style={styles.addressBox}>
-        <Text style={[styles.inputMockText, { fontFamily }]}>
-          Address / Map
-        </Text>
+        <TextInput
+          value={eventAddress}
+          onChangeText={setEventAddress}
+          placeholder="Location (city, street, number)"
+          placeholderTextColor="rgba(245,245,245,0.75)"
+          style={[
+            styles.cardInput,
+            styles.addressInput,
+            {
+              fontFamily: cardFontFamily,
+              fontSize: cardFontFamily === "Tangerine" ? 24 : 15,
+            },
+          ]}
+        />
       </View>
     </View>
   );
 
   return (
-    <ScrollView
+    <KeyboardAwareScrollView
       contentContainerStyle={{ flexGrow: 1 }}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       style={styles.container}
     >
       <View style={styles.content}>
+        {/* HEADER */}
         <View style={styles.headerSection}>
           <View style={styles.header}>
             <Text style={styles.screenTitle}>Plan your event</Text>
           </View>
         </View>
 
+        {/* BODY */}
         <View style={styles.bodySection}>
+          {/* INVITE CARD */}
           <View style={styles.card}>
             <View style={styles.templateContainer}>
               <TouchableOpacity
@@ -143,7 +297,7 @@ export default function EventCreateScreen() {
 
               {templatesOpen && (
                 <View style={styles.templateListOverlay}>
-                  <ScrollView
+                  <KeyboardAwareScrollView
                     style={styles.templateListScroll}
                     contentContainerStyle={styles.templateList}
                     showsVerticalScrollIndicator={false}
@@ -170,7 +324,7 @@ export default function EventCreateScreen() {
                         </Text>
                       </TouchableOpacity>
                     ))}
-                  </ScrollView>
+                  </KeyboardAwareScrollView>
                 </View>
               )}
             </View>
@@ -181,50 +335,74 @@ export default function EventCreateScreen() {
                 style={styles.cardInnerBg}
                 imageStyle={styles.cardInnerBgImage}
               >
-                <View style={styles.cardInnerOverlay}>
-                  {renderCardInnerMock(currentFontFamily)}
-                </View>
+                <View style={styles.cardInnerOverlay}>{renderCardForm()}</View>
               </ImageBackground>
             ) : (
-              <View style={styles.cardInner}>
-                {renderCardInnerMock(currentFontFamily)}
-              </View>
+              <View style={styles.cardInner}>{renderCardForm()}</View>
             )}
           </View>
 
+          {/* ACTION ROW */}
           <View style={styles.primaryActionsRow}>
             <TouchableOpacity
               style={[styles.button, styles.discardButton]}
-              onPress={() => {}}
+              onPress={() => {
+                // opcionálisan: field reset
+                // setEventTitle("");
+                // setEventUser("");
+                // setEventDate("");
+                // setEventTime("");
+                // setEventDescription("");
+                // setEventAddress("");
+              }}
             >
               <Text style={styles.buttonText}>Discard</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.button, styles.shareButton]}
-              onPress={() => {}}
+              style={[styles.button, styles.saveAsDraftButton]}
+              onPress={() => {
+                if (!validateForm()) {
+                  return;
+                }
+                // ide jöhet a mentési logika, ha minden valid
+                // pl. API hívás vagy lokális state mentés
+              }}
             >
-              <Text style={styles.buttonText}>Share options</Text>
+              <Text style={styles.buttonText}>Save as Draft</Text>
+            </TouchableOpacity>
+
+            {/* TODO - SHARE */}
+            <TouchableOpacity
+              style={[styles.button, styles.shareButton]}
+              onPress={() => {
+                if (!validateForm()) {
+                  return;
+                }
+              }}
+            >
+              <Text style={styles.buttonText}>Share</Text>
             </TouchableOpacity>
           </View>
         </View>
 
+        {/* FOOTER */}
         <View style={styles.footerSection}>
-          <View style={styles.actionsRow}>
+          <View style={styles.naviActionsRow}>
             <TouchableOpacity
-              style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+              style={[styles.button, styles.naviButton, styles.actionBtn]}
               onPress={() => goToTab("Profile")}
             >
               <Text style={styles.buttonText}>Profile</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+              style={[styles.button, styles.naviButton, styles.actionBtn]}
               onPress={() => goToTab("Home")}
             >
               <Text style={styles.buttonText}>Home</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+              style={[styles.button, styles.naviButton, styles.actionBtn]}
               onPress={() => goToTab("Calendar")}
             >
               <Text style={styles.buttonText}>Calendar</Text>
@@ -232,6 +410,6 @@ export default function EventCreateScreen() {
           </View>
         </View>
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }

@@ -47,8 +47,8 @@ export default StyleSheet.create({
     paddingHorizontal: theme.spacing.lg,
   },
   screenTitle: {
-    color: theme.colors.textPrimary,
     ...theme.typography.h1,
+    color: theme.colors.textPrimary,
     marginBottom: theme.spacing.xs,
     textAlign: "center",
   },
@@ -64,6 +64,7 @@ export default StyleSheet.create({
     overflow: "hidden",
   },
 
+  // dropdown + bar
   templateContainer: {
     position: "relative",
   },
@@ -88,6 +89,7 @@ export default StyleSheet.create({
     color: theme.colors.textMuted,
   },
 
+  // overlayelt dropdown list
   templateListOverlay: {
     position: "absolute",
     top: 56,
@@ -120,109 +122,114 @@ export default StyleSheet.create({
     fontWeight: "600",
   },
 
-  cardInner: {
-    padding: theme.spacing.lg,
-    height: 430,
-  },
+  // == CARD INNER (background + overlay) ==
   cardInnerBg: {
-    padding: theme.spacing.lg,
-    height: 430,
+    width: "100%",
+    height: 420,
   },
   cardInnerBgImage: {
     resizeMode: "cover",
-    borderBottomLeftRadius: theme.radius.lg,
-    borderBottomRightRadius: theme.radius.lg,
   },
   cardInnerOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.25)",
-    borderBottomLeftRadius: theme.radius.lg,
-    borderBottomRightRadius: theme.radius.lg,
-    padding: theme.spacing.lg,
+    padding: theme.spacing.md,
+  },
+  cardInner: {
+    width: "100%",
+    height: 420,
+    padding: theme.spacing.md,
+    backgroundColor: theme.colors.surfaceElevated,
   },
   cardInnerContent: {
     flex: 1,
+    justifyContent: "flex-start",
   },
 
+  // == CARD LAYOUT ==
   topRow: {
     flexDirection: "row",
     marginBottom: theme.spacing.md,
   },
   dateBox: {
-    width: 72,
-    height: 72,
+    width: 140,
+    height: 80,
     borderRadius: theme.radius.sm,
     borderWidth: 1,
-    borderColor: theme.colors.borderMuted,
-    alignItems: "center",
+    borderColor: theme.border,
     justifyContent: "center",
+    alignItems: "center",
     marginRight: theme.spacing.md,
-    backgroundColor: theme.colors.surfaceElevated,
-  },
-  dateText: {
-    ...theme.typography.small,
-    color: theme.colors.textMuted,
-    textAlign: "center",
+    backgroundColor: "rgba(0,0,0,0.35)",
   },
   titleColumn: {
     flex: 1,
   },
-  inputMockLarge: {
+  inputLargeWrapper: {
     height: 40,
     borderRadius: theme.radius.sm,
     borderWidth: 1,
-    borderColor: theme.colors.borderMuted,
-    justifyContent: "center",
-    paddingHorizontal: theme.spacing.sm,
+    borderColor: theme.border,
     marginBottom: theme.spacing.xs,
-    backgroundColor: "rgba(0,0,0,0.25)",
+    backgroundColor: "rgba(0,0,0,0.35)",
+    justifyContent: "center",
   },
-  inputMockSmall: {
+  inputSmallWrapper: {
     height: 32,
     borderRadius: theme.radius.sm,
     borderWidth: 1,
-    borderColor: theme.colors.borderMuted,
+    borderColor: theme.border,
+    backgroundColor: "rgba(0,0,0,0.35)",
     justifyContent: "center",
-    paddingHorizontal: theme.spacing.sm,
-    backgroundColor: "rgba(0,0,0,0.25)",
-  },
-  inputMockText: {
-    ...theme.typography.small,
-    color: theme.colors.textSecondary,
-    fontStyle: "italic",
   },
 
   descriptionBox: {
-    height: 180,
+    flex: 1,
     borderRadius: theme.radius.sm,
     borderWidth: 1,
-    borderColor: theme.colors.borderMuted,
-    marginTop: theme.spacing.md,
+    borderColor: theme.border,
+    backgroundColor: "rgba(0,0,0,0.35)",
     marginBottom: theme.spacing.md,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(0,0,0,0.25)",
+    paddingVertical: theme.spacing.xs,
   },
-  descriptionPlaceholder: {
-    ...theme.typography.base,
-    color: theme.colors.textSecondary,
-    fontStyle: "italic",
-    textAlign: "center",
-  },
-
   addressBox: {
-    height: 48,
+    height: 46,
     borderRadius: theme.radius.sm,
     borderWidth: 1,
-    borderColor: theme.colors.borderMuted,
+    borderColor: theme.border,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    paddingVertical: 0,
     justifyContent: "center",
-    paddingHorizontal: theme.spacing.sm,
-    marginTop: theme.spacing.sm,
-    backgroundColor: "rgba(0,0,0,0.25)",
   },
 
-  // == BUTTONS ==
-  actionsRow: {
+  // == CARD INPUT STYLES ==
+  cardInput: {
+    flex: 1,
+    color: theme.colors.textPrimary,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 4,
+    fontSize: 14,
+    justifyContent: "center",
+  },
+  dateInput: {
+    textAlign: "center",
+    justifyContent: "center",
+  },
+  titleInput: {
+    fontSize: 16,
+  },
+  usernameInput: {
+    fontSize: 14,
+  },
+  descriptionInput: {
+    textAlignVertical: "top",
+  },
+  addressInput: {
+    fontSize: 14,
+  },
+
+  // == PRIMARY ACTION BUTTONS ==
+  primaryActionsRow: {
     width: "86%",
     flexDirection: "row",
     columnGap: theme.spacing.sm,
@@ -237,11 +244,17 @@ export default StyleSheet.create({
     justifyContent: "center",
     marginTop: theme.spacing.sm,
   },
-  actionBtn: {
+  discardButton: {
     flex: 1,
+    backgroundColor: theme.colors.secondary,
   },
-  buttonNavi: {
-    backgroundColor: theme.colors.navigation,
+  saveAsDraftButton: {
+    flex: 2,
+    backgroundColor: theme.colors.primary,
+  },
+  shareButton: {
+    flex: 1,
+    backgroundColor: theme.colors.primary,
   },
   buttonText: {
     color: theme.colors.textPrimary,
@@ -249,19 +262,18 @@ export default StyleSheet.create({
     fontFamily: "Anta",
   },
 
-  primaryActionsRow: {
+  // == FOOTER ==
+  naviActionsRow: {
     width: "86%",
     flexDirection: "row",
     columnGap: theme.spacing.sm,
     marginTop: theme.spacing.lg,
     alignSelf: "center",
   },
-  discardButton: {
+  actionBtn: {
     flex: 1,
-    backgroundColor: theme.colors.secondary,
   },
-  shareButton: {
-    flex: 2,
-    backgroundColor: theme.colors.primary,
+  naviButton: {
+    backgroundColor: theme.colors.navigation,
   },
 });
