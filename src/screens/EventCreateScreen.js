@@ -1,15 +1,11 @@
-import React, { useState } from "react";
-import {
-  Text,
-  TextInput,
-  View,
-  TouchableOpacity,
-  ImageBackground,
-} from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text, TextInput, View, TouchableOpacity, ImageBackground, } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
 import styles from "../style/EventCreateScreen.style";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { auth, db } from "../services/firebase";
+import { doc, getDoc, collection, addDoc, serverTimestamp, } from "firebase/firestore";
 
 const TEMPLATE_OPTIONS = [
   {
@@ -90,10 +86,8 @@ export default function EventCreateScreen() {
   const handleConfirm = (date) => {
     const d = new Date(date);
 
-    // YYYY-MM-DD
-    const dateStr = d.toISOString().split("T")[0];
+    const dateStr = d.toISOString().split("T")[0]; // YYYY-MM-DD
 
-    // HH:MM
     const hours = String(d.getHours()).padStart(2, "0");
     const minutes = String(d.getMinutes()).padStart(2, "0");
     const timeStr = `${hours}:${minutes}`;
@@ -102,6 +96,34 @@ export default function EventCreateScreen() {
     setEventTime(timeStr);
     hideDatePicker();
   };
+
+  useEffect(() => {
+    const loadUsername = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      let username = user.displayName || "";
+
+      try {
+        const userRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userRef);
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.displayName) {
+            username = data.displayName;
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to load username from Firestore", err);
+      }
+
+      if (username) {
+        setEventUser(username);
+      }
+    };
+
+    loadUsername();
+  }, []);
 
   // city, street, number
   const validateAddress = (address) => {
@@ -146,6 +168,63 @@ export default function EventCreateScreen() {
     return true;
   };
 
+  const resetForm = () => {
+    setSelectedTemplateId("party");
+    setTemplatesOpen(false);
+    setEventDate("");
+    setEventTime("");
+    setEventTitle("");
+    setEventDescription("");
+    setEventAddress("");
+  };
+
+  const handleDiscard = () => {
+    resetForm();
+  };
+
+  const handleSave = async () => {
+    if (!validateForm()) return;
+
+    const user = auth.currentUser;
+    if (!user) {
+      alert("You must be logged in to save an event.");
+      return;
+    }
+
+    try {
+      const startAt = new Date(`${eventDate}T${eventTime}:00`);
+
+      const eventsCol = collection(db, "events");
+
+      const docRef = await addDoc(eventsCol, {
+        title: eventTitle.trim(),
+        description: eventDescription.trim(),
+        location: eventAddress.trim(),
+        ownerId: user.uid,
+        username: eventUser.trim(),
+        startAt,
+        templateId: selectedTemplateId,
+        fontFamily: cardFontFamily,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
+      console.log("Event created with ID:", docRef.id);
+      alert("Event saved.");
+
+      resetForm();
+    } catch (error) {
+      console.error("Error saving event:", error);
+      alert("Could not save event. Please try again.");
+    }
+  };
+
+  const handleShare = async () => {
+    if (!validateForm()) return;
+    // TODO
+    alert("Share action not implemented yet.");
+  };
+
   const renderCardForm = () => (
     <View style={styles.cardInnerContent}>
       <View style={styles.topRow}>
@@ -184,8 +263,8 @@ export default function EventCreateScreen() {
           />
         </View>
 
-        {/* event name */}
         <View style={styles.titleColumn}>
+          {/* event name */}
           <View style={styles.inputLargeWrapper}>
             <TextInput
               value={eventTitle}
@@ -207,7 +286,8 @@ export default function EventCreateScreen() {
           <View style={styles.inputSmallWrapper}>
             <TextInput
               value={eventUser}
-              onChangeText={setEventUser}
+              editable={false}
+              selectTextOnFocus={false}
               placeholder="Username"
               placeholderTextColor="rgba(245,245,245,0.75)"
               style={[
@@ -346,40 +426,21 @@ export default function EventCreateScreen() {
           <View style={styles.primaryActionsRow}>
             <TouchableOpacity
               style={[styles.button, styles.discardButton]}
-              onPress={() => {
-                // opcionálisan: field reset
-                // setEventTitle("");
-                // setEventUser("");
-                // setEventDate("");
-                // setEventTime("");
-                // setEventDescription("");
-                // setEventAddress("");
-              }}
+              onPress={handleDiscard}
             >
               <Text style={styles.buttonText}>Discard</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[styles.button, styles.saveAsDraftButton]}
-              onPress={() => {
-                if (!validateForm()) {
-                  return;
-                }
-                // ide jöhet a mentési logika, ha minden valid
-                // pl. API hívás vagy lokális state mentés
-              }}
+              onPress={handleSave}
             >
               <Text style={styles.buttonText}>Save as Draft</Text>
             </TouchableOpacity>
 
-            {/* TODO - SHARE */}
             <TouchableOpacity
               style={[styles.button, styles.shareButton]}
-              onPress={() => {
-                if (!validateForm()) {
-                  return;
-                }
-              }}
+              onPress={handleShare}
             >
               <Text style={styles.buttonText}>Share</Text>
             </TouchableOpacity>
