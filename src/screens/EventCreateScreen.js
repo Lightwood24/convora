@@ -180,6 +180,7 @@ export default function EventCreateScreen() {
 
   const handleDiscard = () => {
     resetForm();
+    goToTab("Home");
   };
 
   const handleSave = async () => {
@@ -213,6 +214,7 @@ export default function EventCreateScreen() {
       alert("Event saved.");
 
       resetForm();
+      goToTab("Home");
     } catch (error) {
       console.error("Error saving event:", error);
       alert("Could not save event. Please try again.");
