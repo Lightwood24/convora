@@ -126,43 +126,48 @@ export default function HomeScreen() {
                       : "No description provided.";
 
                   return (
-                    <ImageBackground
+                    <TouchableOpacity
                       key={event.id}
-                      source={bgSource}
-                      style={styles.eventCard}
-                      imageStyle={styles.eventCardImage}
+                      style={{ flex: 1 }}
+                      onPress={() => {navigation.navigate("EventDetail")}}
                     >
-                      <View style={styles.eventCardOverlay}>
-                        <Text
-                          style={[styles.eventTitle, { fontFamily, fontSize }]}
-                          numberOfLines={1}
-                          ellipsizeMode="tail"
-                        >
-                          {event.title}
-                        </Text>
+                      <ImageBackground
+                        source={bgSource}
+                        style={styles.eventCard}
+                        imageStyle={styles.eventCardImage}
+                      >
+                        <View style={styles.eventCardOverlay}>
+                          <Text
+                            style={[styles.eventTitle, { fontFamily, fontSize }]}
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                          >
+                            {event.title}
+                          </Text>
 
-                        <Text
-                          style={[
-                            styles.eventDate,
-                            { fontFamily, fontSize: Math.max(12, fontSize - 4) },
-                          ]}
-                          numberOfLines={1}
-                          ellipsizeMode="tail"
-                        >
-                          {dateLabel}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.eventDescription,
-                            { fontFamily, fontSize: Math.max(12, fontSize - 2) },
-                          ]}
-                          numberOfLines={1}
-                          ellipsizeMode="tail"
-                        >
-                          {description}
-                        </Text>
-                      </View>
-                    </ImageBackground>
+                          <Text
+                            style={[
+                              styles.eventDate,
+                              { fontFamily, fontSize: Math.max(12, fontSize - 4) },
+                            ]}
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                          >
+                            {dateLabel}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.eventDescription,
+                              { fontFamily, fontSize: Math.max(12, fontSize - 2) },
+                            ]}
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                          >
+                            {description}
+                          </Text>
+                        </View>
+                      </ImageBackground>
+                    </TouchableOpacity>
                   );
                 })
               )}
