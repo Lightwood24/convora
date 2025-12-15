@@ -1,53 +1,22 @@
-import React, { useState, useEffect } from "react";
-import { Text, TextInput, View, TouchableOpacity, ImageBackground, } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Text, TextInput, View, TouchableOpacity, ImageBackground } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
-import styles from "../style/EventCreateScreen.style";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { auth, db } from "../services/firebase";
-import { doc, getDoc, collection, addDoc, serverTimestamp, } from "firebase/firestore";
+import { doc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import styles from "../style/EventCreateScreen.style";
 
 const TEMPLATE_OPTIONS = [
-  {
-    id: "grim",
-    label: "Grim card",
-    image: require("../../assets/pictures/grim_card.png"),
-  },
-  {
-    id: "love",
-    label: "Love card",
-    image: require("../../assets/pictures/love_card.png"),
-  },
-  {
-    id: "nature",
-    label: "Nature card",
-    image: require("../../assets/pictures/nature_card.png"),
-  },
-  {
-    id: "office",
-    label: "Office card",
-    image: require("../../assets/pictures/office_card.png"),
-  },
-  {
-    id: "party",
-    label: "Party card",
-    image: require("../../assets/pictures/party_card.png"),
-  },
-  {
-    id: "theatre",
-    label: "Theatre card",
-    image: require("../../assets/pictures/theatre_card.png"),
-  },
+  { id: "grim", label: "Grim card", image: require("../../assets/pictures/grim_card.png"), font: "Cinzel" },
+  { id: "love", label: "Love card", image: require("../../assets/pictures/love_card.png"), font: "Tangerine" },
+  { id: "nature", label: "Nature card", image: require("../../assets/pictures/nature_card.png"), font: "Merienda" },
+  { id: "office", label: "Office card", image: require("../../assets/pictures/office_card.png"), font: "Caveat" },
+  { id: "party", label: "Party card", image: require("../../assets/pictures/party_card.png"), font: "Bitcount" },
+  { id: "theatre", label: "Theatre card", image: require("../../assets/pictures/theatre_card.png"), font: "Monoton" },
 ];
 
-const TEMPLATE_FONTS = {
-  grim: "Cinzel",
-  love: "Tangerine",
-  nature: "Merienda",
-  office: "Caveat",
-  theatre: "Monoton",
-  party: "Bitcount",
-};
+const PLACEHOLDER_COLOR = "white";
 
 export default function EventCreateScreen() {
   const navigation = useNavigation();
@@ -64,16 +33,21 @@ export default function EventCreateScreen() {
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
-  const goToTab = (tabName) => {
-    navigation.navigate("AppTabs", { screen: tabName });
-  };
-
-  const selectedTemplate =
-    TEMPLATE_OPTIONS.find((t) => t.id === selectedTemplateId) ||
-    TEMPLATE_OPTIONS[0];
+  const selectedTemplate = useMemo(() => {
+    return TEMPLATE_OPTIONS.find((t) => t.id === selectedTemplateId) ?? TEMPLATE_OPTIONS[0];
+  }, [selectedTemplateId]);
 
   const selectedBg = selectedTemplate.image;
-  const cardFontFamily = TEMPLATE_FONTS[selectedTemplateId] || "Anta";
+  const cardFontFamily = selectedTemplate.font || "Anta";
+
+  const cardTextStyle = (hasValue) => ({
+    color: hasValue ? "white" : PLACEHOLDER_COLOR,
+    fontFamily: cardFontFamily,
+    fontSize: cardFontFamily === "Tangerine" ? 24 : 15,
+    letterSpacing: selectedTemplateId === "theatre" ? 2 : 0,
+  });
+
+  const goToTab = (tabName) => navigation.navigate("AppTabs", { screen: tabName });
 
   const handleSelectTemplate = (id) => {
     setSelectedTemplateId(id);
@@ -87,7 +61,6 @@ export default function EventCreateScreen() {
     const d = new Date(date);
 
     const dateStr = d.toISOString().split("T")[0]; // YYYY-MM-DD
-
     const hours = String(d.getHours()).padStart(2, "0");
     const minutes = String(d.getMinutes()).padStart(2, "0");
     const timeStr = `${hours}:${minutes}`;
@@ -105,27 +78,21 @@ export default function EventCreateScreen() {
       let username = user.displayName || "";
 
       try {
-        const userRef = doc(db, "users", user.uid);
-        const snap = await getDoc(userRef);
+        const snap = await getDoc(doc(db, "users", user.uid));
         if (snap.exists()) {
           const data = snap.data();
-          if (data.displayName) {
-            username = data.displayName;
-          }
+          if (data?.displayName) username = data.displayName;
         }
       } catch (err) {
         console.warn("Failed to load username from Firestore", err);
       }
 
-      if (username) {
-        setEventUser(username);
-      }
+      if (username) setEventUser(username);
     };
 
     loadUsername();
   }, []);
 
-  // city, street, number
   const validateAddress = (address) => {
     const regex =
       /^[A-ZÁÉÍÓÖŐÚÜŰa-záéíóöőúüű\s.-]+,\s*[A-ZÁÉÍÓÖŐÚÜŰa-záéíóöőúüű0-9\s.-]+,\s*\d+[A-Za-z]?$/;
@@ -138,21 +105,10 @@ export default function EventCreateScreen() {
   const validateForm = () => {
     const errors = [];
 
-    if (!isRequiredFilled(eventTitle)) {
-      errors.push("Event name is required.");
-    }
-
-    if (!isRequiredFilled(eventUser)) {
-      errors.push("Username is required.");
-    }
-
-    if (!isRequiredFilled(eventDate)) {
-      errors.push("Date is required.");
-    }
-
-    if (!isRequiredFilled(eventTime)) {
-      errors.push("Time is required.");
-    }
+    if (!isRequiredFilled(eventTitle)) errors.push("Event name is required.");
+    if (!isRequiredFilled(eventUser)) errors.push("Username is required.");
+    if (!isRequiredFilled(eventDate)) errors.push("Date is required.");
+    if (!isRequiredFilled(eventTime)) errors.push("Time is required.");
 
     if (!isRequiredFilled(eventAddress)) {
       errors.push("Location is required (city, street, number).");
@@ -160,11 +116,10 @@ export default function EventCreateScreen() {
       errors.push("Invalid address. Use: city, street, number.");
     }
 
-    if (errors.length > 0) {
+    if (errors.length) {
       alert(errors.join("\n"));
       return false;
     }
-
     return true;
   };
 
@@ -195,9 +150,7 @@ export default function EventCreateScreen() {
     try {
       const startAt = new Date(`${eventDate}T${eventTime}:00`);
 
-      const eventsCol = collection(db, "events");
-
-      const docRef = await addDoc(eventsCol, {
+      const docRef = await addDoc(collection(db, "events"), {
         title: eventTitle.trim(),
         description: eventDescription.trim(),
         location: eventAddress.trim(),
@@ -223,7 +176,6 @@ export default function EventCreateScreen() {
 
   const handleShare = async () => {
     if (!validateForm()) return;
-    // TODO
     alert("Share action not implemented yet.");
   };
 
@@ -231,30 +183,10 @@ export default function EventCreateScreen() {
     <View style={styles.cardInnerContent}>
       <View style={styles.topRow}>
         {/* date */}
-        <View style={[styles.dateBox]}>
-          <TouchableOpacity
-            onPress={showDatePicker}
-            style={[styles.cardInput, styles.dateInput]}
-          >
-            <Text
-              style={{
-                color: eventDate ? "white" : "rgba(245,245,245,0.75)",
-                fontFamily: cardFontFamily,
-                fontSize: cardFontFamily === "Tangerine" ? 24 : 15,
-              }}
-            >
-              {eventDate || "Date"}
-            </Text>
-
-            <Text
-              style={{
-                color: eventTime ? "white" : "rgba(245,245,245,0.75)",
-                fontFamily: cardFontFamily,
-                fontSize: cardFontFamily === "Tangerine" ? 24 : 15,
-              }}
-            >
-              {eventTime || "Time"}
-            </Text>
+        <View style={styles.dateBox}>
+          <TouchableOpacity onPress={showDatePicker} style={[styles.cardInput, styles.dateInput]}>
+            <Text style={cardTextStyle(!!eventDate)}>{eventDate || "Date"}</Text>
+            <Text style={cardTextStyle(!!eventTime)}>{eventTime || "Time"}</Text>
           </TouchableOpacity>
 
           <DateTimePickerModal
@@ -272,15 +204,8 @@ export default function EventCreateScreen() {
               value={eventTitle}
               onChangeText={setEventTitle}
               placeholder="Event name"
-              placeholderTextColor="rgba(245,245,245,0.75)"
-              style={[
-                styles.cardInput,
-                styles.titleInput,
-                {
-                  fontFamily: cardFontFamily,
-                  fontSize: cardFontFamily === "Tangerine" ? 24 : 15,
-                },
-              ]}
+              placeholderTextColor={PLACEHOLDER_COLOR}
+              style={[styles.cardInput, styles.titleInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" ? 24 : 15 }]}
             />
           </View>
 
@@ -291,54 +216,33 @@ export default function EventCreateScreen() {
               editable={false}
               selectTextOnFocus={false}
               placeholder="Username"
-              placeholderTextColor="rgba(245,245,245,0.75)"
-              style={[
-                styles.cardInput,
-                styles.usernameInput,
-                {
-                  fontFamily: cardFontFamily,
-                  fontSize: cardFontFamily === "Tangerine" ? 24 : 15,
-                },
-              ]}
+              placeholderTextColor={PLACEHOLDER_COLOR}
+              style={[styles.cardInput, styles.usernameInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" ? 24 : 15 }]}
             />
           </View>
         </View>
       </View>
 
-      {/* description (optional) */}
+      {/* description */}
       <View style={styles.descriptionBox}>
         <TextInput
           value={eventDescription}
           onChangeText={setEventDescription}
           placeholder="Event description"
-          placeholderTextColor="rgba(245,245,245,0.75)"
+          placeholderTextColor={PLACEHOLDER_COLOR}
           multiline
-          style={[
-            styles.cardInput,
-            styles.descriptionInput,
-            {
-              fontFamily: cardFontFamily,
-              fontSize: cardFontFamily === "Tangerine" ? 24 : 15,
-            },
-          ]}
+          style={[styles.cardInput, styles.descriptionInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" ? 24 : 15 }]}
         />
       </View>
 
-      {/* address / map */}
+      {/* address */}
       <View style={styles.addressBox}>
         <TextInput
           value={eventAddress}
           onChangeText={setEventAddress}
           placeholder="Location (city, street, number)"
-          placeholderTextColor="rgba(245,245,245,0.75)"
-          style={[
-            styles.cardInput,
-            styles.addressInput,
-            {
-              fontFamily: cardFontFamily,
-              fontSize: cardFontFamily === "Tangerine" ? 24 : 15,
-            },
-          ]}
+          placeholderTextColor={PLACEHOLDER_COLOR}
+          style={[styles.cardInput, styles.addressInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" ? 24 : 15 }]}
         />
       </View>
     </View>
@@ -369,12 +273,8 @@ export default function EventCreateScreen() {
                 onPress={() => setTemplatesOpen((prev) => !prev)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.templateText}>
-                  {selectedTemplate ? selectedTemplate.label : "Templates"}
-                </Text>
-                <Text style={styles.templateChevron}>
-                  {templatesOpen ? "▴" : "▾"}
-                </Text>
+                <Text style={styles.templateText}>{selectedTemplate.label}</Text>
+                <Text style={styles.templateChevron}>{templatesOpen ? "▴" : "▾"}</Text>
               </TouchableOpacity>
 
               {templatesOpen && (
@@ -389,8 +289,7 @@ export default function EventCreateScreen() {
                         key={tpl.id}
                         style={[
                           styles.templateItem,
-                          tpl.id === selectedTemplateId &&
-                            styles.templateItemSelected,
+                          tpl.id === selectedTemplateId && styles.templateItemSelected,
                         ]}
                         onPress={() => handleSelectTemplate(tpl.id)}
                         activeOpacity={0.9}
@@ -398,8 +297,7 @@ export default function EventCreateScreen() {
                         <Text
                           style={[
                             styles.templateItemText,
-                            tpl.id === selectedTemplateId &&
-                              styles.templateItemTextSelected,
+                            tpl.id === selectedTemplateId && styles.templateItemTextSelected,
                           ]}
                         >
                           {tpl.label}
@@ -411,39 +309,26 @@ export default function EventCreateScreen() {
               )}
             </View>
 
-            {selectedBg ? (
-              <ImageBackground
-                source={selectedBg}
-                style={styles.cardInnerBg}
-                imageStyle={styles.cardInnerBgImage}
-              >
-                <View style={styles.cardInnerOverlay}>{renderCardForm()}</View>
-              </ImageBackground>
-            ) : (
-              <View style={styles.cardInner}>{renderCardForm()}</View>
-            )}
+            <ImageBackground
+              source={selectedBg}
+              style={styles.cardInnerBg}
+              imageStyle={styles.cardInnerBgImage}
+            >
+              <View style={styles.cardInnerOverlay}>{renderCardForm()}</View>
+            </ImageBackground>
           </View>
 
           {/* ACTION ROW */}
           <View style={styles.primaryActionsRow}>
-            <TouchableOpacity
-              style={[styles.button, styles.discardButton]}
-              onPress={handleDiscard}
-            >
+            <TouchableOpacity style={[styles.button, styles.discardButton]} onPress={handleDiscard}>
               <Text style={styles.buttonText}>Discard</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.button, styles.saveAsDraftButton]}
-              onPress={handleSave}
-            >
+            <TouchableOpacity style={[styles.button, styles.saveAsDraftButton]} onPress={handleSave}>
               <Text style={styles.buttonText}>Save as Draft</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.button, styles.shareButton]}
-              onPress={handleShare}
-            >
+            <TouchableOpacity style={[styles.button, styles.shareButton]} onPress={handleShare}>
               <Text style={styles.buttonText}>Share</Text>
             </TouchableOpacity>
           </View>
@@ -458,12 +343,14 @@ export default function EventCreateScreen() {
             >
               <Text style={styles.buttonText}>Profile</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               style={[styles.button, styles.naviButton, styles.actionBtn]}
               onPress={() => goToTab("Home")}
             >
               <Text style={styles.buttonText}>Home</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
               style={[styles.button, styles.naviButton, styles.actionBtn]}
               onPress={() => goToTab("Calendar")}
