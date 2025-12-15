@@ -13,8 +13,20 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="AppTabs" component={AppTabs} />
-        <Stack.Screen name="EventCreate" component={EventCreateScreen} />
+        <Stack.Screen 
+          name="AppTabs" 
+          component={AppTabs}
+          options={{
+            animation: "fade"
+          }}
+        />
+        <Stack.Screen 
+          name="EventCreate" 
+          component={EventCreateScreen} 
+          options={{
+            animation: "slide_from_bottom"
+          }}
+        />
         <Stack.Screen name="EventDetail" component={EventDetailScreen} />
       </Stack.Navigator>
     </NavigationContainer>
