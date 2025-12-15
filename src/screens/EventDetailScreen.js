@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 
 export default function EventDetailScreen() {
   const navigation = useNavigation();
+  const goToTab = (tabName) => navigation.navigate("AppTabs", { screen: tabName });
 
   return (
     <ScrollView
@@ -16,9 +17,7 @@ export default function EventDetailScreen() {
 
         {/* HEADER */}
         <View style={styles.headerSection}>
-          <View style={styles.header}>
-            <Text style={styles.screenTitle}>Event Detail Screen</Text>
-          </View>
+          {/* TODO */}
         </View>
 
         {/* BODY (center) */}
@@ -31,19 +30,19 @@ export default function EventDetailScreen() {
           <View style={styles.actionsRow}>
             <TouchableOpacity 
               style={[styles.button, styles.buttonNavi, styles.actionBtn]}
-              onPress={() => navigation.navigate("Profile")}
+              onPress={() => goToTab("Profile")}
             >
               <Text style={styles.buttonText}>Profile</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={[styles.button, styles.buttonNavi, styles.actionBtn]}
-              onPress={() => navigation.navigate("Home")}
+              onPress={() => goToTab("Home")}
             >
               <Text style={styles.buttonText}>Home</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={[styles.button, styles.buttonNavi, styles.actionBtn]}
-              onPress={() => navigation.navigate("Calendar")}
+              onPress={() => goToTab("Calendar")}
             >
               <Text style={styles.buttonText}>Calendar</Text>
             </TouchableOpacity>

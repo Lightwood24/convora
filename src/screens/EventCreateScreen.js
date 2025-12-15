@@ -20,6 +20,7 @@ const PLACEHOLDER_COLOR = "white";
 
 export default function EventCreateScreen() {
   const navigation = useNavigation();
+  const goToTab = (tabName) => navigation.navigate("AppTabs", { screen: tabName });
 
   const [selectedTemplateId, setSelectedTemplateId] = useState("party");
   const [templatesOpen, setTemplatesOpen] = useState(false);
@@ -39,8 +40,6 @@ export default function EventCreateScreen() {
 
   const selectedBg = selectedTemplate.image;
   const cardFontFamily = selectedTemplate.font || "Anta";
-
-  const goToTab = (tabName) => navigation.navigate("AppTabs", { screen: tabName });
 
   const handleSelectTemplate = (id) => {
     setSelectedTemplateId(id);
