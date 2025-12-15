@@ -147,6 +147,14 @@ export default StyleSheet.create({
   },
 
   // == CARD LAYOUT ==
+  cardInput: {
+    flex: 1,
+    color: theme.colors.textPrimary,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 4,
+    justifyContent: "center",
+  },
+  
   topRow: {
     flexDirection: "row",
     marginBottom: theme.spacing.md,
@@ -200,32 +208,6 @@ export default StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.35)",
     paddingVertical: 0,
     justifyContent: "center",
-  },
-
-  // == CARD INPUT STYLES ==
-  cardInput: {
-    flex: 1,
-    color: theme.colors.textPrimary,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: 4,
-    fontSize: 14,
-    justifyContent: "center",
-  },
-  dateInput: {
-    textAlign: "center",
-    justifyContent: "center",
-  },
-  titleInput: {
-    fontSize: 16,
-  },
-  usernameInput: {
-    fontSize: 14,
-  },
-  descriptionInput: {
-    textAlignVertical: "top",
-  },
-  addressInput: {
-    fontSize: 14,
   },
 
   // == PRIMARY ACTION BUTTONS ==

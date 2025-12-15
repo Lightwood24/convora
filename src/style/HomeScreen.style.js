@@ -78,15 +78,18 @@ export default StyleSheet.create({
     padding: theme.spacing.md,
     marginBottom: theme.spacing.sm,
     overflow: "hidden",
+    height: 120,
   },
   eventCardImage: {
     borderRadius: theme.radius.lg,
     resizeMode: "cover",
   },
   eventCardOverlay: {
+    flex: 1,
     backgroundColor: "rgba(0,0,0,0.35)",
     padding: theme.spacing.sm,
     borderRadius: theme.radius.md,
+    justifyContent: "center",
   },
   eventTitle: {
     ...theme.typography.base,
@@ -166,5 +169,4 @@ export default StyleSheet.create({
     fontFamily: "Anta",
     fontWeight: "600",
   },
-  
 });

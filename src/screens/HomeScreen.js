@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Text, ScrollView, View, TouchableOpacity, ImageBackground, } from "react-native";
+import React, { useState, useEffect, useMemo } from "react";
+import { Text, ScrollView, View, TouchableOpacity, ImageBackground } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { auth, db } from "../services/firebase";
-import { collection, query, where, orderBy, onSnapshot, } from "firebase/firestore";
+import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
 import styles from "../style/HomeScreen.style";
 import theme from "../style/Theme";
 
@@ -21,6 +21,9 @@ export default function HomeScreen() {
   const [isAtTop, setIsAtTop] = useState(true);
   const [events, setEvents] = useState([]);
 
+  const LARGE_FONTS = useMemo(() => new Set(["Tangerine", "Caveat"]), []);
+  const getFontSize = (fontFamily) => (LARGE_FONTS.has(fontFamily) ? 21 : 12);
+
   const handleScroll = (e) => {
     const offset = e.nativeEvent.contentOffset.y;
     setIsAtTop(offset <= 2);
@@ -33,9 +36,8 @@ export default function HomeScreen() {
       return;
     }
 
-    const eventsCol = collection(db, "events");
     const q = query(
-      eventsCol,
+      collection(db, "events"),
       where("ownerId", "==", user.uid),
       orderBy("startAt", "asc")
     );
@@ -43,18 +45,10 @@ export default function HomeScreen() {
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        const list = snapshot.docs.map((docSnap) => {
-          const data = docSnap.data();
-          return {
-            id: docSnap.id,
-            ...data,
-          };
-        });
+        const list = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
         setEvents(list);
       },
-      (error) => {
-        console.error("Error listening events:", error);
-      }
+      (error) => console.error("Error listening events:", error)
     );
 
     return () => unsubscribe();
@@ -99,14 +93,6 @@ export default function HomeScreen() {
               />
             )}
 
-            {!isAtTop && (
-              <LinearGradient
-                colors={["transparent", theme.colors.background]}
-                style={styles.fadeBottom}
-                pointerEvents="none"
-              />
-            )}
-
             <ScrollView
               style={styles.eventsList}
               contentContainerStyle={styles.eventsListContent}
@@ -128,14 +114,15 @@ export default function HomeScreen() {
               ) : (
                 events.map((event) => {
                   const bgSource =
-                    TEMPLATE_BACKGROUNDS[event.templateId] ||
-                    TEMPLATE_BACKGROUNDS["party"];
+                    TEMPLATE_BACKGROUNDS[event.templateId] || TEMPLATE_BACKGROUNDS.party;
 
                   const fontFamily = event.fontFamily || "Anta";
+                  const fontSize = getFontSize(fontFamily);
+
                   const dateLabel = formatDateLabel(event.startAt);
                   const description =
                     event.description && event.description.trim().length > 0
-                      ? event.description
+                      ? event.description.trim()
                       : "No description provided.";
 
                   return (
@@ -147,19 +134,17 @@ export default function HomeScreen() {
                     >
                       <View style={styles.eventCardOverlay}>
                         <Text
-                          style={[
-                            styles.eventTitle,
-                            { fontFamily: fontFamily },
-                          ]}
+                          style={[styles.eventTitle, { fontFamily, fontSize }]}
                           numberOfLines={1}
                           ellipsizeMode="tail"
                         >
                           {event.title}
                         </Text>
+
                         <Text
                           style={[
                             styles.eventDate,
-                            { fontFamily: fontFamily },
+                            { fontFamily, fontSize: Math.max(12, fontSize - 4) },
                           ]}
                           numberOfLines={1}
                           ellipsizeMode="tail"
@@ -169,9 +154,9 @@ export default function HomeScreen() {
                         <Text
                           style={[
                             styles.eventDescription,
-                            { fontFamily: fontFamily },
+                            { fontFamily, fontSize: Math.max(12, fontSize - 2) },
                           ]}
-                          numberOfLines={2}
+                          numberOfLines={1}
                           ellipsizeMode="tail"
                         >
                           {description}

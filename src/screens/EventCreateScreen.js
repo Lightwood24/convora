@@ -40,13 +40,6 @@ export default function EventCreateScreen() {
   const selectedBg = selectedTemplate.image;
   const cardFontFamily = selectedTemplate.font || "Anta";
 
-  const cardTextStyle = (hasValue) => ({
-    color: hasValue ? "white" : PLACEHOLDER_COLOR,
-    fontFamily: cardFontFamily,
-    fontSize: cardFontFamily === "Tangerine" ? 24 : 15,
-    letterSpacing: selectedTemplateId === "theatre" ? 2 : 0,
-  });
-
   const goToTab = (tabName) => navigation.navigate("AppTabs", { screen: tabName });
 
   const handleSelectTemplate = (id) => {
@@ -184,9 +177,19 @@ export default function EventCreateScreen() {
       <View style={styles.topRow}>
         {/* date */}
         <View style={styles.dateBox}>
-          <TouchableOpacity onPress={showDatePicker} style={[styles.cardInput, styles.dateInput]}>
-            <Text style={cardTextStyle(!!eventDate)}>{eventDate || "Date"}</Text>
-            <Text style={cardTextStyle(!!eventTime)}>{eventTime || "Time"}</Text>
+          <TouchableOpacity onPress={showDatePicker}>
+            <Text
+              style={[styles.cardInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat"
+                ? 24 : 15 }]}
+            >
+              {eventDate || "Date"}
+            </Text>
+            <Text
+              style={[styles.cardInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat"
+                ? 24 : 15 }]}            
+            >
+              {eventTime || "Time"}
+            </Text>
           </TouchableOpacity>
 
           <DateTimePickerModal
@@ -205,7 +208,8 @@ export default function EventCreateScreen() {
               onChangeText={setEventTitle}
               placeholder="Event name"
               placeholderTextColor={PLACEHOLDER_COLOR}
-              style={[styles.cardInput, styles.titleInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" ? 24 : 15 }]}
+              style={[styles.cardInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat"
+                ? 24 : 15 }]}
             />
           </View>
 
@@ -217,7 +221,8 @@ export default function EventCreateScreen() {
               selectTextOnFocus={false}
               placeholder="Username"
               placeholderTextColor={PLACEHOLDER_COLOR}
-              style={[styles.cardInput, styles.usernameInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" ? 24 : 15 }]}
+              style={[styles.cardInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat"
+                ? 24 : 15 }]}
             />
           </View>
         </View>
@@ -231,7 +236,8 @@ export default function EventCreateScreen() {
           placeholder="Event description"
           placeholderTextColor={PLACEHOLDER_COLOR}
           multiline
-          style={[styles.cardInput, styles.descriptionInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" ? 24 : 15 }]}
+          style={[styles.cardInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat"
+            ? 24 : 15 }]}
         />
       </View>
 
@@ -242,7 +248,8 @@ export default function EventCreateScreen() {
           onChangeText={setEventAddress}
           placeholder="Location (city, street, number)"
           placeholderTextColor={PLACEHOLDER_COLOR}
-          style={[styles.cardInput, styles.addressInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" ? 24 : 15 }]}
+          style={[styles.cardInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat"
+            ? 24 : 15 }]}
         />
       </View>
     </View>
