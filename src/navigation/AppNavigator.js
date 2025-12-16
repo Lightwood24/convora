@@ -27,7 +27,13 @@ export default function AppNavigator() {
             animation: "slide_from_bottom"
           }}
         />
-        <Stack.Screen name="EventDetail" component={EventDetailScreen} />
+        <Stack.Screen 
+          name="EventDetail" 
+          component={EventDetailScreen}
+          options={{
+            animation: "fade_from_bottom"
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
