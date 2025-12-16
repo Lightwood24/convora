@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Text, TextInput, View, TouchableOpacity, ImageBackground } from "react-native";
+import { Text, View, TouchableOpacity, ImageBackground } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { auth, db } from "../services/firebase";
-import { doc, getDoc, collection, addDoc, serverTimestamp, query, where, orderBy, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../services/firebase";
 import styles from "../style/EventDetailScreen.style";
 
 const TEMPLATE_BACKGROUNDS = {
@@ -25,6 +24,7 @@ export default function EventDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
+
   const goToTab = (tabName) => navigation.navigate("AppTabs", { screen: tabName });
 
   useEffect(() => {
@@ -92,18 +92,43 @@ export default function EventDetailScreen() {
 
         <ImageBackground
           source={bgSource}
-          style={styles.eventLayout}
+          style={styles.eventCard}
           imageStyle={styles.eventCardImage}
         >
-          {/* HEADER */}
-          <View style={styles.headerSection}>
-            {/* TODO */}
-          </View>
+            {/* HEADER */}
+            <View style={[styles.headerSection, styles.eventCardOverlay]}>
+              <View style={styles.header}>
+                <Text 
+                  style={[styles.eventTitle, { fontFamily, fontSize: baseFontSize + 15}]}
+                >
+                  {event?.title}
+                </Text>
+                <View style={styles.primaryActionsRow}>
+                  <Text
+                    style={[styles.eventDate, { fontFamily, fontSize: baseFontSize}]}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {startAtLabel}
+                  </Text>
+                  <Text 
+                    style={[styles.eventOwner, { fontFamily, fontSize: baseFontSize}]}
+                  >
+                    - username
+                  </Text>
+                </View>
+                <Text 
+                  style={[styles.eventDescription, { fontFamily, fontSize: baseFontSize + 6}]}
+                >
+                  {event?.description}
+                </Text>
+              </View>
+            </View>
 
-          {/* BODY (center) */}
-          <View style={styles.bodySection}>
-            {/* TODO */}
-          </View>
+            {/* BODY (center) */}
+            <View style={[styles.bodySection, styles.eventCardOverlay]}>
+              {/* TODO */}
+            </View>
         </ImageBackground>
 
         {/* FOOTER */}

@@ -45,6 +45,8 @@ const colors = {
     sm: 8,
     md: 10,
     lg: 14,
+    xl: 20,
+    xxl: 40,
   };
   
   const typography = {

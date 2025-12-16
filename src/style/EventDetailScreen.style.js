@@ -14,16 +14,15 @@ export default StyleSheet.create({
 
   // == SECTIONS ==
   headerSection: {
-    paddingTop: 100,
     paddingHorizontal: theme.spacing.lg,
     alignItems: "center",
-    
+    flexGrow: 0,
+    marginTop: 60,
   },
   bodySection: {
     flex: 1,
     alignItems: "center",
     justifyContent: "flex-start",
-    width: "100%",
     paddingHorizontal: theme.spacing.lg,
     paddingBottom: theme.spacing.xl,
   },
@@ -41,8 +40,8 @@ export default StyleSheet.create({
     paddingBottom: 100,
   },
 
-  // == HEAD + BODY ==
-  eventLayout: {
+  // == HEADER + BODY ==
+  eventCard: {
     flex: 1,
     width: "100%",
     overflow: "hidden",
@@ -50,6 +49,46 @@ export default StyleSheet.create({
   eventCardImage: {
     borderRadius: theme.radius.lg,
     resizeMode: "cover",
+  },
+  eventCardOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.55)",
+    padding: theme.spacing.xl,
+    margin: theme.spacing.md,
+    borderRadius: theme.radius.xxl,
+    justifyContent: "center",
+  },
+
+  // == HEADER ==
+  header: {
+    alignItems: "center",
+    marginBottom: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
+  },
+  eventTitle: {
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.xs,
+    width: "100%",
+    height: "30%",
+  },
+  eventDescription: {
+    color: theme.colors.textSecondary,
+    marginTop: theme.spacing.xs,
+    textAlign: "center",
+  },
+  primaryActionsRow: {
+    width: "86%",
+    flexDirection: "row",
+    columnGap: 120,
+    alignSelf: "center",
+  },
+  eventDate: {
+    color: theme.colors.textSecondary,
+    paddingLeft: theme.spacing.md,
+  },
+  eventOwner: {
+    color: theme.colors.textPrimary,
+    paddingRight: theme.spacing.md,
   },
 
   // == INPUT / BUTTONS ==
