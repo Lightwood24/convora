@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Text, ScrollView, View, TouchableOpacity, ImageBackground } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -18,12 +18,9 @@ const TEMPLATE_BACKGROUNDS = {
 
 export default function HomeScreen() {
   const navigation = useNavigation();
-  
+
   const [isAtTop, setIsAtTop] = useState(true);
   const [events, setEvents] = useState([]);
-
-  const LARGE_FONTS = useMemo(() => new Set(["Tangerine", "Caveat"]), []);
-  const getFontSize = (fontFamily) => (LARGE_FONTS.has(fontFamily) ? 21 : 12);
 
   const handleScroll = (e) => {
     const offset = e.nativeEvent.contentOffset.y;
@@ -46,7 +43,10 @@ export default function HomeScreen() {
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        const list = snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }));
+        const list = snapshot.docs.map((docSnap) => ({
+          id: docSnap.id,
+          ...docSnap.data(),
+        }));
         setEvents(list);
       },
       (error) => console.error("Error listening events:", error)
@@ -118,7 +118,7 @@ export default function HomeScreen() {
                     TEMPLATE_BACKGROUNDS[event.templateId] || TEMPLATE_BACKGROUNDS.party;
 
                   const fontFamily = event.fontFamily || "Anta";
-                  const fontSize = getFontSize(fontFamily);
+                  const fontSize = fontFamily === "Tangerine" || fontFamily === "Caveat" ? 21 : 12;
 
                   const dateLabel = formatDateLabel(event.startAt);
                   const description =
@@ -156,6 +156,7 @@ export default function HomeScreen() {
                           >
                             {dateLabel}
                           </Text>
+                          
                           <Text
                             style={[
                               styles.eventDescription,
