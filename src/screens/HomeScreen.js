@@ -18,6 +18,7 @@ const TEMPLATE_BACKGROUNDS = {
 
 export default function HomeScreen() {
   const navigation = useNavigation();
+  
   const [isAtTop, setIsAtTop] = useState(true);
   const [events, setEvents] = useState([]);
 
@@ -129,7 +130,7 @@ export default function HomeScreen() {
                     <TouchableOpacity
                       key={event.id}
                       style={{ flex: 1 }}
-                      onPress={() => {navigation.navigate("EventDetail")}}
+                      onPress={() => {navigation.navigate("EventDetail", { eventId: event.id })}}
                     >
                       <ImageBackground
                         source={bgSource}

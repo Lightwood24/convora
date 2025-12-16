@@ -14,10 +14,9 @@ export default StyleSheet.create({
 
   // == SECTIONS ==
   headerSection: {
-    flex: 1,
+    paddingTop: 100,
+    paddingHorizontal: theme.spacing.lg,
     alignItems: "center",
-    justifyContent: "flex-start",
-    marginTop: 100,
     
   },
   bodySection: {
@@ -25,6 +24,7 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     width: "100%",
+    paddingHorizontal: theme.spacing.lg,
     paddingBottom: theme.spacing.xl,
   },
   footerSection: {
@@ -41,17 +41,15 @@ export default StyleSheet.create({
     paddingBottom: 100,
   },
 
-  // == HEADER ==
-  header: {
-    alignItems: "center",
-    marginBottom: theme.spacing.md,
-    paddingHorizontal: theme.spacing.lg,
+  // == HEAD + BODY ==
+  eventLayout: {
+    flex: 1,
+    width: "100%",
+    overflow: "hidden",
   },
-  screenTitle: {
-    color: theme.colors.textPrimary,
-    ...theme.typography.h1, 
-    marginBottom: theme.spacing.xs,
-    textAlign: "center",
+  eventCardImage: {
+    borderRadius: theme.radius.lg,
+    resizeMode: "cover",
   },
 
   // == INPUT / BUTTONS ==
