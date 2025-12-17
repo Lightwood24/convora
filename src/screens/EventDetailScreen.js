@@ -79,74 +79,93 @@ export default function EventDetailScreen() {
   }, [event?.templateId]);
 
   const fontFamily = event?.fontFamily || "Anta";
-  const baseFontSize = fontFamily === "Tangerine" || fontFamily === "Caveat" ? 21 : 13;
+  const baseFontSize = fontFamily === "Tangerine" ? 25 : 13 && fontFamily === "Caveat" ? 21 : 13;
 
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={{flexGrow: 1}}
-      keyboardShouldPersistTaps="handled"
-      keyboardDismissMode="on-drag"
-      style={styles.container}
-    >
-      <View style={styles.content}>   
-
+    <View style={styles.container}>
+      <View style={styles.content}>
         <ImageBackground
           source={bgSource}
           style={styles.eventCard}
           imageStyle={styles.eventCardImage}
         >
+          {/* SCROLLABLE AREA: HEADER + BODY */}
+          <KeyboardAwareScrollView
+            contentContainerStyle={styles.eventScrollContent}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+            showsVerticalScrollIndicator={false}
+          >
             {/* HEADER */}
             <View style={[styles.headerSection, styles.eventCardOverlay]}>
               <View style={styles.header}>
-                <Text 
-                  style={[styles.eventTitle, { fontFamily, fontSize: baseFontSize + 15}]}
-                >
+                <Text style={[styles.eventTitle, { fontFamily, fontSize: baseFontSize + 15 }]}>
                   {event?.title}
                 </Text>
+  
                 <View style={styles.primaryActionsRow}>
                   <Text
-                    style={[styles.eventDate, { fontFamily, fontSize: baseFontSize}]}
+                    style={[styles.eventDate, { fontFamily, fontSize: baseFontSize }]}
                     numberOfLines={1}
                     ellipsizeMode="tail"
                   >
                     {startAtLabel}
                   </Text>
-                  <Text 
-                    style={[styles.eventOwner, { fontFamily, fontSize: baseFontSize}]}
-                  >
-                    - username
+                  <Text style={[styles.eventOwner, { fontFamily, fontSize: baseFontSize }]}>
+                    {event?.username}
                   </Text>
                 </View>
-                <Text 
-                  style={[styles.eventDescription, { fontFamily, fontSize: baseFontSize + 6}]}
-                >
+  
+                <Text style={[styles.eventDescription, { fontFamily, fontSize: baseFontSize + 6 }]}>
                   {event?.description}
                 </Text>
               </View>
             </View>
-
-            {/* BODY (center) */}
+  
+            {/* BODY */}
             <View style={[styles.bodySection, styles.eventCardOverlay]}>
-              {/* TODO */}
+              <View style={[styles.box, styles.inviteesBox]}>
+                <Text style={[styles.boxTitle, { fontFamily, fontSize: baseFontSize }]}>
+                  Invited
+                </Text>
+              </View>
+  
+              <View style={[styles.box, styles.chatBox]}>
+                <Text style={[styles.boxTitle, { fontFamily, fontSize: baseFontSize }]}>
+                  Chat
+                </Text>
+              </View>
+  
+              <TouchableOpacity 
+                style={styles.mapButton} 
+                onPress={() => {}}
+              >
+                <Text style={[styles.mapButtonText, { fontFamily, fontSize: baseFontSize }]}>
+                  {event?.location}
+                </Text>
+              </TouchableOpacity>
             </View>
+          </KeyboardAwareScrollView>
         </ImageBackground>
-
+  
         {/* FOOTER */}
         <View style={styles.footerSection}>
           <View style={styles.actionsRow}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.button, styles.buttonNavi, styles.actionBtn]}
               onPress={() => goToTab("Profile")}
             >
               <Text style={styles.buttonText}>Profile</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+  
+            <TouchableOpacity
               style={[styles.button, styles.buttonNavi, styles.actionBtn]}
               onPress={() => goToTab("Home")}
             >
               <Text style={styles.buttonText}>Home</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+  
+            <TouchableOpacity
               style={[styles.button, styles.buttonNavi, styles.actionBtn]}
               onPress={() => goToTab("Calendar")}
             >
@@ -154,8 +173,8 @@ export default function EventDetailScreen() {
             </TouchableOpacity>
           </View>
         </View>
-
       </View>
-    </KeyboardAwareScrollView>
+    </View>
   );
+  
 }

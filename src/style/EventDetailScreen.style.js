@@ -14,17 +14,14 @@ export default StyleSheet.create({
 
   // == SECTIONS ==
   headerSection: {
-    paddingHorizontal: theme.spacing.lg,
-    alignItems: "center",
     flexGrow: 0,
+    alignItems: "center",
     marginTop: 60,
   },
   bodySection: {
-    flex: 1,
+    flexGrow: 0,
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingHorizontal: theme.spacing.lg,
-    paddingBottom: theme.spacing.xl,
   },
   footerSection: {
     position: "absolute",
@@ -58,6 +55,9 @@ export default StyleSheet.create({
     borderRadius: theme.radius.xxl,
     justifyContent: "center",
   },
+  eventScrollContent: {
+    paddingBottom: 120,
+  },
 
   // == HEADER ==
   header: {
@@ -69,17 +69,17 @@ export default StyleSheet.create({
     color: theme.colors.textPrimary,
     marginBottom: theme.spacing.xs,
     width: "100%",
-    height: "30%",
+    height: "35%",
   },
   eventDescription: {
     color: theme.colors.textSecondary,
-    marginTop: theme.spacing.xs,
+    marginTop: theme.spacing.md,
     textAlign: "center",
   },
   primaryActionsRow: {
     width: "86%",
     flexDirection: "row",
-    columnGap: 120,
+    columnGap: 80,
     alignSelf: "center",
   },
   eventDate: {
@@ -89,6 +89,26 @@ export default StyleSheet.create({
   eventOwner: {
     color: theme.colors.textPrimary,
     paddingRight: theme.spacing.md,
+  },
+
+  // == BODY ==
+  box: {
+    height: 150,
+    width: "100%",
+    backgroundColor: "rgba(0,0,0,0.35)",
+    borderRadius: theme.radius.lg,
+    padding: theme.spacing.md,
+    marginBottom: theme.spacing.md,
+  },
+  inviteesBox: {
+    justifyContent: "space-between",
+  },
+  chatBox: {
+    justifyContent: "flex-start",
+  },
+  boxTitle: {
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.sm,
   },
 
   // == INPUT / BUTTONS ==
@@ -118,5 +138,19 @@ export default StyleSheet.create({
     fontWeight: "600",
     fontFamily: "Anta", 
   },
+  mapButton: {
+    height: 44,
+    width: "100%",
+    borderRadius: theme.radius.md,
+    backgroundColor: "rgba(0,0,0,0.60)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: theme.spacing.sm,
+  },
+  
+  mapButtonText: {
+    color: theme.colors.textPrimary,
+    fontWeight: "600",
+  },  
 
 });
