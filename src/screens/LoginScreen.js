@@ -161,6 +161,7 @@ export default function LoginScreen() {
           >
             <Image source={convoraLogo} style={styles.logo} resizeMode="contain" />
             <Text style={styles.appName}>Convora</Text>
+            <Text style={styles.slogan}>All your events, one place</Text>
           </Animated.View>
         </View>
 

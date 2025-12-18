@@ -20,7 +20,7 @@ export default StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    marginBottom: 50,
+    marginBottom: 40,
   },
   logo: {
     width: 80,
@@ -32,6 +32,10 @@ export default StyleSheet.create({
   appName: {
     color: theme.colors.textPrimary,
     ...theme.typography.h1,          
+  },
+  slogan: {
+    color: theme.colors.textSecondary,
+    ...theme.typography.base
   },
 
   // == BODY ==
