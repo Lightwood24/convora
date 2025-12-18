@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, Pressable, Animated, Image, } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, Pressable, Animated, Image, ImageBackground} from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
 import { fetchSignInMethodsForEmail } from "firebase/auth";
@@ -9,6 +9,7 @@ import { auth, db } from "../services/firebase";
 import passwordShowIcon from "../../assets/pictures/password_show.png";
 import passwordHideIcon from "../../assets/pictures/password_hide.png";
 import convoraLogo from "../../assets/pictures/convora_logo.png";
+import background from  "../../assets/pictures/background.jpg"
 import styles from "../style/LoginScreen.style";
 
 export default function LoginScreen() {
@@ -153,194 +154,200 @@ export default function LoginScreen() {
       keyboardDismissMode="on-drag"
       style={styles.container}
     >
-      <View style={styles.content}>
-        {/* HEADER (top) */}
-        <View style={styles.headerSection}>
-          <Animated.View
-            style={[styles.header, { transform: [{ translateY: headerOffset }] }]}
-          >
-            <Image source={convoraLogo} style={styles.logo} resizeMode="contain" />
-            <Text style={styles.appName}>Convora</Text>
-            <Text style={styles.slogan}>All your events, one place</Text>
-          </Animated.View>
-        </View>
+      <ImageBackground
+        source={background}
+        style={styles.background}
+        resizeMode="cover"
+      >
+        <View style={styles.content}>
+          {/* HEADER (top) */}
+          <View style={styles.headerSection}>
+            <Animated.View
+              style={[styles.header, { transform: [{ translateY: headerOffset }] }]}
+            >
+              <Image source={convoraLogo} style={styles.logo} resizeMode="contain" />
+              <Text style={styles.appName}>Convora</Text>
+              <Text style={styles.slogan}>All your events, one place</Text>
+            </Animated.View>
+          </View>
 
-        {/* BODY */}
-        <View style={styles.bodySection}>
-          {/* LOGIN CARD */}
-          <View style={styles.card}>
-            <Pressable onPress={() => toggleCard("login")} style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>Login</Text>
-              <Text style={styles.arrow}>
-                {activeCard === "login" ? "▲" : "▼"}
-              </Text>
-            </Pressable>
+          {/* BODY */}
+          <View style={styles.bodySection}>
+            {/* LOGIN CARD */}
+            <View style={styles.card}>
+              <Pressable onPress={() => toggleCard("login")} style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>Login</Text>
+                <Text style={styles.arrow}>
+                  {activeCard === "login" ? "▲" : "▼"}
+                </Text>
+              </Pressable>
 
-            {activeCard === "login" && (
-              <View style={styles.cardBody}>
-                <TextInput
-                  placeholder="Email"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  value={loginEmail}
-                  onChangeText={setLoginEmail}
-                  style={styles.input}
-                  placeholderTextColor="#888"
-                />
-                <View style={{ position: "relative" }}>
+              {activeCard === "login" && (
+                <View style={styles.cardBody}>
                   <TextInput
-                    placeholder="Password"
-                    secureTextEntry={!showLoginPassword}
-                    value={loginPassword}
-                    onChangeText={setLoginPassword}
+                    placeholder="Email"
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    value={loginEmail}
+                    onChangeText={setLoginEmail}
                     style={styles.input}
                     placeholderTextColor="#888"
                   />
-                  <TouchableOpacity
-                    onPress={() => setShowLoginPassword(!showLoginPassword)}
-                    style={styles.passwordIcon}
-                  >
-                    <Image
-                      source={showLoginPassword ? passwordHideIcon : passwordShowIcon}
-                      style={{ width: 20, height: 20, tintColor: "#3b82f6" }}
+                  <View style={{ position: "relative" }}>
+                    <TextInput
+                      placeholder="Password"
+                      secureTextEntry={!showLoginPassword}
+                      value={loginPassword}
+                      onChangeText={setLoginPassword}
+                      style={styles.input}
+                      placeholderTextColor="#888"
                     />
+                    <TouchableOpacity
+                      onPress={() => setShowLoginPassword(!showLoginPassword)}
+                      style={styles.passwordIcon}
+                    >
+                      <Image
+                        source={showLoginPassword ? passwordHideIcon : passwordShowIcon}
+                        style={{ width: 20, height: 20, tintColor: "#3b82f6" }}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <TouchableOpacity
+                    style={[styles.button, loginDisabled && styles.buttonDisabled]}
+                    onPress={onLogin}
+                    disabled={loginDisabled}
+                  >
+                    {loading ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <Text style={styles.buttonText}>Login</Text>
+                    )}
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity
-                  style={[styles.button, loginDisabled && styles.buttonDisabled]}
-                  onPress={onLogin}
-                  disabled={loginDisabled}
-                >
-                  {loading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Text style={styles.buttonText}>Login</Text>
-                  )}
-                </TouchableOpacity>
-              </View>
-            )}
-          </View>
+              )}
+            </View>
 
-          {/* REGISTER CARD */}
-          <View style={styles.card}>
-            <Pressable
-              onPress={() => toggleCard("register")}
-              style={styles.cardHeader}
-            >
-              <Text style={styles.cardTitle}>Register</Text>
-              <Text style={styles.arrow}>
-                {activeCard === "register" ? "▲" : "▼"}
-              </Text>
-            </Pressable>
+            {/* REGISTER CARD */}
+            <View style={styles.card}>
+              <Pressable
+                onPress={() => toggleCard("register")}
+                style={styles.cardHeader}
+              >
+                <Text style={styles.cardTitle}>Register</Text>
+                <Text style={styles.arrow}>
+                  {activeCard === "register" ? "▲" : "▼"}
+                </Text>
+              </Pressable>
 
-            {activeCard === "register" && (
-              <View style={styles.cardBody}>
-                {/* USERNAME */}
-                <TextInput
-                  placeholder="Display name"
-                  value={regName}
-                  onChangeText={(text) => {
-                    setRegName(text);
-                    const trimmed = text.trim();
-                    if (!trimmed) {
-                      setRegNameError("Username is required.");
-                    } else if (!validUsername(trimmed)) {
-                      setRegNameError(
-                        "Use only letters, numbers, or underscore (_). No spaces or other symbols."
-                      );
-                    } else {
-                      setRegNameError("");
-                    }
-                  }}
-                  style={styles.input}
-                  placeholderTextColor="#888"
-                />
-                {regNameError ? (
-                  <Text style={styles.errorText}>{regNameError}</Text>
-                ) : null}
-
-                {/* EMAIL */}
-                <TextInput
-                  placeholder="Email"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  value={regEmail}
-                  onChangeText={(text) => {
-                    setRegEmail(text);
-                    const trimmed = text.trim();
-                    if (!trimmed) {
-                      setRegEmailError("Email is required.");
-                    } else if (!emailRegex.test(trimmed)) {
-                      setRegEmailError(
-                        "Please enter a valid email address (something@domain.tld)."
-                      );
-                    } else {
-                      setRegEmailError("");
-                    }
-                  }}
-                  style={styles.input}
-                  placeholderTextColor="#888"
-                />
-                {regEmailError ? (
-                  <Text style={styles.errorText}>{regEmailError}</Text>
-                ) : null}
-
-                {/* PASSWORD */}
-                <View style={{ position: "relative" }}>
+              {activeCard === "register" && (
+                <View style={styles.cardBody}>
+                  {/* USERNAME */}
                   <TextInput
-                    placeholder="Password"
-                    secureTextEntry={!showRegPassword}
-                    value={regPassword}
+                    placeholder="Display name"
+                    value={regName}
                     onChangeText={(text) => {
-                      setRegPassword(text);
-                      if (!text) {
-                        setRegPasswordError("Password is required.");
-                      } else if (!strongPw(text)) {
-                        setRegPasswordError(
-                          "Min. 9 characters, at least 1 uppercase letter and 1 number."
+                      setRegName(text);
+                      const trimmed = text.trim();
+                      if (!trimmed) {
+                        setRegNameError("Username is required.");
+                      } else if (!validUsername(trimmed)) {
+                        setRegNameError(
+                          "Use only letters, numbers, or underscore (_). No spaces or other symbols."
                         );
                       } else {
-                        setRegPasswordError("");
+                        setRegNameError("");
                       }
                     }}
                     style={styles.input}
                     placeholderTextColor="#888"
                   />
-                  <TouchableOpacity
-                    onPress={() => setShowRegPassword(!showRegPassword)}
-                    style={styles.passwordIcon}
-                  >
-                    <Image
-                      source={showRegPassword ? passwordHideIcon : passwordShowIcon}
-                      style={{ width: 20, height: 20, tintColor: "#3b82f6" }}
+                  {regNameError ? (
+                    <Text style={styles.errorText}>{regNameError}</Text>
+                  ) : null}
+
+                  {/* EMAIL */}
+                  <TextInput
+                    placeholder="Email"
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    value={regEmail}
+                    onChangeText={(text) => {
+                      setRegEmail(text);
+                      const trimmed = text.trim();
+                      if (!trimmed) {
+                        setRegEmailError("Email is required.");
+                      } else if (!emailRegex.test(trimmed)) {
+                        setRegEmailError(
+                          "Please enter a valid email address (something@domain.tld)."
+                        );
+                      } else {
+                        setRegEmailError("");
+                      }
+                    }}
+                    style={styles.input}
+                    placeholderTextColor="#888"
+                  />
+                  {regEmailError ? (
+                    <Text style={styles.errorText}>{regEmailError}</Text>
+                  ) : null}
+
+                  {/* PASSWORD */}
+                  <View style={{ position: "relative" }}>
+                    <TextInput
+                      placeholder="Password"
+                      secureTextEntry={!showRegPassword}
+                      value={regPassword}
+                      onChangeText={(text) => {
+                        setRegPassword(text);
+                        if (!text) {
+                          setRegPasswordError("Password is required.");
+                        } else if (!strongPw(text)) {
+                          setRegPasswordError(
+                            "Min. 9 characters, at least 1 uppercase letter and 1 number."
+                          );
+                        } else {
+                          setRegPasswordError("");
+                        }
+                      }}
+                      style={styles.input}
+                      placeholderTextColor="#888"
                     />
+                    <TouchableOpacity
+                      onPress={() => setShowRegPassword(!showRegPassword)}
+                      style={styles.passwordIcon}
+                    >
+                      <Image
+                        source={showRegPassword ? passwordHideIcon : passwordShowIcon}
+                        style={{ width: 20, height: 20, tintColor: "#3b82f6" }}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  {regPasswordError ? (
+                    <Text style={styles.errorText}>{regPasswordError}</Text>
+                  ) : null}
+
+                  <TouchableOpacity
+                    style={[styles.button, regDisabled && styles.buttonDisabled]}
+                    onPress={onRegister}
+                    disabled={regDisabled}
+                  >
+                    {loading ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <Text style={styles.buttonText}>Register</Text>
+                    )}
                   </TouchableOpacity>
                 </View>
-                {regPasswordError ? (
-                  <Text style={styles.errorText}>{regPasswordError}</Text>
-                ) : null}
+              )}
+            </View>
+          </View>
 
-                <TouchableOpacity
-                  style={[styles.button, regDisabled && styles.buttonDisabled]}
-                  onPress={onRegister}
-                  disabled={regDisabled}
-                >
-                  {loading ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Text style={styles.buttonText}>Register</Text>
-                  )}
-                </TouchableOpacity>
-              </View>
-            )}
+          {/* FOOTER */}
+          <View style={styles.footerSection}>
+            <Text style={styles.footerText}>A Thesis app made by Daniel Kiss</Text>
           </View>
         </View>
-
-        {/* FOOTER */}
-        <View style={styles.footerSection}>
-          <Text style={styles.footer}>A Thesis app made by Daniel Kiss</Text>
-        </View>
-      </View>
+      </ImageBackground>
     </KeyboardAwareScrollView>
   );
 }

@@ -11,13 +11,31 @@ export default StyleSheet.create({
     flex: 1,
     width: "100%",
   },
+  background: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
 
-  // == HEADER ==
+  // == SECTIONS == 
   headerSection: {
     flex: 1,
     alignItems: "center",
     justifyContent: "flex-end",
   },
+  bodySection: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
+  footerSection: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+
+  // == HEADER ==
   header: {
     alignItems: "center",
     marginBottom: 40,
@@ -39,12 +57,6 @@ export default StyleSheet.create({
   },
 
   // == BODY ==
-  bodySection: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-  },
   card: {
     width: "86%",
     backgroundColor: theme.colors.surface,
@@ -122,12 +134,7 @@ export default StyleSheet.create({
   },
 
   // == FOOTER ==
-  footerSection: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-end",
-  },
-  footer: {
+  footerText: {
     color: theme.colors.textMuted,
     marginTop: theme.spacing.sm,
     marginBottom: 50,
