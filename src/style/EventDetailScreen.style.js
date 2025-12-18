@@ -99,6 +99,8 @@ export default StyleSheet.create({
     borderRadius: theme.radius.lg,
     padding: theme.spacing.md,
     marginBottom: theme.spacing.md,
+    borderColor: theme.colors.borderWhite,
+    borderWidth: 1,
   },
   inviteesBox: {
     justifyContent: "space-between",
@@ -142,6 +144,8 @@ export default StyleSheet.create({
     height: 44,
     width: "100%",
     borderRadius: theme.radius.md,
+    borderColor: theme.colors.borderWhite,
+    borderWidth: 1,
     backgroundColor: "rgba(0,0,0,0.60)",
     alignItems: "center",
     justifyContent: "center",

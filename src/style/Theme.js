@@ -10,6 +10,7 @@ const colors = {
     // borders
     border: "#1f2937",
     borderMuted: "#2d2d2d",
+    borderWhite: "#f5f5f5",
   
     // text
     textPrimary: "#f5f5f5",

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Text, View, TouchableOpacity, ImageBackground } from "react-native";
+import { Text, View, TouchableOpacity, ImageBackground, Linking } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { doc, onSnapshot } from "firebase/firestore";
@@ -17,15 +17,14 @@ const TEMPLATE_BACKGROUNDS = {
 
 export default function EventDetailScreen() {
   const navigation = useNavigation();
-  const route = useRoute();
+  const goToTab = (tabName) => navigation.navigate("AppTabs", { screen: tabName });
 
+  const route = useRoute();
   const eventId = route?.params?.eventId ?? null;
 
   const [loading, setLoading] = useState(true);
   const [event, setEvent] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
-
-  const goToTab = (tabName) => navigation.navigate("AppTabs", { screen: tabName });
 
   useEffect(() => {
     if (!eventId) {
@@ -62,6 +61,13 @@ export default function EventDetailScreen() {
     return () => unsub();
   }, [eventId]);
 
+  const openMapForAddress = (address) => {
+    const encodedAddress = encodeURIComponent(address);
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+    Linking.openURL(url);
+  };
+  
+
   const startAtLabel = useMemo(() => {
     if (!event?.startAt) return "";
     const d = event.startAt?.toDate ? event.startAt.toDate() : new Date(event.startAt);
@@ -89,7 +95,7 @@ export default function EventDetailScreen() {
           style={styles.eventCard}
           imageStyle={styles.eventCardImage}
         >
-          {/* SCROLLABLE AREA: HEADER + BODY */}
+          {/* HEADER + BODY */}
           <KeyboardAwareScrollView
             contentContainerStyle={styles.eventScrollContent}
             keyboardShouldPersistTaps="handled"
@@ -138,7 +144,7 @@ export default function EventDetailScreen() {
   
               <TouchableOpacity 
                 style={styles.mapButton} 
-                onPress={() => {}}
+                onPress={() => openMapForAddress(event?.location)}
               >
                 <Text style={[styles.mapButtonText, { fontFamily, fontSize: baseFontSize }]}>
                   {event?.location}
