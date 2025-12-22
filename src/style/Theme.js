@@ -1,6 +1,10 @@
 const colors = {
     // base
     background: "#0d0d0d",
+    backgroundOpaque25: "rgba(0,0,0,0.25)",
+    backgroundOpaque35: "rgba(0,0,0,0.35)",
+    backgroundOpaque55: "rgba(0,0,0,0.55)",
+    backgroundOpaque75: "rgba(0,0,0,0.75)",
     secondaryBackground: "#111827",
     avatarBackground: "#e5e5e5",
     avatarPlaceholderBackground: "#d4d4d4",
@@ -16,7 +20,6 @@ const colors = {
     textPrimary: "#f5f5f5",
     textSecondary: "#e5e7eb",
     textMuted: "#6b7280",
-    placeholder: "#888888",
   
     // inputs
     inputBg: "#1f2937",
@@ -28,8 +31,6 @@ const colors = {
     primaryMuted: "#3b82f6", // blue-500
     secondary: "#374151",
     navigation: "#0ea5e9",
-    success: "#22c55e",
-    warning: "#f59e0b",
     danger:  "#ef4444",
   };
   
@@ -40,6 +41,7 @@ const colors = {
     lg: 16,
     xl: 24,
     xxl: 32,
+    xxxl: 50,
   };
   
   const radius = {
@@ -59,7 +61,7 @@ const colors = {
     h2: {
       fontFamily: "Anta",
       fontSize: 20,
-      fontWeight: "400",
+      fontWeight: "300",
     },
     small: {
       fontFamily: "Anta",

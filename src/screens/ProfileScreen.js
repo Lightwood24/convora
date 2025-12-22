@@ -20,11 +20,9 @@ export default function ProfileScreen() {
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  // inline errorok
+  // == VALIDÁTOROK ==
   const [usernameError, setUsernameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
-
-  // == VALIDÁTOROK ==
 
   const validUsername = (name) => /^[A-Za-z0-9_]+$/.test(name);
 
@@ -47,6 +45,7 @@ export default function ProfileScreen() {
     return true;
   }
 
+  // adatbázis adatok kezelése
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -253,7 +252,7 @@ export default function ProfileScreen() {
     setIsEditing(false);
   };
 
-  // Save disable logika
+  // Save gomb disable logika
   const trimmedUsername = username.trim();
   const hasValidationError = !!usernameError || !!phoneError;
   const primaryDisabled = saving || hasValidationError || !trimmedUsername;

@@ -164,5 +164,4 @@ export default StyleSheet.create({
     ...theme.typography.small,
   },
   
-
 });

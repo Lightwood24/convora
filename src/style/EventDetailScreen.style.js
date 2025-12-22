@@ -49,7 +49,7 @@ export default StyleSheet.create({
   },
   eventCardOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.55)",
+    backgroundColor: theme.colors.backgroundOpaque55,
     padding: theme.spacing.xl,
     margin: theme.spacing.md,
     borderRadius: theme.radius.xxl,
@@ -95,7 +95,7 @@ export default StyleSheet.create({
   box: {
     height: 150,
     width: "100%",
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: theme.colors.backgroundOpaque35,
     borderRadius: theme.radius.lg,
     padding: theme.spacing.md,
     marginBottom: theme.spacing.md,
@@ -132,10 +132,10 @@ export default StyleSheet.create({
   actionBtn: {
     flex: 1,
   },
-  buttonNavi: {
+  naviButton: {
     backgroundColor: theme.colors.navigation, 
   },
-  buttonText: {
+  naviButtonText: {
     color: theme.colors.textPrimary,
     fontWeight: "600",
     fontFamily: "Anta", 
@@ -146,19 +146,18 @@ export default StyleSheet.create({
     borderRadius: theme.radius.md,
     borderColor: theme.colors.borderWhite,
     borderWidth: 1,
-    backgroundColor: "rgba(0,0,0,0.60)",
+    backgroundColor: theme.colors.backgroundOpaque75,
     alignItems: "center",
     justifyContent: "center",
     marginTop: theme.spacing.sm,
   },
-  
   mapButtonText: {
     color: theme.colors.textPrimary,
     fontWeight: "600",
   },  
-
   errorText: {
     ...theme.typography.h1,
     color: theme.colors.textPrimary,
   },
+  
 });

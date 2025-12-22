@@ -25,6 +25,7 @@ export default function EventDetailScreen() {
   const [event, setEvent] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
 
+  // event betöltése az adatbázisból
   useEffect(() => {
     if (!eventId) {
       setEvent(null);
@@ -62,7 +63,6 @@ export default function EventDetailScreen() {
     Linking.openURL(url);
   };
   
-
   const startAtLabel = useMemo(() => {
     if (!event?.startAt) return "";
     const d = event.startAt?.toDate ? event.startAt.toDate() : new Date(event.startAt);
@@ -117,14 +117,17 @@ export default function EventDetailScreen() {
             keyboardDismissMode="on-drag"
             showsVerticalScrollIndicator={false}
           >
+
             {/* HEADER */}
             <View style={[styles.headerSection, styles.eventCardOverlay]}>
               <View style={styles.header}>
+                {/* EVENT TITLE */}
                 <Text style={[styles.eventTitle, { fontFamily, fontSize: baseFontSize + 15 }]}>
                   {event?.title}
                 </Text>
   
                 <View style={styles.primaryActionsRow}>
+                  {/* EVENT DATE */}
                   <Text
                     style={[styles.eventDate, { fontFamily, fontSize: baseFontSize }]}
                     numberOfLines={1}
@@ -132,11 +135,14 @@ export default function EventDetailScreen() {
                   >
                     {startAtLabel}
                   </Text>
+
+                  {/* EVENT OWNER */}
                   <Text style={[styles.eventOwner, { fontFamily, fontSize: baseFontSize }]}>
                     {event?.username}
                   </Text>
                 </View>
   
+                {/* EVENT DESCRIPTION */}
                 <Text style={[styles.eventDescription, { fontFamily, fontSize: baseFontSize + 6 }]}>
                   {event?.description}
                 </Text>
@@ -145,18 +151,21 @@ export default function EventDetailScreen() {
   
             {/* BODY */}
             <View style={[styles.bodySection, styles.eventCardOverlay]}>
+              {/* INVITEES */}
               <View style={[styles.box, styles.inviteesBox]}>
                 <Text style={[styles.boxTitle, { fontFamily, fontSize: baseFontSize }]}>
                   Invited
                 </Text>
               </View>
   
+              {/* CHAT BOX */}
               <View style={[styles.box, styles.chatBox]}>
                 <Text style={[styles.boxTitle, { fontFamily, fontSize: baseFontSize }]}>
                   Chat
                 </Text>
               </View>
   
+              {/* MAP */}
               <TouchableOpacity 
                 style={styles.mapButton} 
                 onPress={() => openMapForAddress(event?.location)}
@@ -174,29 +183,28 @@ export default function EventDetailScreen() {
         <View style={styles.footerSection}>
           <View style={styles.actionsRow}>
             <TouchableOpacity
-              style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+              style={[styles.button, styles.naviButton, styles.actionBtn]}
               onPress={() => goToTab("Profile")}
             >
-              <Text style={styles.buttonText}>Profile</Text>
+              <Text style={styles.naviButtonText}>Profile</Text>
             </TouchableOpacity>
   
             <TouchableOpacity
-              style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+              style={[styles.button, styles.naviButton, styles.actionBtn]}
               onPress={() => goToTab("Home")}
             >
-              <Text style={styles.buttonText}>Home</Text>
+              <Text style={styles.naviButtonText}>Home</Text>
             </TouchableOpacity>
   
             <TouchableOpacity
-              style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+              style={[styles.button, styles.naviButton, styles.actionBtn]}
               onPress={() => goToTab("Calendar")}
             >
-              <Text style={styles.buttonText}>Calendar</Text>
+              <Text style={styles.naviButtonText}>Calendar</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
     </View>
   );
-  
 }

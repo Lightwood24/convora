@@ -62,6 +62,8 @@ export default StyleSheet.create({
     ...theme.typography.h2,
     marginBottom: theme.spacing.sm,
   },
+
+  //EVENT LIST LAYOUT
   eventsListContainer: {
     width: "100%",
     alignItems: "center",
@@ -75,6 +77,7 @@ export default StyleSheet.create({
     paddingBottom: theme.spacing.md,
   },
 
+  // EVENT CARD
   eventCard: {
     borderRadius: theme.radius.lg,
     borderWidth: 1,
@@ -109,6 +112,8 @@ export default StyleSheet.create({
     color: theme.colors.textSecondary,
     marginTop: 4,
   },
+
+  // GRADIANT FADE
   fadeTop: {
     position: "absolute",
     top: 0,
@@ -149,12 +154,11 @@ export default StyleSheet.create({
   actionBtn: {
     flex: 1,
   },
-  buttonNavi: {
+  naviButton: {
     backgroundColor: theme.colors.navigation,
   },
-  buttonText: {
+  naviButtonText: {
     color: theme.colors.textPrimary,
-    fontWeight: "600",
     fontFamily: "Anta",
   },
   newEventButton: {
@@ -173,4 +177,5 @@ export default StyleSheet.create({
     fontFamily: "Anta",
     fontWeight: "600",
   },
+  
 });

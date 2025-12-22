@@ -43,7 +43,6 @@ export default function LoginScreen() {
   }, [activeCard, headerOffset]);
 
   // == VALIDATION ==
-  // inline errorok
   const [regNameError, setRegNameError] = useState("");
   const [regEmailError, setRegEmailError] = useState("");
   const [regPasswordError, setRegPasswordError] = useState("");
@@ -344,7 +343,7 @@ export default function LoginScreen() {
 
           {/* FOOTER */}
           <View style={styles.footerSection}>
-            <Text style={styles.footerText}>A Thesis app made by Daniel Kiss</Text>
+            <Text style={styles.footerText}>A Thesis project app made by Daniel Kiss</Text>
           </View>
         </View>
       </ImageBackground>

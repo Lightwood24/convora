@@ -22,7 +22,6 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     marginTop: 100,
-    
   },
   bodySection: {
     flex: 1,
@@ -77,10 +76,10 @@ export default StyleSheet.create({
   actionBtn: {
     flex: 1,
   },
-  buttonNavi: {
+  naviButton: {
     backgroundColor: theme.colors.navigation, 
   },
-  buttonText: {
+  naviButtonText: {
     color: theme.colors.textPrimary,
     fontWeight: "600",
     fontFamily: "Anta", 

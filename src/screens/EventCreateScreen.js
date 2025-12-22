@@ -63,6 +63,7 @@ export default function EventCreateScreen() {
     hideDatePicker();
   };
 
+  // username betöltése az adatbázisból
   useEffect(() => {
     const loadUsername = async () => {
       const user = auth.currentUser;
@@ -86,6 +87,7 @@ export default function EventCreateScreen() {
     loadUsername();
   }, []);
 
+  // == VALIDÁTOROK ==
   const validateAddress = (address) => {
     const regex =
       /^[A-ZÁÉÍÓÖŐÚÜŰa-záéíóöőúüű\s.-]+,\s*[A-ZÁÉÍÓÖŐÚÜŰa-záéíóöőúüű0-9\s.-]+,\s*\d+[A-Za-z]?$/;
@@ -126,6 +128,7 @@ export default function EventCreateScreen() {
     setEventAddress("");
   };
 
+  // == ACTION ROW GOMBOK ==
   const handleDiscard = () => {
     resetForm();
     goToTab("Home");
@@ -172,8 +175,9 @@ export default function EventCreateScreen() {
     alert("Share action not implemented yet.");
   };
 
+  // Event kártya
   const renderCardForm = () => (
-    <View style={styles.cardInnerContent}>
+    <View style={styles.cardContent}>
       <View style={styles.topRow}>
         {/* date */}
         <View style={styles.dateBox}>
@@ -201,6 +205,7 @@ export default function EventCreateScreen() {
         </View>
 
         <View style={styles.titleColumn}>
+
           {/* event name */}
           <View style={styles.inputLargeWrapper}>
             <TextInput
@@ -268,6 +273,7 @@ export default function EventCreateScreen() {
         style={styles.container}
       >
         <View style={styles.content}>
+
           {/* HEADER */}
           <View style={styles.headerSection}>
             <View style={styles.header}>
@@ -323,10 +329,10 @@ export default function EventCreateScreen() {
 
               <ImageBackground
                 source={selectedBg}
-                style={styles.cardInnerBg}
-                imageStyle={styles.cardInnerBgImage}
+                style={styles.cardBg}
+                imageStyle={styles.cardBgImage}
               >
-                <View style={styles.cardInnerOverlay}>{renderCardForm()}</View>
+                <View style={styles.cardOverlay}>{renderCardForm()}</View>
               </ImageBackground>
             </View>
 
@@ -344,6 +350,7 @@ export default function EventCreateScreen() {
                 <Text style={styles.buttonText}>Share</Text>
               </TouchableOpacity>
             </View>
+
           </View>
 
           {/* FOOTER */}

@@ -68,7 +68,7 @@ export default StyleSheet.create({
     overflow: "hidden",
   },
 
-  // dropdown + bar
+  // TEMPLATE DROPDOWN BAR
   templateContainer: {
     position: "relative",
   },
@@ -86,14 +86,11 @@ export default StyleSheet.create({
   templateText: {
     ...theme.typography.base,
     color: theme.colors.textMuted,
-    fontStyle: "italic",
   },
   templateChevron: {
     ...theme.typography.base,
     color: theme.colors.textMuted,
   },
-
-  // overlayelt dropdown list
   templateListOverlay: {
     position: "absolute",
     top: 56,
@@ -126,26 +123,20 @@ export default StyleSheet.create({
     fontWeight: "600",
   },
 
-  // == CARD INNER (background + overlay) ==
-  cardInnerBg: {
+  // == EVENT CARD ==
+  cardBg: {
     width: "100%",
     height: 420,
   },
-  cardInnerBgImage: {
+  cardBgImage: {
     resizeMode: "cover",
   },
-  cardInnerOverlay: {
+  cardOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.25)",
+    backgroundColor: theme.colors.backgroundOpaque25,
     padding: theme.spacing.md,
   },
-  cardInner: {
-    width: "100%",
-    height: 420,
-    padding: theme.spacing.md,
-    backgroundColor: theme.colors.surfaceElevated,
-  },
-  cardInnerContent: {
+  cardContent: {
     flex: 1,
     justifyContent: "flex-start",
   },
@@ -158,7 +149,6 @@ export default StyleSheet.create({
     paddingVertical: 4,
     justifyContent: "center",
   },
-  
   topRow: {
     flexDirection: "row",
     marginBottom: theme.spacing.md,
@@ -172,7 +162,7 @@ export default StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginRight: theme.spacing.md,
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: theme.colors.backgroundOpaque35,
   },
   titleColumn: {
     flex: 1,
@@ -183,7 +173,7 @@ export default StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.border,
     marginBottom: theme.spacing.xs,
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: theme.colors.backgroundOpaque35,
     justifyContent: "center",
   },
   inputSmallWrapper: {
@@ -191,16 +181,15 @@ export default StyleSheet.create({
     borderRadius: theme.radius.sm,
     borderWidth: 1,
     borderColor: theme.border,
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: theme.colors.backgroundOpaque35,
     justifyContent: "center",
   },
-
   descriptionBox: {
     flex: 1,
     borderRadius: theme.radius.sm,
     borderWidth: 1,
     borderColor: theme.border,
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: theme.colors.backgroundOpaque35,
     marginBottom: theme.spacing.md,
     paddingVertical: theme.spacing.xs,
   },
@@ -209,7 +198,7 @@ export default StyleSheet.create({
     borderRadius: theme.radius.sm,
     borderWidth: 1,
     borderColor: theme.border,
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: theme.colors.backgroundOpaque35,
     paddingVertical: 0,
     justifyContent: "center",
   },
@@ -262,4 +251,5 @@ export default StyleSheet.create({
   naviButton: {
     backgroundColor: theme.colors.navigation,
   },
+  
 });

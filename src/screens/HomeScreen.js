@@ -28,6 +28,7 @@ export default function HomeScreen() {
     setIsAtTop(offset <= 2);
   };
 
+  // adatbázis adatokok kezelése
   useEffect(() => {
     const user = auth.currentUser;
     if (!user) {
@@ -200,22 +201,22 @@ export default function HomeScreen() {
           <View style={styles.footerSection}>
             <View style={styles.actionsRow}>
               <TouchableOpacity
-                style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+                style={[styles.button, styles.naviButton, styles.actionBtn]}
                 onPress={() => navigation.navigate("Profile")}
               >
-                <Text style={styles.buttonText}>Profile</Text>
+                <Text style={styles.naviButtonText}>Profile</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+                style={[styles.button, styles.naviButton, styles.actionBtn]}
                 onPress={() => navigation.navigate("Home")}
               >
-                <Text style={styles.buttonText}>Home</Text>
+                <Text style={styles.naviButtonText}>Home</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+                style={[styles.button, styles.naviButton, styles.actionBtn]}
                 onPress={() => navigation.navigate("Calendar")}
               >
-                <Text style={styles.buttonText}>Calendar</Text>
+                <Text style={styles.naviButtonText}>Calendar</Text>
               </TouchableOpacity>
             </View>
           </View>

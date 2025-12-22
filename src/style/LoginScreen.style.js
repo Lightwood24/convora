@@ -37,7 +37,8 @@ export default StyleSheet.create({
   // == HEADER ==
   header: {
     alignItems: "center",
-    marginBottom: 40,
+    marginTop: theme.spacing.xxl,
+    marginBottom: theme.spacing.xl,
   },
   logo: {
     width: 80,
@@ -70,8 +71,8 @@ export default StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
     backgroundColor: theme.colors.surfaceElevated,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.borderMuted,
@@ -94,7 +95,7 @@ export default StyleSheet.create({
   input: {
     backgroundColor: theme.colors.inputBg,
     borderRadius: theme.radius.md,
-    paddingHorizontal: 14,
+    paddingHorizontal: theme.spacing.md,
     height: 46,
     color: theme.colors.textPrimary,
     borderWidth: 1,
@@ -136,9 +137,10 @@ export default StyleSheet.create({
   footerText: {
     color: theme.colors.textMuted,
     marginTop: theme.spacing.sm,
-    marginBottom: 50,
+    marginBottom: theme.spacing.xxxl,
     fontStyle: "italic",
     ...theme.typography.small,       
     fontFamily: "Anta",              
   },
+  
 });
