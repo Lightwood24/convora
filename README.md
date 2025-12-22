@@ -117,9 +117,9 @@ Convora/
 - Clean iOS-focused design
 
 ## 📜 Changelog
-- v1.4.0: Added Home screen with real-time event listing, unified background imagery across screens, implemented Event Detail screen with map integration and error handling
-- v1.3.0: Implemented full event flow (create → list → detail), added event templates with dynamic backgrounds and fonts, integrated Firestore-backed event loading, improved navigation animations
-- v2.0.0: Added user registration / login logic, implemented profile edit / delete and sign out option, added navigation between main screens, implemented a global theme
+- v1.3.0: Added Home screen with real-time event listing, unified background imagery across screens, implemented Event Detail screen with map integration and error handling
+- v1.2.0: Implemented full event flow (create → list → detail), added event templates with dynamic backgrounds and fonts, integrated Firestore-backed event loading, improved navigation animations
+- v1.1.0: Added user registration / login logic, implemented profile edit / delete and sign out option, added navigation between main screens, implemented a global theme
 - v1.0.0: Initial Expo project setup, added base skeleton
 
 ### 👨‍💻 Author
