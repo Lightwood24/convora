@@ -157,4 +157,8 @@ export default StyleSheet.create({
     fontWeight: "600",
   },  
 
+  errorText: {
+    ...theme.typography.h1,
+    color: theme.colors.textPrimary,
+  },
 });

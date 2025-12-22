@@ -21,20 +21,17 @@ export default function EventDetailScreen() {
 
   const route = useRoute();
   const eventId = route?.params?.eventId ?? null;
-
-  const [loading, setLoading] = useState(true);
+  
   const [event, setEvent] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     if (!eventId) {
-      setLoading(false);
       setEvent(null);
       setErrorMsg("Missing event id. Please open the event from the Home screen.");
       return;
     }
 
-    setLoading(true);
     setErrorMsg("");
 
     const ref = doc(db, "events", eventId);
@@ -48,13 +45,11 @@ export default function EventDetailScreen() {
           setEvent({ id: snap.id, ...snap.data() });
           setErrorMsg("");
         }
-        setLoading(false);
       },
       (err) => {
         console.error("EventDetail onSnapshot error:", err);
         setEvent(null);
         setErrorMsg(err?.message ?? "Failed to load event.");
-        setLoading(false);
       }
     );
 
@@ -87,6 +82,26 @@ export default function EventDetailScreen() {
   const fontFamily = event?.fontFamily || "Anta";
   const baseFontSize = fontFamily === "Tangerine" ? 25 : 13 && fontFamily === "Caveat" ? 21 : 13;
 
+  if (errorMsg) {
+    return (
+      <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+        <Text
+          style={styles.errorText}
+        >
+          {errorMsg}
+        </Text>
+  
+        <TouchableOpacity
+          style={[styles.button, styles.buttonNavi]}
+          onPress={() => navigation.navigate("Home")}
+        >
+          <Text style={styles.buttonText}>Back to Home</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+  
+  
   return (
     <View style={styles.container}>
       <View style={styles.content}>
