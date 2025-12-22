@@ -5,7 +5,6 @@ export default StyleSheet.create({
   // == LAYOUT ==
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
   },
   content: {
     flex: 1,

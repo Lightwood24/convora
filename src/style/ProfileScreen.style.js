@@ -5,11 +5,15 @@ export default StyleSheet.create({
   // == LAYOUT ==
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
   },
   content: {
     flex: 1,
     width: "100%",
+  },
+  background: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
   },
 
   // == SECTIONS ==

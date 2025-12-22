@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { auth, db } from "../services/firebase";
 import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
+import background from  "../../assets/pictures/background.jpg"
 import styles from "../style/HomeScreen.style";
 import theme from "../style/Theme";
 
@@ -67,153 +68,159 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      keyboardShouldPersistTaps="handled"
-      keyboardDismissMode="on-drag"
-      style={styles.container}
+    <ImageBackground
+    source={background}
+    style={styles.background}
+    resizeMode="cover"
     >
-      <View style={styles.content}>
-        {/* HEADER */}
-        <View style={styles.headerSection}>
-          <View style={styles.header}>
-            <Text style={styles.screenTitle}>Home Screen</Text>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        style={styles.container}
+      >
+        <View style={styles.content}>
+          {/* HEADER */}
+          <View style={styles.headerSection}>
+            <View style={styles.header}>
+              <Text style={styles.screenTitle}>Home Screen</Text>
+            </View>
           </View>
-        </View>
 
-        {/* BODY */}
-        <View style={styles.bodySection}>
-          <Text style={styles.sectionTitle}>Upcoming events</Text>
+          {/* BODY */}
+          <View style={styles.bodySection}>
+            <Text style={styles.sectionTitle}>Upcoming events</Text>
 
-          <View style={styles.eventsListContainer}>
-            {!isAtTop && (
+            <View style={styles.eventsListContainer}>
+              {!isAtTop && (
+                <LinearGradient
+                  colors={[theme.colors.background, "transparent"]}
+                  style={styles.fadeTop}
+                  pointerEvents="none"
+                />
+              )}
+
+              <ScrollView
+                style={styles.eventsList}
+                contentContainerStyle={styles.eventsListContent}
+                showsVerticalScrollIndicator={false}
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
+              >
+                {events.length === 0 ? (
+                  <Text
+                    style={{
+                      ...theme.typography.small,
+                      color: theme.colors.textMuted,
+                      textAlign: "center",
+                      marginTop: theme.spacing.md,
+                    }}
+                  >
+                    You have no events yet.
+                  </Text>
+                ) : (
+                  events.map((event) => {
+                    const bgSource =
+                      TEMPLATE_BACKGROUNDS[event.templateId] || TEMPLATE_BACKGROUNDS.party;
+
+                    const fontFamily = event.fontFamily || "Anta";
+                    const fontSize = fontFamily === "Tangerine" || fontFamily === "Caveat" ? 21 : 12;
+
+                    const dateLabel = formatDateLabel(event.startAt);
+                    const description =
+                      event.description && event.description.trim().length > 0
+                        ? event.description.trim()
+                        : "No description provided.";
+
+                    return (
+                      <TouchableOpacity
+                        key={event.id}
+                        style={{ flex: 1 }}
+                        onPress={() => {navigation.navigate("EventDetail", { eventId: event.id })}}
+                      >
+                        <ImageBackground
+                          source={bgSource}
+                          style={styles.eventCard}
+                          imageStyle={styles.eventCardImage}
+                        >
+                          <View style={styles.eventCardOverlay}>
+                            <Text
+                              style={[styles.eventTitle, { fontFamily, fontSize }]}
+                              numberOfLines={1}
+                              ellipsizeMode="tail"
+                            >
+                              {event.title}
+                            </Text>
+
+                            <Text
+                              style={[
+                                styles.eventDate,
+                                { fontFamily, fontSize: Math.max(12, fontSize - 4) },
+                              ]}
+                              numberOfLines={1}
+                              ellipsizeMode="tail"
+                            >
+                              {dateLabel}
+                            </Text>
+                            
+                            <Text
+                              style={[
+                                styles.eventDescription,
+                                { fontFamily, fontSize: Math.max(12, fontSize - 2) },
+                              ]}
+                              numberOfLines={1}
+                              ellipsizeMode="tail"
+                            >
+                              {description}
+                            </Text>
+                          </View>
+                        </ImageBackground>
+                      </TouchableOpacity>
+                    );
+                  })
+                )}
+              </ScrollView>
+
               <LinearGradient
-                colors={[theme.colors.background, "transparent"]}
-                style={styles.fadeTop}
+                colors={["transparent", theme.colors.background]}
+                style={styles.fadeBottom}
                 pointerEvents="none"
               />
-            )}
+            </View>
 
-            <ScrollView
-              style={styles.eventsList}
-              contentContainerStyle={styles.eventsListContent}
-              showsVerticalScrollIndicator={false}
-              onScroll={handleScroll}
-              scrollEventThrottle={16}
-            >
-              {events.length === 0 ? (
-                <Text
-                  style={{
-                    ...theme.typography.small,
-                    color: theme.colors.textMuted,
-                    textAlign: "center",
-                    marginTop: theme.spacing.md,
-                  }}
-                >
-                  You have no events yet.
-                </Text>
-              ) : (
-                events.map((event) => {
-                  const bgSource =
-                    TEMPLATE_BACKGROUNDS[event.templateId] || TEMPLATE_BACKGROUNDS.party;
-
-                  const fontFamily = event.fontFamily || "Anta";
-                  const fontSize = fontFamily === "Tangerine" || fontFamily === "Caveat" ? 21 : 12;
-
-                  const dateLabel = formatDateLabel(event.startAt);
-                  const description =
-                    event.description && event.description.trim().length > 0
-                      ? event.description.trim()
-                      : "No description provided.";
-
-                  return (
-                    <TouchableOpacity
-                      key={event.id}
-                      style={{ flex: 1 }}
-                      onPress={() => {navigation.navigate("EventDetail", { eventId: event.id })}}
-                    >
-                      <ImageBackground
-                        source={bgSource}
-                        style={styles.eventCard}
-                        imageStyle={styles.eventCardImage}
-                      >
-                        <View style={styles.eventCardOverlay}>
-                          <Text
-                            style={[styles.eventTitle, { fontFamily, fontSize }]}
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                          >
-                            {event.title}
-                          </Text>
-
-                          <Text
-                            style={[
-                              styles.eventDate,
-                              { fontFamily, fontSize: Math.max(12, fontSize - 4) },
-                            ]}
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                          >
-                            {dateLabel}
-                          </Text>
-                          
-                          <Text
-                            style={[
-                              styles.eventDescription,
-                              { fontFamily, fontSize: Math.max(12, fontSize - 2) },
-                            ]}
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                          >
-                            {description}
-                          </Text>
-                        </View>
-                      </ImageBackground>
-                    </TouchableOpacity>
-                  );
-                })
-              )}
-            </ScrollView>
-
-            <LinearGradient
-              colors={["transparent", theme.colors.background]}
-              style={styles.fadeBottom}
-              pointerEvents="none"
-            />
-          </View>
-
-          <TouchableOpacity
-            style={styles.newEventButton}
-            onPress={() => navigation.navigate("EventCreate")}
-          >
-            <Text style={styles.newEventButtonText}>New event</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* FOOTER */}
-        <View style={styles.footerSection}>
-          <View style={styles.actionsRow}>
             <TouchableOpacity
-              style={[styles.button, styles.buttonNavi, styles.actionBtn]}
-              onPress={() => navigation.navigate("Profile")}
+              style={styles.newEventButton}
+              onPress={() => navigation.navigate("EventCreate")}
             >
-              <Text style={styles.buttonText}>Profile</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.buttonNavi, styles.actionBtn]}
-              onPress={() => navigation.navigate("Home")}
-            >
-              <Text style={styles.buttonText}>Home</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.buttonNavi, styles.actionBtn]}
-              onPress={() => navigation.navigate("Calendar")}
-            >
-              <Text style={styles.buttonText}>Calendar</Text>
+              <Text style={styles.newEventButtonText}>New event</Text>
             </TouchableOpacity>
           </View>
+
+          {/* FOOTER */}
+          <View style={styles.footerSection}>
+            <View style={styles.actionsRow}>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+                onPress={() => navigation.navigate("Profile")}
+              >
+                <Text style={styles.buttonText}>Profile</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+                onPress={() => navigation.navigate("Home")}
+              >
+                <Text style={styles.buttonText}>Home</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+                onPress={() => navigation.navigate("Calendar")}
+              >
+                <Text style={styles.buttonText}>Calendar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </ImageBackground>
   );
 }

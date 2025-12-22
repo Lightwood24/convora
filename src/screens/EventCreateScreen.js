@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { auth, db } from "../services/firebase";
 import { doc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import background from  "../../assets/pictures/background.jpg"
 import styles from "../style/EventCreateScreen.style";
 
 const TEMPLATE_OPTIONS = [
@@ -255,117 +256,123 @@ export default function EventCreateScreen() {
   );
 
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      keyboardShouldPersistTaps="handled"
-      keyboardDismissMode="on-drag"
-      style={styles.container}
+    <ImageBackground
+      source={background}
+      style={styles.background}
+      resizeMode="cover"
     >
-      <View style={styles.content}>
-        {/* HEADER */}
-        <View style={styles.headerSection}>
-          <View style={styles.header}>
-            <Text style={styles.screenTitle}>Plan your event</Text>
+      <KeyboardAwareScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        style={styles.container}
+      >
+        <View style={styles.content}>
+          {/* HEADER */}
+          <View style={styles.headerSection}>
+            <View style={styles.header}>
+              <Text style={styles.screenTitle}>Plan your event</Text>
+            </View>
           </View>
-        </View>
 
-        {/* BODY */}
-        <View style={styles.bodySection}>
-          {/* INVITE CARD */}
-          <View style={styles.card}>
-            <View style={styles.templateContainer}>
-              <TouchableOpacity
-                style={styles.templateBar}
-                onPress={() => setTemplatesOpen((prev) => !prev)}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.templateText}>{selectedTemplate.label}</Text>
-                <Text style={styles.templateChevron}>{templatesOpen ? "▴" : "▾"}</Text>
-              </TouchableOpacity>
+          {/* BODY */}
+          <View style={styles.bodySection}>
+            {/* INVITE CARD */}
+            <View style={styles.card}>
+              <View style={styles.templateContainer}>
+                <TouchableOpacity
+                  style={styles.templateBar}
+                  onPress={() => setTemplatesOpen((prev) => !prev)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.templateText}>{selectedTemplate.label}</Text>
+                  <Text style={styles.templateChevron}>{templatesOpen ? "▴" : "▾"}</Text>
+                </TouchableOpacity>
 
-              {templatesOpen && (
-                <View style={styles.templateListOverlay}>
-                  <KeyboardAwareScrollView
-                    style={styles.templateListScroll}
-                    contentContainerStyle={styles.templateList}
-                    showsVerticalScrollIndicator={false}
-                  >
-                    {TEMPLATE_OPTIONS.map((tpl) => (
-                      <TouchableOpacity
-                        key={tpl.id}
-                        style={[
-                          styles.templateItem,
-                          tpl.id === selectedTemplateId && styles.templateItemSelected,
-                        ]}
-                        onPress={() => handleSelectTemplate(tpl.id)}
-                        activeOpacity={0.9}
-                      >
-                        <Text
+                {templatesOpen && (
+                  <View style={styles.templateListOverlay}>
+                    <KeyboardAwareScrollView
+                      style={styles.templateListScroll}
+                      contentContainerStyle={styles.templateList}
+                      showsVerticalScrollIndicator={false}
+                    >
+                      {TEMPLATE_OPTIONS.map((tpl) => (
+                        <TouchableOpacity
+                          key={tpl.id}
                           style={[
-                            styles.templateItemText,
-                            tpl.id === selectedTemplateId && styles.templateItemTextSelected,
+                            styles.templateItem,
+                            tpl.id === selectedTemplateId && styles.templateItemSelected,
                           ]}
+                          onPress={() => handleSelectTemplate(tpl.id)}
+                          activeOpacity={0.9}
                         >
-                          {tpl.label}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </KeyboardAwareScrollView>
-                </View>
-              )}
+                          <Text
+                            style={[
+                              styles.templateItemText,
+                              tpl.id === selectedTemplateId && styles.templateItemTextSelected,
+                            ]}
+                          >
+                            {tpl.label}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </KeyboardAwareScrollView>
+                  </View>
+                )}
+              </View>
+
+              <ImageBackground
+                source={selectedBg}
+                style={styles.cardInnerBg}
+                imageStyle={styles.cardInnerBgImage}
+              >
+                <View style={styles.cardInnerOverlay}>{renderCardForm()}</View>
+              </ImageBackground>
             </View>
 
-            <ImageBackground
-              source={selectedBg}
-              style={styles.cardInnerBg}
-              imageStyle={styles.cardInnerBgImage}
-            >
-              <View style={styles.cardInnerOverlay}>{renderCardForm()}</View>
-            </ImageBackground>
+            {/* ACTION ROW */}
+            <View style={styles.primaryActionsRow}>
+              <TouchableOpacity style={[styles.button, styles.discardButton]} onPress={handleDiscard}>
+                <Text style={styles.buttonText}>Discard</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.button, styles.saveAsDraftButton]} onPress={handleSave}>
+                <Text style={styles.buttonText}>Save as Draft</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={[styles.button, styles.shareButton]} onPress={handleShare}>
+                <Text style={styles.buttonText}>Share</Text>
+              </TouchableOpacity>
+            </View>
           </View>
 
-          {/* ACTION ROW */}
-          <View style={styles.primaryActionsRow}>
-            <TouchableOpacity style={[styles.button, styles.discardButton]} onPress={handleDiscard}>
-              <Text style={styles.buttonText}>Discard</Text>
-            </TouchableOpacity>
+          {/* FOOTER */}
+          <View style={styles.footerSection}>
+            <View style={styles.naviActionsRow}>
+              <TouchableOpacity
+                style={[styles.button, styles.naviButton, styles.actionBtn]}
+                onPress={() => goToTab("Profile")}
+              >
+                <Text style={styles.buttonText}>Profile</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.button, styles.saveAsDraftButton]} onPress={handleSave}>
-              <Text style={styles.buttonText}>Save as Draft</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.naviButton, styles.actionBtn]}
+                onPress={() => goToTab("Home")}
+              >
+                <Text style={styles.buttonText}>Home</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.button, styles.shareButton]} onPress={handleShare}>
-              <Text style={styles.buttonText}>Share</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* FOOTER */}
-        <View style={styles.footerSection}>
-          <View style={styles.naviActionsRow}>
-            <TouchableOpacity
-              style={[styles.button, styles.naviButton, styles.actionBtn]}
-              onPress={() => goToTab("Profile")}
-            >
-              <Text style={styles.buttonText}>Profile</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.button, styles.naviButton, styles.actionBtn]}
-              onPress={() => goToTab("Home")}
-            >
-              <Text style={styles.buttonText}>Home</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.button, styles.naviButton, styles.actionBtn]}
-              onPress={() => goToTab("Calendar")}
-            >
-              <Text style={styles.buttonText}>Calendar</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.naviButton, styles.actionBtn]}
+                onPress={() => goToTab("Calendar")}
+              >
+                <Text style={styles.buttonText}>Calendar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    </KeyboardAwareScrollView>
+      </KeyboardAwareScrollView>
+    </ImageBackground>
   );
 }

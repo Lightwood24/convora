@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Image, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Image, ImageBackground, Alert } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
@@ -8,6 +8,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject, } from "fir
 import { doc, getDoc, setDoc, serverTimestamp, deleteDoc, collection, query, where, getDocs, } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
 import basePic from "../../assets/pictures/base_prof_pic.jpg";
+import background from  "../../assets/pictures/background.jpg"
 import styles from "../style/ProfileScreen.style";
 
 export default function ProfileScreen() {
@@ -320,172 +321,178 @@ export default function ProfileScreen() {
   };
 
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      keyboardShouldPersistTaps="handled"
-      keyboardDismissMode="on-drag"
-      style={styles.container}
+    <ImageBackground
+      source={background}
+      style={styles.background}
+      resizeMode="cover"
     >
-      <View style={styles.content}>
-        {/* HEADER */}
-        <View style={styles.headerSection}>
-          <View style={styles.header}>
-            <Text style={styles.screenTitle}>Profile Screen</Text>
-          </View>
-          <View>
-            <Text style={styles.subtitle}>
-              Tap on 'Edit' to update your name, phone number or to change your
-              profile picture.
-            </Text>
-          </View>
-        </View>
-
-        {/* BODY */}
-        <View style={styles.bodySection}>
-          <View style={styles.card}>
-            {/* Avatar */}
-            <TouchableOpacity
-              onPress={pickAvatar}
-              activeOpacity={isEditing ? 0.85 : 1}
-              style={styles.avatarBtn}
-              disabled={!isEditing}
-            >
-              <View style={styles.avatar}>
-                {avatarUri ? (
-                  <Image source={{ uri: avatarUri }} style={styles.avatarImg} />
-                ) : (
-                  <Image source={basePic} style={styles.avatarImg} />
-                )}
-              </View>
-
-              {isEditing && (
-                <Text style={styles.changePhotoText}>
-                  Choose a new profile picture
-                </Text>
-              )}
-            </TouchableOpacity>
-
-            {/* Form */}
-            <View style={styles.cardBody}>
-              <TextInput
-                style={[
-                  styles.input,
-                  isEditing && styles.disabledInput
-                ]}
-                placeholder="Email"
-                placeholderTextColor="#9CA3AF"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={email}
-                editable={false}
-              />
-
-              <TextInput
-                style={styles.input}
-                placeholder="Username"
-                placeholderTextColor="#9CA3AF"
-                autoCapitalize="none"
-                value={username}
-                onChangeText={handleUsernameChange}
-                editable={isEditing}
-                selectTextOnFocus={isEditing}
-              />
-              {usernameError ? (
-                <Text style={styles.errorText}>{usernameError}</Text>
-              ) : null}
-
-              <TextInput
-                style={styles.input}
-                placeholder="Phone number"
-                placeholderTextColor="#9CA3AF"
-                keyboardType="phone-pad"
-                value={phone}
-                onChangeText={handlePhoneChange}
-                editable={isEditing}
-                selectTextOnFocus={isEditing}
-              />
-              {phoneError ? (
-                <Text style={styles.errorText}>{phoneError}</Text>
-              ) : null}
-
-              {isEditing ? (
-                <View style={styles.actionsRowWithoutMarginChange}>
-                  <TouchableOpacity
-                    style={[styles.button, styles.buttonDanger, styles.actionBtn]}
-                    onPress={onCancelEdit}
-                  >
-                    <Text style={styles.buttonText}>Cancel</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[
-                      styles.button,
-                      primaryDisabled && styles.buttonDisabled,
-                      styles.actionBtn,
-                    ]}
-                    disabled={primaryDisabled}
-                    onPress={onSave}
-                  >
-                    {saving ? (
-                      <ActivityIndicator color="#fff" />
-                    ) : (
-                      <Text style={styles.buttonText}>Save</Text>
-                    )}
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                <TouchableOpacity
-                  style={[styles.button]}
-                  onPress={() => setIsEditing(true)}
-                >
-                  <Text style={styles.buttonText}>Edit</Text>
-                </TouchableOpacity>
-              )}
+      <KeyboardAwareScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        style={styles.container}
+      >
+        <View style={styles.content}>
+          {/* HEADER */}
+          <View style={styles.headerSection}>
+            <View style={styles.header}>
+              <Text style={styles.screenTitle}>Profile Screen</Text>
+            </View>
+            <View>
+              <Text style={styles.subtitle}>
+                Tap on 'Edit' to update your name, phone number or to change your
+                profile picture.
+              </Text>
             </View>
           </View>
 
-          {/* Secondary actions */}
-          <View style={styles.actionsRow}>
-            <TouchableOpacity
-              style={[styles.button, styles.buttonSecondary, styles.actionBtn]}
-              onPress={onSignOut}
-            >
-              <Text style={styles.buttonText}>Sign out</Text>
-            </TouchableOpacity>
+          {/* BODY */}
+          <View style={styles.bodySection}>
+            <View style={styles.card}>
+              {/* Avatar */}
+              <TouchableOpacity
+                onPress={pickAvatar}
+                activeOpacity={isEditing ? 0.85 : 1}
+                style={styles.avatarBtn}
+                disabled={!isEditing}
+              >
+                <View style={styles.avatar}>
+                  {avatarUri ? (
+                    <Image source={{ uri: avatarUri }} style={styles.avatarImg} />
+                  ) : (
+                    <Image source={basePic} style={styles.avatarImg} />
+                  )}
+                </View>
 
-            <TouchableOpacity
-              style={[styles.button, styles.buttonDanger, styles.actionBtn]}
-              onPress={onDeleteAccount}
-            >
-              <Text style={styles.buttonText}>Delete account</Text>
-            </TouchableOpacity>
+                {isEditing && (
+                  <Text style={styles.changePhotoText}>
+                    Choose a new profile picture
+                  </Text>
+                )}
+              </TouchableOpacity>
+
+              {/* Form */}
+              <View style={styles.cardBody}>
+                <TextInput
+                  style={[
+                    styles.input,
+                    isEditing && styles.disabledInput
+                  ]}
+                  placeholder="Email"
+                  placeholderTextColor="#9CA3AF"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  value={email}
+                  editable={false}
+                />
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Username"
+                  placeholderTextColor="#9CA3AF"
+                  autoCapitalize="none"
+                  value={username}
+                  onChangeText={handleUsernameChange}
+                  editable={isEditing}
+                  selectTextOnFocus={isEditing}
+                />
+                {usernameError ? (
+                  <Text style={styles.errorText}>{usernameError}</Text>
+                ) : null}
+
+                <TextInput
+                  style={styles.input}
+                  placeholder="Phone number"
+                  placeholderTextColor="#9CA3AF"
+                  keyboardType="phone-pad"
+                  value={phone}
+                  onChangeText={handlePhoneChange}
+                  editable={isEditing}
+                  selectTextOnFocus={isEditing}
+                />
+                {phoneError ? (
+                  <Text style={styles.errorText}>{phoneError}</Text>
+                ) : null}
+
+                {isEditing ? (
+                  <View style={styles.actionsRowWithoutMarginChange}>
+                    <TouchableOpacity
+                      style={[styles.button, styles.buttonDanger, styles.actionBtn]}
+                      onPress={onCancelEdit}
+                    >
+                      <Text style={styles.buttonText}>Cancel</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[
+                        styles.button,
+                        primaryDisabled && styles.buttonDisabled,
+                        styles.actionBtn,
+                      ]}
+                      disabled={primaryDisabled}
+                      onPress={onSave}
+                    >
+                      {saving ? (
+                        <ActivityIndicator color="#fff" />
+                      ) : (
+                        <Text style={styles.buttonText}>Save</Text>
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={[styles.button]}
+                    onPress={() => setIsEditing(true)}
+                  >
+                    <Text style={styles.buttonText}>Edit</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+
+            {/* Secondary actions */}
+            <View style={styles.actionsRow}>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonSecondary, styles.actionBtn]}
+                onPress={onSignOut}
+              >
+                <Text style={styles.buttonText}>Sign out</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.button, styles.buttonDanger, styles.actionBtn]}
+                onPress={onDeleteAccount}
+              >
+                <Text style={styles.buttonText}>Delete account</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* FOOTER */}
+          <View style={styles.footerSection}>
+            <View style={styles.actionsRow}>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+                onPress={() => navigation.navigate("Profile")}
+              >
+                <Text style={styles.buttonText}>Profile</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+                onPress={() => navigation.navigate("Home")}
+              >
+                <Text style={styles.buttonText}>Home</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonNavi, styles.actionBtn]}
+                onPress={() => navigation.navigate("Calendar")}
+              >
+                <Text style={styles.buttonText}>Calendar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-
-        {/* FOOTER */}
-        <View style={styles.footerSection}>
-          <View style={styles.actionsRow}>
-            <TouchableOpacity
-              style={[styles.button, styles.buttonNavi, styles.actionBtn]}
-              onPress={() => navigation.navigate("Profile")}
-            >
-              <Text style={styles.buttonText}>Profile</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.buttonNavi, styles.actionBtn]}
-              onPress={() => navigation.navigate("Home")}
-            >
-              <Text style={styles.buttonText}>Home</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.buttonNavi, styles.actionBtn]}
-              onPress={() => navigation.navigate("Calendar")}
-            >
-              <Text style={styles.buttonText}>Calendar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </KeyboardAwareScrollView>
+      </KeyboardAwareScrollView>
+    </ImageBackground>
   );
 }

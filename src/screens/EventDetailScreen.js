@@ -151,6 +151,7 @@ export default function EventDetailScreen() {
                 </Text>
               </TouchableOpacity>
             </View>
+            
           </KeyboardAwareScrollView>
         </ImageBackground>
   
