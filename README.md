@@ -70,9 +70,17 @@ Convora/
 ├─ README.md 
 └─ tsconfig.json
 ```
-Only implemented screens are listed
 
 ## ✨ Implemented Features
+### 📅 Event System
+- Create events with:
+  - title, description, date, time & location
+  - visual template selection
+- Multiple event templates:
+  - custom background images
+  - template-specific font families
+- Automatic owner binding (ownerId, username)
+
 ### 🔐 Authentication System
 - Email + password login
 - Registration with:
@@ -93,7 +101,8 @@ Only implemented screens are listed
 - Sign out and navigation reset
 
 ### 🌐 Navigation
-- Stack navigation for Login → AppTabs
+- Stack-based navigation for event flows
+- Custom screen transition animations
 - Bottom tabs (hidden UI) for:
   - Profile Screen
   - Home Screen
@@ -101,15 +110,16 @@ Only implemented screens are listed
 
 ### 🎨 UI / UX
 - Centralized theme system
-- Custom typography & color palette
+  - Custom typography & color palette
+  - Centralized spacing, radius, and shadows
 - Card-style expanding sections
+- Shared background imagery across screens
 - Clean iOS-focused design
 
 ## 📜 Changelog
-- v1.4.0: Added full validation in registration and in profile editing, improved styling consistency
-- v1.3.0: Added navigation between main screens, implemented a globan theme
-- v1.2.0: Added user registration / login logic, implemented profile edit / delete and sign out option
-- v1.1.0: Initial login and profile screen structure
+- v1.4.0: Added Home screen with real-time event listing, unified background imagery across screens, implemented Event Detail screen with map integration and error handling
+- v1.3.0: Implemented full event flow (create → list → detail), added event templates with dynamic backgrounds and fonts, integrated Firestore-backed event loading, improved navigation animations
+- v2.0.0: Added user registration / login logic, implemented profile edit / delete and sign out option, added navigation between main screens, implemented a global theme
 - v1.0.0: Initial Expo project setup, added base skeleton
 
 ### 👨‍💻 Author
