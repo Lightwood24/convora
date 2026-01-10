@@ -6,6 +6,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { auth, db } from "../services/firebase";
 import { doc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
 import background from  "../../assets/pictures/background.jpg"
+import ShareDialog from "./ShareDialog";
 import styles from "../style/EventCreateScreen.style";
 
 const TEMPLATE_OPTIONS = [
@@ -34,6 +35,9 @@ export default function EventCreateScreen() {
   const [eventAddress, setEventAddress] = useState("");
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  // Share dialog state
+  const [isShareOpen, setShareOpen] = useState(false);
 
   const selectedTemplate = useMemo(() => {
     return TEMPLATE_OPTIONS.find((t) => t.id === selectedTemplateId) ?? TEMPLATE_OPTIONS[0];
@@ -170,9 +174,9 @@ export default function EventCreateScreen() {
     }
   };
 
-  const handleShare = async () => {
+  const handleShare = () => {
     if (!validateForm()) return;
-    alert("Share action not implemented yet.");
+    setShareOpen(true);
   };
 
   // Event kártya
@@ -183,14 +187,24 @@ export default function EventCreateScreen() {
         <View style={styles.dateBox}>
           <TouchableOpacity onPress={showDatePicker}>
             <Text
-              style={[styles.cardInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat"
-                ? 24 : 15 }]}
+              style={[
+                styles.cardInput,
+                {
+                  fontFamily: cardFontFamily,
+                  fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat" ? 24 : 15,
+                },
+              ]}
             >
               {eventDate || "Date"}
             </Text>
             <Text
-              style={[styles.cardInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat"
-                ? 24 : 15 }]}            
+              style={[
+                styles.cardInput,
+                {
+                  fontFamily: cardFontFamily,
+                  fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat" ? 24 : 15,
+                },
+              ]}
             >
               {eventTime || "Time"}
             </Text>
@@ -213,8 +227,13 @@ export default function EventCreateScreen() {
               onChangeText={setEventTitle}
               placeholder="Event name"
               placeholderTextColor={PLACEHOLDER_COLOR}
-              style={[styles.cardInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat"
-                ? 24 : 15 }]}
+              style={[
+                styles.cardInput,
+                {
+                  fontFamily: cardFontFamily,
+                  fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat" ? 24 : 15,
+                },
+              ]}
             />
           </View>
 
@@ -226,8 +245,13 @@ export default function EventCreateScreen() {
               selectTextOnFocus={false}
               placeholder="Username"
               placeholderTextColor={PLACEHOLDER_COLOR}
-              style={[styles.cardInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat"
-                ? 24 : 15 }]}
+              style={[
+                styles.cardInput,
+                {
+                  fontFamily: cardFontFamily,
+                  fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat" ? 24 : 15,
+                },
+              ]}
             />
           </View>
         </View>
@@ -241,8 +265,13 @@ export default function EventCreateScreen() {
           placeholder="Event description"
           placeholderTextColor={PLACEHOLDER_COLOR}
           multiline
-          style={[styles.cardInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat"
-            ? 24 : 15 }]}
+          style={[
+            styles.cardInput,
+            {
+              fontFamily: cardFontFamily,
+              fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat" ? 24 : 15,
+            },
+          ]}
         />
       </View>
 
@@ -253,8 +282,13 @@ export default function EventCreateScreen() {
           onChangeText={setEventAddress}
           placeholder="Location (city, street, number)"
           placeholderTextColor={PLACEHOLDER_COLOR}
-          style={[styles.cardInput, { fontFamily: cardFontFamily, fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat"
-            ? 24 : 15 }]}
+          style={[
+            styles.cardInput,
+            {
+              fontFamily: cardFontFamily,
+              fontSize: cardFontFamily === "Tangerine" || cardFontFamily === "Caveat" ? 24 : 15,
+            },
+          ]}
         />
       </View>
     </View>
@@ -380,6 +414,17 @@ export default function EventCreateScreen() {
           </View>
         </View>
       </KeyboardAwareScrollView>
+
+      {/* SHARE POPUP*/}
+      <ShareDialog
+        visible={isShareOpen}
+        onClose={() => setShareOpen(false)}
+        title="Share your event"
+        primaryLabel="Send Invite"
+        onPrimaryPress={() => setShareOpen(false)}
+        secondaryLabel="Cancel"
+      >
+      </ShareDialog>
     </ImageBackground>
   );
 }
