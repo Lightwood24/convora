@@ -4,10 +4,10 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useNavigation } from "@react-navigation/native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { auth, db } from "../services/firebase";
-import { doc, getDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
-import background from  "../../assets/pictures/background.jpg"
-import ShareDialog from "./ShareDialog";
+import { doc, getDoc, collection, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
+import background from "../../assets/pictures/background.jpg";
 import styles from "../style/EventCreateScreen.style";
+import ShareDialog from "./ShareDialog";
 
 const TEMPLATE_OPTIONS = [
   { id: "grim", label: "Grim card", image: require("../../assets/pictures/grim_card.png"), font: "Cinzel" },
@@ -38,6 +38,7 @@ export default function EventCreateScreen() {
 
   // Share dialog state
   const [isShareOpen, setShareOpen] = useState(false);
+  const [savedInviteId, setSavedInviteId] = useState(null);
 
   const selectedTemplate = useMemo(() => {
     return TEMPLATE_OPTIONS.find((t) => t.id === selectedTemplateId) ?? TEMPLATE_OPTIONS[0];
@@ -130,6 +131,7 @@ export default function EventCreateScreen() {
     setEventTitle("");
     setEventDescription("");
     setEventAddress("");
+    setSavedInviteId(null);
   };
 
   // == ACTION ROW GOMBOK ==
@@ -138,7 +140,7 @@ export default function EventCreateScreen() {
     goToTab("Home");
   };
 
-  const handleSave = async () => {
+  const handleSaveAndShare = async () => {
     if (!validateForm()) return;
 
     const user = auth.currentUser;
@@ -148,9 +150,10 @@ export default function EventCreateScreen() {
     }
 
     try {
+      // 1) Create event
       const startAt = new Date(`${eventDate}T${eventTime}:00`);
 
-      const docRef = await addDoc(collection(db, "events"), {
+      const eventRef = await addDoc(collection(db, "events"), {
         title: eventTitle.trim(),
         description: eventDescription.trim(),
         location: eventAddress.trim(),
@@ -163,20 +166,27 @@ export default function EventCreateScreen() {
         updatedAt: serverTimestamp(),
       });
 
-      console.log("Event created with ID:", docRef.id);
-      alert("Event saved.");
+      const eventId = eventRef.id;
 
-      resetForm();
-      goToTab("Home");
+      // 2) Create invite
+      // Expiry: 48 hours from now
+      const expiresAt = Timestamp.fromDate(new Date(Date.now() + 48 * 60 * 60 * 1000));
+      const inviteRef = await addDoc(collection(db, "invites"), {
+        eventId,
+        createdBy: user.uid,
+        status: "pending",
+        createdAt: serverTimestamp(),
+        expiresAt,
+        usedBy: null,
+        usedAt: null,
+      });
+
+      setSavedInviteId(inviteRef.id);
+      setShareOpen(true);
     } catch (error) {
-      console.error("Error saving event:", error);
+      console.error("Error saving event/invite:", error);
       alert("Could not save event. Please try again.");
     }
-  };
-
-  const handleShare = () => {
-    if (!validateForm()) return;
-    setShareOpen(true);
   };
 
   // Event kártya
@@ -376,15 +386,10 @@ export default function EventCreateScreen() {
                 <Text style={styles.buttonText}>Discard</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.button, styles.saveAsDraftButton]} onPress={handleSave}>
-                <Text style={styles.buttonText}>Save as Draft</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={[styles.button, styles.shareButton]} onPress={handleShare}>
-                <Text style={styles.buttonText}>Share</Text>
+              <TouchableOpacity style={[styles.button, styles.shareButton]} onPress={handleSaveAndShare}>
+                <Text style={styles.buttonText}>Save & Share</Text>
               </TouchableOpacity>
             </View>
-
           </View>
 
           {/* FOOTER */}
@@ -415,16 +420,14 @@ export default function EventCreateScreen() {
         </View>
       </KeyboardAwareScrollView>
 
-      {/* SHARE POPUP*/}
+      {/* SHARE DIALOG*/}
       <ShareDialog
         visible={isShareOpen}
         onClose={() => setShareOpen(false)}
         title="Share your event"
-        primaryLabel="Send Invite"
-        onPrimaryPress={() => setShareOpen(false)}
         secondaryLabel="Cancel"
-      >
-      </ShareDialog>
+        inviteId={savedInviteId}
+      />
     </ImageBackground>
   );
 }

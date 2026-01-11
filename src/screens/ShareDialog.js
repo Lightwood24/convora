@@ -1,5 +1,6 @@
-import React from "react";
-import { Modal, View, Text, TextInput, TouchableOpacity, Image, Pressable, Platform, KeyboardAvoidingView, ScrollView, } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Modal, View, Text, TouchableOpacity, Image, Pressable, Platform, KeyboardAvoidingView, ScrollView, } from "react-native";
+import * as Clipboard from "expo-clipboard";
 import styles from "../style/ShareDialog.style";
 import discord from "../../assets/icons/discord_icon.png";
 import messenger from "../../assets/icons/messenger_icon.png";
@@ -7,12 +8,35 @@ import whatsapp from "../../assets/icons/whatsapp_icon.png";
 import twitter from "../../assets/icons/twitter_icon.png";
 import gmail from "../../assets/icons/gmail_icon.png";
 
+// TODO: replace with real hosting domain later
+const LANDING_BASE_URL = "https://example.com";
+
 export default function ShareDialog({
   visible,
   onClose,
   title = "Share your event",
   secondaryLabel = "Cancel",
+  inviteId,
 }) {
+  const [landingLink, setLandingLink] = useState("");
+
+  useEffect(() => {
+    if (!visible) return;
+
+    if (!inviteId) {
+      setLandingLink("");
+      return;
+    }
+
+    setLandingLink(`${LANDING_BASE_URL}/i/${inviteId}`);
+  }, [visible, inviteId]);
+
+  const handleCopyLink = async () => {
+    if (!landingLink) return;
+    await Clipboard.setStringAsync(landingLink);
+    alert("Link copied.");
+  };
+
   return (
     <Modal
       visible={visible}
@@ -43,35 +67,45 @@ export default function ShareDialog({
                 contentContainerStyle={styles.bodyContent}
                 keyboardShouldPersistTaps="handled"
               >
-                <Text style={styles.bodyTitle}>
-                  Choose a method to share your event:
-                </Text>
+                <Text style={styles.bodyTitle}>Choose a method to share your event:</Text>
+
                 <Text style={styles.bodyText}>
-                  Copy the following link and share it with your friends...
+                  Tap on the following link to copy it and share it with your friends...
                 </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Event link"
-                  placeholderTextColor="#9CA3AF"
-                  editable={false}
-                />
-                <Text style={styles.bodyText}>
-                  ...or choose the method below:
-                </Text>
+
+                <Pressable
+                  onPress={handleCopyLink}
+                  style={({ pressed }) => [
+                    styles.inputPressable,
+                    pressed && styles.inputPressed,
+                  ]}
+                >
+                  <Text
+                    style={styles.inputText}
+                    numberOfLines={1}
+                    ellipsizeMode="middle"
+                  >
+                    {landingLink || "Event link"}
+                  </Text>
+                </Pressable>
+
+                <Text style={styles.bodyText}>...or choose one of the methods below:</Text>
+
+                {/* TODO: real share flows later */}
                 <View style={styles.actionsRow}>
-                  <TouchableOpacity style={styles.actionBtn}>
+                  <TouchableOpacity style={styles.actionBtn} onPress={() => {}}>
                     <Image source={gmail} style={styles.actionBtnIcon} />
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.actionBtn}>
+                  <TouchableOpacity style={styles.actionBtn} onPress={() => {}}>
                     <Image source={messenger} style={styles.actionBtnIcon} />
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.actionBtn}>
+                  <TouchableOpacity style={styles.actionBtn} onPress={() => {}}>
                     <Image source={whatsapp} style={styles.actionBtnIcon} />
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.actionBtn}>
+                  <TouchableOpacity style={styles.actionBtn} onPress={() => {}}>
                     <Image source={twitter} style={styles.actionBtnIcon} />
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.actionBtn}>
+                  <TouchableOpacity style={styles.actionBtn} onPress={() => {}}>
                     <Image source={discord} style={styles.actionBtnIcon} />
                   </TouchableOpacity>
                 </View>

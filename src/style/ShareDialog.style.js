@@ -23,7 +23,7 @@ export default StyleSheet.create({
 
   card: {
     width: "100%",
-    height: 320,
+    height: 330,
     backgroundColor: theme.colors.secondaryBackground,
     borderRadius: theme.radius.xl,
     borderWidth: 1,
@@ -80,15 +80,23 @@ export default StyleSheet.create({
     ...theme.typography.small,
     color: theme.colors.textSecondary,
   },
-  input: {
-    backgroundColor: theme.colors.inputBg,
-    borderRadius: theme.radius.md,
-    paddingHorizontal: theme.spacing.sm,
-    height: 44,
-    color: theme.colors.textPrimary,
+  inputPressable: {
+    width: "100%",
+    minHeight: 48,
     borderWidth: 1,
-    borderColor: theme.colors.inputBorder,
-    fontFamily: "Anta", 
+    borderColor: theme.colors.borderMuted,
+    borderRadius: theme.radius?.lg ?? 12,
+    paddingHorizontal: theme.spacing.lg,
+    justifyContent: "center",
+    backgroundColor: theme.colors.secondaryBackground,
+  },
+  inputPressed: {
+    backgroundColor: theme.colors.backgroundOpaque25,
+  },
+  inputText: {
+    color: theme.colors.textPrimary,
+    fontFamily: "Anta",
+    ...theme.typography.small,
   },
   actionsRow: {
     width: "86%",              
