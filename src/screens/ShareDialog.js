@@ -1,6 +1,11 @@
 import React from "react";
-import { Modal, View, Text, TextInput, TouchableOpacity, Pressable, Platform, KeyboardAvoidingView, ScrollView, } from "react-native";
+import { Modal, View, Text, TextInput, TouchableOpacity, Image, Pressable, Platform, KeyboardAvoidingView, ScrollView, } from "react-native";
 import styles from "../style/ShareDialog.style";
+import discord from "../../assets/icons/discord_icon.png";
+import messenger from "../../assets/icons/messenger_icon.png";
+import whatsapp from "../../assets/icons/whatsapp_icon.png";
+import twitter from "../../assets/icons/twitter_icon.png";
+import gmail from "../../assets/icons/gmail_icon.png";
 
 export default function ShareDialog({
   visible,
@@ -55,19 +60,19 @@ export default function ShareDialog({
                 </Text>
                 <View style={styles.actionsRow}>
                   <TouchableOpacity style={styles.actionBtn}>
-                    <Text style={styles.actionBtnText}>E</Text>
+                    <Image source={gmail} style={styles.actionBtnIcon} />
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.actionBtn}>
-                    <Text style={styles.actionBtnText}>M</Text>
+                    <Image source={messenger} style={styles.actionBtnIcon} />
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.actionBtn}>
-                    <Text style={styles.actionBtnText}>W</Text>
+                    <Image source={whatsapp} style={styles.actionBtnIcon} />
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.actionBtn}>
-                    <Text style={styles.actionBtnText}>T</Text>
+                    <Image source={twitter} style={styles.actionBtnIcon} />
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.actionBtn}>
-                    <Text style={styles.actionBtnText}>D</Text>
+                    <Image source={discord} style={styles.actionBtnIcon} />
                   </TouchableOpacity>
                 </View>
               </ScrollView>

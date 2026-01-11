@@ -101,9 +101,10 @@ export default StyleSheet.create({
     flex: 1,
     alignItems: "center",
   },
-  actionBtnText: {
-    ...theme.typography.base,
-    color: theme.colors.textPrimary,
+  actionBtnIcon: {
+    width: 25,
+    height: 25,
+    tintColor: theme.colors.textPrimary,
   },
   
   // == FOOTER ==
