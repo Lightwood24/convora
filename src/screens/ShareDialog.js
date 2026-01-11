@@ -15,7 +15,6 @@ export default function ShareDialog({
   visible,
   onClose,
   title = "Share your event",
-  secondaryLabel = "Cancel",
   inviteId,
 }) {
   const [landingLink, setLandingLink] = useState("");
@@ -113,8 +112,8 @@ export default function ShareDialog({
 
               {/* Footer */}
               <View style={styles.footer}>
-                <Pressable onPress={onClose} style={styles.secondaryBtn}>
-                  <Text style={styles.secondaryBtnText}>{secondaryLabel}</Text>
+                <Pressable onPress={onClose} style={styles.homeBtn}>
+                  <Text style={styles.homeBtnText}>Back to home page</Text>
                 </Pressable>
               </View>
             </View>

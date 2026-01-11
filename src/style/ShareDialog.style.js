@@ -124,29 +124,15 @@ export default StyleSheet.create({
     gap: theme.spacing.md,
     justifyContent: "flex-end",
   },
-
-  secondaryBtn: {
+  homeBtn: {
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.sm,
     borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.secondary,
+    backgroundColor: theme.colors.primaryMuted,
   },
-
-  secondaryBtnText: {
+  homeBtnText: {
     ...theme.typography.base,
     color: theme.colors.textSecondary,
-  },
-
-  primaryBtn: {
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.sm,
-    borderRadius: theme.radius.lg,
-    backgroundColor: theme.colors.primary,
-  },
-
-  primaryBtnText: {
-    ...theme.typography.base,
-    color: theme.colors.textPrimary,
   },
 
 });

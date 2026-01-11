@@ -423,9 +423,11 @@ export default function EventCreateScreen() {
       {/* SHARE DIALOG*/}
       <ShareDialog
         visible={isShareOpen}
-        onClose={() => setShareOpen(false)}
+        onClose={() => {
+          setShareOpen(false);
+          goToTab("Home");
+        }}
         title="Share your event"
-        secondaryLabel="Cancel"
         inviteId={savedInviteId}
       />
     </ImageBackground>
