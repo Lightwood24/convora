@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Modal, View, Text, TouchableOpacity, Image, Pressable, Platform, KeyboardAvoidingView, ScrollView, } from "react-native";
+import { Modal, View, Text, TouchableOpacity, Image, Pressable, Platform, KeyboardAvoidingView, ScrollView, Share, } from "react-native";
 import * as Clipboard from "expo-clipboard";
+import * as Linking from "expo-linking";
 import styles from "../style/ShareDialog.style";
 import discord from "../../assets/icons/discord_icon.png";
 import messenger from "../../assets/icons/messenger_icon.png";
@@ -34,6 +35,16 @@ export default function ShareDialog({
     await Clipboard.setStringAsync(landingLink);
     alert("Link copied.");
   };
+
+  const handleShare = async () => {
+    if (!landingLink) return;
+  
+    await Share.share({
+      message: `You're invited!\n\n${landingLink}`,
+      url: landingLink,
+    });
+  };
+  
 
   return (
     <Modal
@@ -87,32 +98,17 @@ export default function ShareDialog({
                   </Text>
                 </Pressable>
 
-                <Text style={styles.bodyText}>...or choose one of the methods below:</Text>
-
-                {/* TODO: real share flows later */}
-                <View style={styles.actionsRow}>
-                  <TouchableOpacity style={styles.actionBtn} onPress={() => {}}>
-                    <Image source={gmail} style={styles.actionBtnIcon} />
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.actionBtn} onPress={() => {}}>
-                    <Image source={messenger} style={styles.actionBtnIcon} />
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.actionBtn} onPress={() => {}}>
-                    <Image source={whatsapp} style={styles.actionBtnIcon} />
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.actionBtn} onPress={() => {}}>
-                    <Image source={twitter} style={styles.actionBtnIcon} />
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.actionBtn} onPress={() => {}}>
-                    <Image source={discord} style={styles.actionBtnIcon} />
-                  </TouchableOpacity>
-                </View>
+                <Text style={styles.bodyText}>...or tap on share, to choose other sharing metholds!</Text>
               </ScrollView>
 
               {/* Footer */}
               <View style={styles.footer}>
-                <Pressable onPress={onClose} style={styles.homeBtn}>
-                  <Text style={styles.homeBtnText}>Back to home page</Text>
+                <Pressable onPress={onClose} style={styles.secondaryBtn}>
+                  <Text style={styles.footerBtnText}>Back to home</Text>
+                </Pressable>
+
+                <Pressable onPress={handleShare} style={styles.primaryBtn}>
+                  <Text style={styles.footerBtnText}>Share your event</Text>
                 </Pressable>
               </View>
             </View>

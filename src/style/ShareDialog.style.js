@@ -23,7 +23,7 @@ export default StyleSheet.create({
 
   card: {
     width: "100%",
-    height: 330,
+    height: 300,
     backgroundColor: theme.colors.secondaryBackground,
     borderRadius: theme.radius.xl,
     borderWidth: 1,
@@ -124,13 +124,19 @@ export default StyleSheet.create({
     gap: theme.spacing.md,
     justifyContent: "flex-end",
   },
-  homeBtn: {
+  primaryBtn: {
     paddingHorizontal: theme.spacing.lg,
     paddingVertical: theme.spacing.sm,
     borderRadius: theme.radius.lg,
     backgroundColor: theme.colors.primaryMuted,
   },
-  homeBtnText: {
+  secondaryBtn: {
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.sm,
+    borderRadius: theme.radius.lg,
+    backgroundColor: theme.colors.secondary,
+  },
+  footerBtnText: {
     ...theme.typography.base,
     color: theme.colors.textSecondary,
   },
