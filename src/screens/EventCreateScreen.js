@@ -1,10 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
+import ViewShot from "react-native-view-shot";
+import { storage } from "../services/firebase";
+import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage"
 import { Text, TextInput, View, TouchableOpacity, ImageBackground } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { auth, db } from "../services/firebase";
-import { doc, getDoc, collection, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
+import { doc, getDoc, collection, addDoc, updateDoc, serverTimestamp, Timestamp } from "firebase/firestore";
 import background from "../../assets/pictures/background.jpg";
 import styles from "../style/EventCreateScreen.style";
 import ShareDialog from "./ShareDialog";
@@ -36,9 +39,10 @@ export default function EventCreateScreen() {
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
-  // Share dialog state
   const [isShareOpen, setShareOpen] = useState(false);
   const [savedInviteId, setSavedInviteId] = useState(null);
+
+  const cardShotRef = useRef(null);
 
   const selectedTemplate = useMemo(() => {
     return TEMPLATE_OPTIONS.find((t) => t.id === selectedTemplateId) ?? TEMPLATE_OPTIONS[0];
@@ -66,6 +70,27 @@ export default function EventCreateScreen() {
     setEventDate(dateStr);
     setEventTime(timeStr);
     hideDatePicker();
+  };
+
+  const uploadInviteImageAndGetUrl = async ({ inviteId }) => {
+    if (!cardShotRef.current) throw new Error("cardShotRef not ready");
+  
+    // 1) capture local file uri
+    const uri = await cardShotRef.current.capture();
+  
+    // 2) convert to blob
+    const resp = await fetch(uri);
+    const blob = await resp.blob();
+  
+    // 3) upload to Storage
+    const path = `invites/${inviteId}/invite.jpg`;
+    const fileRef = storageRef(storage, path);
+  
+    await uploadBytes(fileRef, blob, { contentType: "image/jpeg" });
+  
+    // 4) download URL (public via token)
+    const url = await getDownloadURL(fileRef);
+    return url;
   };
 
   // username betöltése az adatbázisból
@@ -150,9 +175,9 @@ export default function EventCreateScreen() {
     }
 
     try {
-      // 1) Create event
       const startAt = new Date(`${eventDate}T${eventTime}:00`);
-
+  
+      // 1) event
       const eventRef = await addDoc(collection(db, "events"), {
         title: eventTitle.trim(),
         description: eventDescription.trim(),
@@ -165,11 +190,10 @@ export default function EventCreateScreen() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
-
+  
       const eventId = eventRef.id;
-
-      // 2) Create invite
-      // Expiry: 48 hours from now
+  
+      // 2) invite
       const expiresAt = Timestamp.fromDate(new Date(Date.now() + 48 * 60 * 60 * 1000));
       const inviteRef = await addDoc(collection(db, "invites"), {
         eventId,
@@ -179,11 +203,21 @@ export default function EventCreateScreen() {
         expiresAt,
         usedBy: null,
         usedAt: null,
-        // TEMP
-        imageUrl: "https://via.placeholder.com/1200x1600.png?text=Invite+image+TODO",
+        imageUrl: null,
       });
-
-      setSavedInviteId(inviteRef.id);
+  
+      const inviteId = inviteRef.id;
+  
+      // 3) generate + upload image
+      const imageUrl = await uploadInviteImageAndGetUrl({ inviteId });
+  
+      // 4) save imageUrl to invite doc
+      await updateDoc(doc(db, "invites", inviteId), {
+        imageUrl,
+      });
+  
+      // 5) open share dialog
+      setSavedInviteId(inviteId);
       setShareOpen(true);
     } catch (error) {
       console.error("Error saving event/invite:", error);
@@ -373,13 +407,18 @@ export default function EventCreateScreen() {
                 )}
               </View>
 
-              <ImageBackground
-                source={selectedBg}
-                style={styles.cardBg}
-                imageStyle={styles.cardBgImage}
+              <ViewShot
+                ref={cardShotRef}
+                options={{ format: "jpg", quality: 0.95 }}
               >
-                <View style={styles.cardOverlay}>{renderCardForm()}</View>
-              </ImageBackground>
+                <ImageBackground
+                  source={selectedBg}
+                  style={styles.cardBg}
+                  imageStyle={styles.cardBgImage}
+                >
+                  <View style={styles.cardOverlay}>{renderCardForm()}</View>
+                </ImageBackground>
+              </ViewShot>
             </View>
 
             {/* ACTION ROW */}
