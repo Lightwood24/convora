@@ -1,89 +1,222 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Convora — Invitation</title>
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.7.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.7.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.7.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.7.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.7.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.7.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.7.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.7.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.7.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.7.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+  <!-- Firebase compat SDK -->
+  <script defer src="/__/firebase/12.7.0/firebase-app-compat.js"></script>
+  <script defer src="/__/firebase/12.7.0/firebase-firestore-compat.js"></script>
+  <script defer src="/__/firebase/init.js"></script>
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#0f1a2e;
+      --text:#ffffff;
+      --muted:rgba(255,255,255,0.75);
+      --border:rgba(255,255,255,0.12);
+      --btn:#152846;
+      --btnText:#fff;
+      --btnDisabled:rgba(255,255,255,0.10);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 800px at 50% 0%, rgba(70,120,255,0.18), transparent 60%),
+                  radial-gradient(900px 600px at 20% 20%, rgba(0,255,200,0.08), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .wrap{
+      width:min(520px, 100%);
+    }
+    .card{
+      background: rgba(15,26,46,0.92);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow:hidden;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.45);
+    }
+    .hero{
+      aspect-ratio: 3/4;
+      width:100%;
+      background: rgba(255,255,255,0.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+    .hero img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .hero .skeleton{
+      width: 88%;
+      height: 88%;
+      border-radius: 14px;
+      border: 1px dashed rgba(255,255,255,0.18);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: var(--muted);
+      text-align:center;
+      padding:18px;
+    }
+    .content{
+      padding:18px 18px 16px 18px;
+    }
+    h1{
+      font-size: 18px;
+      margin: 0 0 8px 0;
+      letter-spacing: 0.2px;
+    }
+    p{
+      margin: 0 0 14px 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 14px;
+    }
+    .btnRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top: 8px;
+    }
+    .btn{
+      flex: 1 1 180px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--btn);
+      color: var(--btnText);
+      font-weight: 600;
+      cursor: pointer;
+      text-align:center;
+      text-decoration:none;
+      user-select:none;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn.disabled{
+      background: var(--btnDisabled);
+      color: rgba(255,255,255,0.55);
+      cursor: not-allowed;
+    }
+    .footerNote{
+      margin-top: 12px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
+    }
+    .error{
+      color: #ffb4b4;
+      font-size: 13px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="hero" id="hero">
+        <div class="skeleton" id="skeleton">
+          Loading invitation…
+        </div>
+      </div>
+
+      <div class="content">
+        <h1>Open or download the app for details</h1>
+        <p>
+          You’re viewing an invitation preview. To see full event details and respond, open the app.
+        </p>
+
+        <div class="btnRow">
+          <a id="openBtn" class="btn disabled" href="javascript:void(0)">Open app (TODO)</a>
+          <a id="dlBtn" class="btn disabled" href="javascript:void(0)">Download app (TODO)</a>
+        </div>
+
+        <div class="footerNote" id="inviteMeta"></div>
+        <div class="error" id="error"></div>
+      </div>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+  </div>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+  <script>
+    function getInviteIdFromPath() {
+      // expected: /i/<inviteId>  (with SPA rewrite)
+      const parts = window.location.pathname.split("/").filter(Boolean);
+      if (parts.length >= 2 && parts[0] === "i") return parts[1];
+      return null;
+    }
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+    function setError(msg) {
+      document.getElementById("error").textContent = msg || "";
+    }
+
+    function renderImage(url) {
+      const hero = document.getElementById("hero");
+      hero.innerHTML = "";
+      const img = document.createElement("img");
+      img.src = url;
+      img.alt = "Invitation image";
+      hero.appendChild(img);
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const inviteId = getInviteIdFromPath();
+      if (!inviteId) {
+        setError("Invalid invite link.\nExpected URL format: /i/<inviteId>");
+        document.getElementById("skeleton").textContent = "Invalid link";
+        return;
+      }
+
+      document.getElementById("inviteMeta").textContent = `Invite: ${inviteId}`;
+
+      try {
+        // wait for firebase init.js to set up firebase
+        if (!window.firebase || !firebase.apps || !firebase.apps.length) {
+          // small wait loop
+          for (let i = 0; i < 40; i++) {
+            await new Promise(r => setTimeout(r, 50));
+            if (window.firebase && firebase.apps && firebase.apps.length) break;
+          }
         }
-      });
-    </script>
-  </body>
+
+        const db = firebase.firestore();
+        const docSnap = await db.collection("invites").doc(inviteId).get();
+
+        if (!docSnap.exists) {
+          setError("Invite not found.");
+          document.getElementById("skeleton").textContent = "Invite not found";
+          return;
+        }
+
+        const data = docSnap.data() || {};
+        const imageUrl = data.imageUrl;
+
+        if (!imageUrl) {
+          setError("Invite has no imageUrl yet (TODO).");
+          document.getElementById("skeleton").textContent = "No invite image yet";
+          return;
+        }
+
+        renderImage(imageUrl);
+      } catch (e) {
+        console.error(e);
+        setError("Failed to load invite. Check console and Firestore rules.");
+        document.getElementById("skeleton").textContent = "Could not load invitation";
+      }
+    });
+  </script>
+</body>
 </html>

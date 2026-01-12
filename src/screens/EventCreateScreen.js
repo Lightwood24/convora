@@ -179,6 +179,8 @@ export default function EventCreateScreen() {
         expiresAt,
         usedBy: null,
         usedAt: null,
+        // TEMP
+        imageUrl: "https://via.placeholder.com/1200x1600.png?text=Invite+image+TODO",
       });
 
       setSavedInviteId(inviteRef.id);
