@@ -8,8 +8,7 @@ import whatsapp from "../../assets/icons/whatsapp_icon.png";
 import twitter from "../../assets/icons/twitter_icon.png";
 import gmail from "../../assets/icons/gmail_icon.png";
 
-// TODO: replace with real hosting domain later
-const LANDING_BASE_URL = "https://example.com";
+const LANDING_BASE_URL = "https://convora-c72ee.web.app";
 
 export default function ShareDialog({
   visible,
