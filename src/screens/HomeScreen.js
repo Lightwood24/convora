@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { auth, db } from "../services/firebase";
 import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
-import background from  "../../assets/pictures/background.jpg"
+import background from "../../assets/pictures/background.jpg";
 import styles from "../style/HomeScreen.style";
 import theme from "../style/Theme";
 
@@ -38,7 +38,7 @@ export default function HomeScreen() {
 
     const q = query(
       collection(db, "events"),
-      where("ownerId", "==", user.uid),
+      where("participants", "array-contains", user.uid),
       orderBy("startAt", "asc")
     );
 
@@ -206,12 +206,14 @@ export default function HomeScreen() {
               >
                 <Text style={styles.naviButtonText}>Profile</Text>
               </TouchableOpacity>
+              
               <TouchableOpacity
                 style={[styles.button, styles.naviButton, styles.actionBtn]}
                 onPress={() => navigation.navigate("Home")}
               >
                 <Text style={styles.naviButtonText}>Home</Text>
               </TouchableOpacity>
+
               <TouchableOpacity
                 style={[styles.button, styles.naviButton, styles.actionBtn]}
                 onPress={() => navigation.navigate("Calendar")}

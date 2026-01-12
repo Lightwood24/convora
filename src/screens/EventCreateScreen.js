@@ -187,6 +187,7 @@ export default function EventCreateScreen() {
         startAt,
         templateId: selectedTemplateId,
         fontFamily: cardFontFamily,
+        participants: [user.uid],
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
@@ -212,10 +213,8 @@ export default function EventCreateScreen() {
       const imageUrl = await uploadInviteImageAndGetUrl({ inviteId });
   
       // 4) save imageUrl to invite doc
-      await updateDoc(doc(db, "invites", inviteId), {
-        imageUrl,
-      });
-  
+      await updateDoc(doc(db, "invites", inviteId), { imageUrl });
+
       // 5) open share dialog
       setSavedInviteId(inviteId);
       setShareOpen(true);
@@ -461,7 +460,7 @@ export default function EventCreateScreen() {
         </View>
       </KeyboardAwareScrollView>
 
-      {/* SHARE DIALOG*/}
+      {/* SHARE DIALOG */}
       <ShareDialog
         visible={isShareOpen}
         onClose={() => {

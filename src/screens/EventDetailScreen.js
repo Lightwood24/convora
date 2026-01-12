@@ -3,7 +3,7 @@ import { Text, View, TouchableOpacity, ImageBackground, Linking } from "react-na
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { doc, onSnapshot } from "firebase/firestore";
-import { db } from "../services/firebase";
+import { auth, db } from "../services/firebase";
 import styles from "../style/EventDetailScreen.style";
 
 const TEMPLATE_BACKGROUNDS = {
@@ -21,7 +21,7 @@ export default function EventDetailScreen() {
 
   const route = useRoute();
   const eventId = route?.params?.eventId ?? null;
-  
+
   const [event, setEvent] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -62,7 +62,7 @@ export default function EventDetailScreen() {
     const url = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
     Linking.openURL(url);
   };
-  
+
   const startAtLabel = useMemo(() => {
     if (!event?.startAt) return "";
     const d = event.startAt?.toDate ? event.startAt.toDate() : new Date(event.startAt);
@@ -80,17 +80,19 @@ export default function EventDetailScreen() {
   }, [event?.templateId]);
 
   const fontFamily = event?.fontFamily || "Anta";
-  const baseFontSize = fontFamily === "Tangerine" ? 25 : 13 && fontFamily === "Caveat" ? 21 : 13;
+  const baseFontSize =
+    fontFamily === "Tangerine" ? 25 : fontFamily === "Caveat" ? 21 : 13;
+
+  const currentUid = auth.currentUser?.uid ?? null;
+  const participants = Array.isArray(event?.participants) ? event.participants : [];
+  const isOwner = !!currentUid && event?.ownerId === currentUid;
+  const isParticipant = !!currentUid && (participants.includes(currentUid) || isOwner);
 
   if (errorMsg) {
     return (
       <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
-        <Text
-          style={styles.errorText}
-        >
-          {errorMsg}
-        </Text>
-  
+        <Text style={styles.errorText}>{errorMsg}</Text>
+
         <TouchableOpacity
           style={[styles.button, styles.buttonNavi]}
           onPress={() => navigation.navigate("Home")}
@@ -100,8 +102,7 @@ export default function EventDetailScreen() {
       </View>
     );
   }
-  
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -117,7 +118,6 @@ export default function EventDetailScreen() {
             keyboardDismissMode="on-drag"
             showsVerticalScrollIndicator={false}
           >
-
             {/* HEADER */}
             <View style={[styles.headerSection, styles.eventCardOverlay]}>
               <View style={styles.header}>
@@ -178,7 +178,7 @@ export default function EventDetailScreen() {
             
           </KeyboardAwareScrollView>
         </ImageBackground>
-  
+
         {/* FOOTER */}
         <View style={styles.footerSection}>
           <View style={styles.actionsRow}>
@@ -188,14 +188,14 @@ export default function EventDetailScreen() {
             >
               <Text style={styles.naviButtonText}>Profile</Text>
             </TouchableOpacity>
-  
+
             <TouchableOpacity
               style={[styles.button, styles.naviButton, styles.actionBtn]}
               onPress={() => goToTab("Home")}
             >
               <Text style={styles.naviButtonText}>Home</Text>
             </TouchableOpacity>
-  
+
             <TouchableOpacity
               style={[styles.button, styles.naviButton, styles.actionBtn]}
               onPress={() => goToTab("Calendar")}
