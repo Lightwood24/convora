@@ -7,7 +7,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { useNavigation } from "@react-navigation/native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { auth, db } from "../services/firebase";
-import { doc, getDoc, collection, addDoc, updateDoc, serverTimestamp, Timestamp } from "firebase/firestore";
+import { doc, getDoc, collection, addDoc, updateDoc, serverTimestamp, Timestamp, setDoc } from "firebase/firestore";
 import background from "../../assets/pictures/background.jpg";
 import styles from "../style/EventCreateScreen.style";
 import ShareDialog from "./ShareDialog";
@@ -193,6 +193,16 @@ export default function EventCreateScreen() {
       });
   
       const eventId = eventRef.id;
+
+      // 1.5) attendee doc (default +1 = false)
+      await setDoc(
+        doc(db, "events", eventId, "attendees", user.uid),
+        {
+          plusOne: false,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
   
       // 2) invite
       const expiresAt = Timestamp.fromDate(new Date(Date.now() + 48 * 60 * 60 * 1000));

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Text, View, TouchableOpacity, ImageBackground, Linking, ScrollView, Image } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { doc, onSnapshot, collection, query, where, orderBy, limit, getDocs, getDoc } from "firebase/firestore";
+import { doc, onSnapshot, collection, query, where, orderBy, limit, getDocs, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
 import styles from "../style/EventDetailScreen.style";
 import ShareDialog from "./ShareDialog";
@@ -26,7 +26,13 @@ export default function EventDetailScreen() {
   const [event, setEvent] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
 
+  const currentUid = auth.currentUser?.uid ?? null;
+  const participants = Array.isArray(event?.participants) ? event.participants : [];
+  const isOwner = !!currentUid && event?.ownerId === currentUid;
+  const isParticipant = !!currentUid && (participants.includes(currentUid) || isOwner);
   const [participantsProfiles, setParticipantsProfiles] = useState({});
+  const [plusOneByUid, setPlusOneByUid] = useState({});
+  const [myPlusOne, setMyPlusOne] = useState(false);
 
   const [isShareOpen, setShareOpen] = useState(false);
   const [savedInviteId, setSavedInviteId] = useState(null);
@@ -62,6 +68,45 @@ export default function EventDetailScreen() {
 
     return () => unsub();
   }, [eventId]);
+
+  useEffect(() => {
+    if (!eventId) return;
+  
+    const ref = collection(db, "events", eventId, "attendees");
+    const unsub = onSnapshot(
+      ref,
+      (snap) => {
+        const next = {};
+        snap.forEach((d) => {
+          const data = d.data() || {};
+          next[d.id] = !!data.plusOne;
+        });
+        setPlusOneByUid(next);
+      },
+      (err) => {
+        console.error("attendees onSnapshot error:", err);
+        setPlusOneByUid({});
+      }
+    );
+  
+    return () => unsub();
+  }, [eventId]);
+
+  useEffect(() => {
+    if (!eventId || !currentUid) return;
+  
+    const ref = doc(db, "events", eventId, "attendees", currentUid);
+    const unsub = onSnapshot(
+      ref,
+      (snap) => {
+        const data = snap.exists() ? snap.data() : {};
+        setMyPlusOne(!!data?.plusOne);
+      },
+      (err) => console.error("my attendee onSnapshot error:", err)
+    );
+  
+    return () => unsub();
+  }, [eventId, currentUid]);
 
   useEffect(() => {
     let cancelled = false;
@@ -106,7 +151,32 @@ export default function EventDetailScreen() {
       cancelled = true;
     };
   }, [event?.participants]);
+
+  const handleTogglePlusOne = async () => {
+    try {
+      if (!eventId || !currentUid) return;
   
+      const next = !myPlusOne;
+
+      await setDoc(
+        doc(db, "events", eventId, "attendees", currentUid),
+        {
+          plusOne: next,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+    } catch (e) {
+      console.error("toggle +1 error:", e);
+      alert("Could not update +1. Please try again.");
+    }
+  };
+
+  const plusOneCount = useMemo(() => {
+    return Object.values(plusOneByUid).filter(Boolean).length;
+  }, [plusOneByUid]);
+  
+  const participantsDisplayCount = participants.length + plusOneCount;
 
   const openMapForAddress = (address) => {
     const encodedAddress = encodeURIComponent(address);
@@ -165,12 +235,7 @@ export default function EventDetailScreen() {
   }, [event?.templateId]);
 
   const fontFamily = event?.fontFamily || "Anta";
-  const baseFontSize = fontFamily === "Tangerine" ? 25 : fontFamily === "Caveat" ? 21 : 13;
-
-  const currentUid = auth.currentUser?.uid ?? null;
-  const participants = Array.isArray(event?.participants) ? event.participants : [];
-  const isOwner = !!currentUid && event?.ownerId === currentUid;
-  const isParticipant = !!currentUid && (participants.includes(currentUid) || isOwner);
+  const baseFontSize = fontFamily === "Tangerine" ? 25 : fontFamily === "Caveat" ? 19 : 15;
 
   if (errorMsg) {
     return (
@@ -237,8 +302,11 @@ export default function EventDetailScreen() {
             <View style={[styles.bodySection, styles.eventCardOverlay]}>
               {/* PARTICIPANTS */}
               <View style={[styles.box, styles.participantsBox]}>
-                <Text style={[styles.boxTitle, { fontFamily, fontSize: baseFontSize }]}>
-                  Participants:
+                <Text style={[styles.boxTitle, { fontFamily, fontSize: baseFontSize + 2 }]}>
+                  Participants - ({participantsDisplayCount})
+                </Text>                
+                <Text style={[styles.boxDesc, { fontFamily}]}>
+                  Click on "+1" if you wanna bring someone with you
                 </Text>
 
                 <View style={styles.participantsList}>
@@ -255,24 +323,44 @@ export default function EventDetailScreen() {
                         const profile = participantsProfiles[uid];
                         const name = profile?.displayName || "Loading…";
                         const photoURL = profile?.photoURL || "";
+                        const hasPlusOne = !!plusOneByUid[uid];
+                        const isMe = uid === currentUid;
                       
                         return (
                           <View key={uid} style={styles.participantRow}>
                             <View style={styles.participantRowInner}>
-                              <Image
-                                source={{ uri: photoURL }}
-                                style={styles.participantAvatar}
-                              />
+                              <Image source={{ uri: photoURL }} style={styles.participantAvatar} />
+                      
                               <Text
-                                style={[
-                                  styles.participantText,
-                                  { fontFamily, fontSize: baseFontSize },
-                                ]}
+                                style={[styles.participantText, { fontFamily, fontSize: baseFontSize }]}
                                 numberOfLines={1}
                                 ellipsizeMode="tail"
                               >
                                 {name}
                               </Text>
+                      
+                              {/* +1 badge */}
+                              {hasPlusOne && (
+                                <View style={styles.plusOneBadge}>
+                                  <Text style={[styles.plusOneBadgeText, { fontFamily }]}>+1</Text>
+                                </View>
+                              )}
+                      
+                              {/* +1 toggle */}
+                              {isMe && (
+                                <TouchableOpacity
+                                  onPress={handleTogglePlusOne}
+                                  style={[
+                                    styles.plusOneToggle,
+                                    myPlusOne && styles.plusOneToggleOn,
+                                  ]}
+                                  activeOpacity={0.85}
+                                >
+                                  <Text style={[styles.plusOneToggleText, { fontFamily }]}>
+                                    +1
+                                  </Text>
+                                </TouchableOpacity>
+                              )}
                             </View>
                           </View>
                         );

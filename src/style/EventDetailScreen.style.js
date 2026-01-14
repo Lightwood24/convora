@@ -93,7 +93,7 @@ export default StyleSheet.create({
 
   // == BODY ==
   box: {
-    height: 150,
+    height: 240,
     width: "100%",
     backgroundColor: theme.colors.backgroundOpaque35,
     borderRadius: theme.radius.lg,
@@ -135,13 +135,54 @@ export default StyleSheet.create({
     fontSize: 12,
     textAlign: "center",
     marginTop: theme.spacing.sm,
-  },  
+  },
+  plusOneBadge: {
+    marginLeft: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 2,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.borderWhite,
+    backgroundColor: theme.colors.backgroundOpaque25,
+  },
+  plusOneBadgeText: {
+    color: theme.colors.textPrimary,
+    fontSize: 11,
+  },
+  plusOneToggle: {
+    marginLeft: "auto",
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 6,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.borderWhite,
+    backgroundColor: theme.colors.backgroundOpaque25,
+  },
+  plusOneToggleOn: {
+    backgroundColor: theme.colors.backgroundOpaque35,
+  },
+  plusOneToggleText: {
+    color: theme.colors.textPrimary,
+    fontSize: 12,
+  },
   chatBox: {
     justifyContent: "flex-start",
   },
   boxTitle: {
     color: theme.colors.textPrimary,
-    marginBottom: theme.spacing.sm,
+    backgroundColor: theme.colors.backgroundOpaque35,
+    borderTopStartRadius: theme.radius.xl,
+    borderTopEndRadius: theme.radius.xl,
+    padding: theme.spacing.xs,
+  },
+  boxDesc: {
+    ...theme.typography.base,
+    color: theme.colors.textSecondary,
+    backgroundColor: theme.colors.backgroundOpaque35,
+    borderBottomStartRadius: theme.radius.xl,
+    borderBottomEndRadius: theme.radius.xl,
+    padding: theme.spacing.xs,
+    paddingBottom: theme.spacing.md,
   },
 
   // == BUTTONS ==
