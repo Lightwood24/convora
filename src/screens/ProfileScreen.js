@@ -16,21 +16,13 @@ export default function ProfileScreen() {
   const [avatarUri, setAvatarUri] = useState(null);
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
-  const [phone, setPhone] = useState("");
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   // == VALIDÁTOROK ==
   const [usernameError, setUsernameError] = useState("");
-  const [phoneError, setPhoneError] = useState("");
 
   const validUsername = (name) => /^[A-Za-z0-9_]+$/.test(name);
-
-  // telefonszám: csak számok, +, 7–15 számjegy
-  const validPhone = (value) => {
-    if (!value) return true; // üresen hagyható
-    return /^\+?[0-9]{7,15}$/.test(value);
-  };
 
   async function isUsernameAvailableForUpdate(name, uid) {
     const q = query(collection(db, "users"), where("displayName", "==", name));
@@ -52,9 +44,7 @@ export default function ProfileScreen() {
         setEmail("");
         setUsername("");
         setAvatarUri(null);
-        setPhone("");
         setUsernameError("");
-        setPhoneError("");
         return;
       }
       try {
@@ -67,14 +57,12 @@ export default function ProfileScreen() {
 
       let fsName = authName;
       let fsPhoto = authPhoto;
-      let fsPhone = "";
       try {
         const snap = await getDoc(doc(db, "users", user.uid));
         if (snap.exists()) {
           const d = snap.data();
           if (d?.displayName) fsName = d.displayName;
           if (d?.photoURL) fsPhoto = d.photoURL;
-          if (d?.phone) fsPhone = d.phone;
         }
       } catch (e) {
         console.warn("Firestore read error", e);
@@ -82,10 +70,8 @@ export default function ProfileScreen() {
 
       setEmail(authEmail);
       setUsername(fsName);
-      setPhone(fsPhone);
       if (fsPhoto) setAvatarUri(fsPhoto);
       setUsernameError("");
-      setPhoneError("");
     });
 
     return unsub;
@@ -144,26 +130,8 @@ export default function ProfileScreen() {
     }
   };
 
-  const handlePhoneChange = (value) => {
-    setPhone(value);
-    const trimmed = value.trim();
-
-    if (!trimmed) {
-      setPhoneError("");
-      return;
-    }
-    if (!validPhone(trimmed)) {
-      setPhoneError(
-        "Enter a valid phone number (optional + at start, then 7–15 digits, no spaces)."
-      );
-    } else {
-      setPhoneError("");
-    }
-  };
-
   const onSave = async () => {
     const trimmedName = username.trim();
-    const trimmedPhone = phone.trim();
 
     if (!trimmedName) {
       setUsernameError("Username cannot be empty.");
@@ -172,12 +140,6 @@ export default function ProfileScreen() {
     if (!validUsername(trimmedName)) {
       setUsernameError(
         "Use only letters, numbers, or underscore (_). No spaces or other symbols."
-      );
-      return;
-    }
-    if (!validPhone(trimmedPhone)) {
-      setPhoneError(
-        "Enter a valid phone number (optional + at start, then 7–15 digits, no spaces)."
       );
       return;
     }
@@ -217,7 +179,6 @@ export default function ProfileScreen() {
       const userDoc = {
         displayName: trimmedName,
         photoURL: photoURL ?? user.photoURL ?? null,
-        phone: trimmedPhone,
         updatedAt: serverTimestamp(),
       };
       await setDoc(doc(db, "users", uid), userDoc, { merge: true });
@@ -240,7 +201,6 @@ export default function ProfileScreen() {
       if (snap.exists()) {
         const d = snap.data();
         setUsername(d?.displayName ?? user.displayName ?? "");
-        setPhone(d?.phone ?? "");
         setAvatarUri(d?.photoURL ?? user.photoURL ?? null);
       }
     } catch (e) {
@@ -248,13 +208,12 @@ export default function ProfileScreen() {
     }
 
     setUsernameError("");
-    setPhoneError("");
     setIsEditing(false);
   };
 
   // Save gomb disable logika
   const trimmedUsername = username.trim();
-  const hasValidationError = !!usernameError || !!phoneError;
+  const hasValidationError = !!usernameError;
   const primaryDisabled = saving || hasValidationError || !trimmedUsername;
 
   const onSignOut = async () => {
@@ -339,7 +298,7 @@ export default function ProfileScreen() {
             </View>
             <View>
               <Text style={styles.subtitle}>
-                Tap on 'Edit' to update your name, phone number or to change your
+                Tap on 'Edit' to update your name or to change your
                 profile picture.
               </Text>
             </View>
@@ -397,20 +356,6 @@ export default function ProfileScreen() {
                 />
                 {usernameError ? (
                   <Text style={styles.errorText}>{usernameError}</Text>
-                ) : null}
-
-                <TextInput
-                  style={styles.input}
-                  placeholder="Phone number"
-                  placeholderTextColor="#9CA3AF"
-                  keyboardType="phone-pad"
-                  value={phone}
-                  onChangeText={handlePhoneChange}
-                  editable={isEditing}
-                  selectTextOnFocus={isEditing}
-                />
-                {phoneError ? (
-                  <Text style={styles.errorText}>{phoneError}</Text>
                 ) : null}
 
                 {isEditing ? (
