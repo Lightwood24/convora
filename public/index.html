@@ -141,8 +141,12 @@
         </p>
 
         <div class="btnRow">
-          <a id="openBtn" class="btn disabled" href="javascript:void(0)">Open app (TODO)</a>
-          <a id="dlBtn" class="btn disabled" href="javascript:void(0)">Download app (TODO)</a>
+          <a id="openBtn" class="btn disabled" href="javascript:void(0)">
+            Open app (TODO)
+          </a>
+          <a id="dlBtn" class="btn">
+            Download app
+          </a>
         </div>
 
         <div class="footerNote" id="inviteMeta"></div>
@@ -152,6 +156,25 @@
   </div>
 
   <script>
+    function getStoreSearchUrl(appName) {
+      const term = encodeURIComponent(appName);
+
+      const ua = navigator.userAgent || navigator.vendor || window.opera;
+
+      // iOS: App Store search
+      if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
+        return `https://apps.apple.com/us/search?term=${term}`;
+      }
+
+      // Android: Play Store search
+      if (/android/i.test(ua)) {
+        return `https://play.google.com/store/search?q=${term}&c=apps`;
+      }
+
+      // Desktop fallback
+      return `https://play.google.com/store/search?q=${term}&c=apps`;
+    }
+
     function getInviteIdFromPath() {
       // expected: /i/<inviteId>  (with SPA rewrite)
       const parts = window.location.pathname.split("/").filter(Boolean);
@@ -173,6 +196,10 @@
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
+      const dlBtn = document.getElementById("dlBtn");
+      dlBtn.href = getStoreSearchUrl("Convora");
+      dlBtn.target = "_blank";
+
       const inviteId = getInviteIdFromPath();
       if (!inviteId) {
         setError("Invalid invite link.\nExpected URL format: /i/<inviteId>");
