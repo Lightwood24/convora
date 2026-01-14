@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Text, View, TouchableOpacity, ImageBackground, Linking } from "react-native";
+import { Text, View, TouchableOpacity, ImageBackground, Linking, ScrollView, Image } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { doc, onSnapshot, collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
+import { doc, onSnapshot, collection, query, where, orderBy, limit, getDocs, getDoc } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
 import styles from "../style/EventDetailScreen.style";
 import ShareDialog from "./ShareDialog";
@@ -25,6 +25,8 @@ export default function EventDetailScreen() {
 
   const [event, setEvent] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
+
+  const [participantsProfiles, setParticipantsProfiles] = useState({});
 
   const [isShareOpen, setShareOpen] = useState(false);
   const [savedInviteId, setSavedInviteId] = useState(null);
@@ -60,6 +62,51 @@ export default function EventDetailScreen() {
 
     return () => unsub();
   }, [eventId]);
+
+  useEffect(() => {
+    let cancelled = false;
+  
+    const loadParticipantsProfiles = async () => {
+      if (!participants || participants.length === 0) {
+        setParticipantsProfiles({});
+        return;
+      }
+  
+      try {
+        const results = {};
+        await Promise.all(
+          participants.map(async (uid) => {
+            try {
+              const snap = await getDoc(doc(db, "users", uid));
+              if (snap.exists()) {
+                const data = snap.data() || {};
+                results[uid] = {
+                  displayName: data.displayName || "Unknown user",
+                  photoURL: data.photoURL || "",
+                };
+              } else {
+                results[uid] = { displayName: "Unknown user", photoURL: "" };
+              }
+            } catch {
+              results[uid] = { displayName: "Unknown user", photoURL: "" };
+            }
+          })
+        );
+  
+        if (!cancelled) setParticipantsProfiles(results);
+      } catch (e) {
+        console.error("Failed to load participants profiles:", e);
+        if (!cancelled) setParticipantsProfiles({});
+      }
+    };
+  
+    loadParticipantsProfiles();
+  
+    return () => {
+      cancelled = true;
+    };
+  }, [event?.participants]);
+  
 
   const openMapForAddress = (address) => {
     const encodedAddress = encodeURIComponent(address);
@@ -191,8 +238,48 @@ export default function EventDetailScreen() {
               {/* PARTICIPANTS */}
               <View style={[styles.box, styles.participantsBox]}>
                 <Text style={[styles.boxTitle, { fontFamily, fontSize: baseFontSize }]}>
-                  Participants
+                  Participants:
                 </Text>
+
+                <View style={styles.participantsList}>
+                  <ScrollView
+                    showsVerticalScrollIndicator={true}
+                    contentContainerStyle={styles.participantsListContent}
+                  >
+                    {participants.length === 0 ? (
+                      <Text style={[styles.participantEmpty, { fontFamily }]}>
+                        No participants yet.
+                      </Text>
+                    ) : (
+                      participants.map((uid) => {
+                        const profile = participantsProfiles[uid];
+                        const name = profile?.displayName || "Loading…";
+                        const photoURL = profile?.photoURL || "";
+                      
+                        return (
+                          <View key={uid} style={styles.participantRow}>
+                            <View style={styles.participantRowInner}>
+                              <Image
+                                source={{ uri: photoURL }}
+                                style={styles.participantAvatar}
+                              />
+                              <Text
+                                style={[
+                                  styles.participantText,
+                                  { fontFamily, fontSize: baseFontSize },
+                                ]}
+                                numberOfLines={1}
+                                ellipsizeMode="tail"
+                              >
+                                {name}
+                              </Text>
+                            </View>
+                          </View>
+                        );
+                      })
+                    )}
+                  </ScrollView>
+                </View>
               </View>
   
               {/* CHAT BOX */}

@@ -102,9 +102,40 @@ export default StyleSheet.create({
     borderColor: theme.colors.borderWhite,
     borderWidth: 1,
   },
-  participantsBox: {
-    justifyContent: "space-between",
+  participantsList: {
+    flex: 1,
   },
+  participantsListContent: {
+    paddingBottom: theme.spacing.xs,
+  },
+  participantRow: {
+    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm,
+    borderRadius: theme.radius.sm,
+    backgroundColor: theme.colors.backgroundOpaque20,
+    marginBottom: theme.spacing.xs,
+  },
+  participantRowInner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.sm,
+  },
+  participantAvatar: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: theme.colors.borderWhite,
+  },
+  participantText: {
+    color: theme.colors.textPrimary,
+  },
+  participantEmpty: {
+    color: theme.colors.textMuted,
+    fontSize: 12,
+    textAlign: "center",
+    marginTop: theme.spacing.sm,
+  },  
   chatBox: {
     justifyContent: "flex-start",
   },
@@ -113,7 +144,7 @@ export default StyleSheet.create({
     marginBottom: theme.spacing.sm,
   },
 
-  // == INPUT / BUTTONS ==
+  // == BUTTONS ==
   actionsRow: {
     width: "86%",              
     flexDirection: "row",
