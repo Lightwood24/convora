@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Modal, View, Text, TouchableOpacity, Image, Pressable, Platform, KeyboardAvoidingView, ScrollView, Share, } from "react-native";
+import { Modal, View, Text, Pressable, Platform, KeyboardAvoidingView, ScrollView, Share, } from "react-native";
 import * as Clipboard from "expo-clipboard";
-import * as Linking from "expo-linking";
 import styles from "../style/ShareDialog.style";
-import discord from "../../assets/icons/discord_icon.png";
-import messenger from "../../assets/icons/messenger_icon.png";
-import whatsapp from "../../assets/icons/whatsapp_icon.png";
-import twitter from "../../assets/icons/twitter_icon.png";
-import gmail from "../../assets/icons/gmail_icon.png";
 
 const LANDING_BASE_URL = "https://convora-c72ee.web.app";
 
@@ -104,7 +98,7 @@ export default function ShareDialog({
               {/* Footer */}
               <View style={styles.footer}>
                 <Pressable onPress={onClose} style={styles.secondaryBtn}>
-                  <Text style={styles.footerBtnText}>Back to home</Text>
+                  <Text style={styles.footerBtnText}>Back</Text>
                 </Pressable>
 
                 <Pressable onPress={handleShare} style={styles.primaryBtn}>

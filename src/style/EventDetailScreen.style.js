@@ -102,7 +102,7 @@ export default StyleSheet.create({
     borderColor: theme.colors.borderWhite,
     borderWidth: 1,
   },
-  inviteesBox: {
+  participantsBox: {
     justifyContent: "space-between",
   },
   chatBox: {
@@ -140,7 +140,7 @@ export default StyleSheet.create({
     fontWeight: "600",
     fontFamily: "Anta", 
   },
-  mapButton: {
+  actionButton: {
     height: 44,
     width: "100%",
     borderRadius: theme.radius.md,
@@ -151,9 +151,8 @@ export default StyleSheet.create({
     justifyContent: "center",
     marginTop: theme.spacing.sm,
   },
-  mapButtonText: {
+  actionButtonText: {
     color: theme.colors.textPrimary,
-    fontWeight: "600",
   },  
   errorText: {
     ...theme.typography.h1,

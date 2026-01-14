@@ -2,9 +2,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Text, View, TouchableOpacity, ImageBackground, Linking } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
 import styles from "../style/EventDetailScreen.style";
+import ShareDialog from "./ShareDialog";
 
 const TEMPLATE_BACKGROUNDS = {
   grim: require("../../assets/pictures/grim_card.png"),
@@ -24,6 +25,9 @@ export default function EventDetailScreen() {
 
   const [event, setEvent] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
+
+  const [isShareOpen, setShareOpen] = useState(false);
+  const [savedInviteId, setSavedInviteId] = useState(null);
 
   // event betöltése az adatbázisból
   useEffect(() => {
@@ -63,6 +67,40 @@ export default function EventDetailScreen() {
     Linking.openURL(url);
   };
 
+  const handleShare = async () => {
+    try {
+      if (!eventId) return;
+  
+      if (!isOwner) {
+        alert("Only the event owner can share this event.");
+        return;
+      }
+  
+      // legutóbbi invite az eventhez
+      const q = query(
+        collection(db, "invites"),
+        where("eventId", "==", eventId),
+        orderBy("createdAt", "desc"),
+        limit(1)
+      );
+  
+      const snap = await getDocs(q);
+  
+      if (snap.empty) {
+        alert("No invite found for this event.");
+        return;
+      }
+  
+      const inviteDoc = snap.docs[0];
+      setSavedInviteId(inviteDoc.id);
+      setShareOpen(true);
+    } catch (e) {
+      console.error("handleShare error:", e);
+  
+      alert("Could not load invite for sharing. Please try again.");
+    }
+  };  
+
   const startAtLabel = useMemo(() => {
     if (!event?.startAt) return "";
     const d = event.startAt?.toDate ? event.startAt.toDate() : new Date(event.startAt);
@@ -80,8 +118,7 @@ export default function EventDetailScreen() {
   }, [event?.templateId]);
 
   const fontFamily = event?.fontFamily || "Anta";
-  const baseFontSize =
-    fontFamily === "Tangerine" ? 25 : fontFamily === "Caveat" ? 21 : 13;
+  const baseFontSize = fontFamily === "Tangerine" ? 25 : fontFamily === "Caveat" ? 21 : 13;
 
   const currentUid = auth.currentUser?.uid ?? null;
   const participants = Array.isArray(event?.participants) ? event.participants : [];
@@ -151,10 +188,10 @@ export default function EventDetailScreen() {
   
             {/* BODY */}
             <View style={[styles.bodySection, styles.eventCardOverlay]}>
-              {/* INVITEES */}
-              <View style={[styles.box, styles.inviteesBox]}>
+              {/* PARTICIPANTS */}
+              <View style={[styles.box, styles.participantsBox]}>
                 <Text style={[styles.boxTitle, { fontFamily, fontSize: baseFontSize }]}>
-                  Invited
+                  Participants
                 </Text>
               </View>
   
@@ -167,13 +204,25 @@ export default function EventDetailScreen() {
   
               {/* MAP */}
               <TouchableOpacity 
-                style={styles.mapButton} 
+                style={styles.actionButton} 
                 onPress={() => openMapForAddress(event?.location)}
               >
-                <Text style={[styles.mapButtonText, { fontFamily, fontSize: baseFontSize }]}>
+                <Text style={[styles.actionButtonText, { fontFamily, fontSize: baseFontSize }]}>
                   {event?.location}
                 </Text>
               </TouchableOpacity>
+
+              {/* Share */}
+              {isOwner && (
+                <TouchableOpacity
+                  style={styles.actionButton}
+                  onPress={handleShare}
+                >
+                  <Text style={[styles.actionButtonText, { fontFamily, fontSize: baseFontSize }]}>
+                    Share
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
             
           </KeyboardAwareScrollView>
@@ -205,6 +254,14 @@ export default function EventDetailScreen() {
           </View>
         </View>
       </View>
+
+      {/* SHARE DIALOG */}
+      <ShareDialog
+        visible={isShareOpen}
+        onClose={() => setShareOpen(false)}
+        title="Share your event"
+        inviteId={savedInviteId}
+      />
     </View>
   );
 }
