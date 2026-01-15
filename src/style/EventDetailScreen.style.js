@@ -93,7 +93,7 @@ export default StyleSheet.create({
 
   // == BODY ==
   box: {
-    height: 240,
+    height: 300,
     width: "100%",
     backgroundColor: theme.colors.backgroundOpaque35,
     borderRadius: theme.radius.lg,
@@ -102,6 +102,24 @@ export default StyleSheet.create({
     borderColor: theme.colors.borderWhite,
     borderWidth: 1,
   },
+  boxTitle: {
+    color: theme.colors.textPrimary,
+    backgroundColor: theme.colors.backgroundOpaque35,
+    borderTopStartRadius: theme.radius.xl,
+    borderTopEndRadius: theme.radius.xl,
+    padding: theme.spacing.xs,
+  },
+  boxDesc: {
+    ...theme.typography.base,
+    color: theme.colors.textSecondary,
+    backgroundColor: theme.colors.backgroundOpaque35,
+    borderBottomStartRadius: theme.radius.xl,
+    borderBottomEndRadius: theme.radius.xl,
+    padding: theme.spacing.xs,
+    paddingBottom: theme.spacing.md,
+  },
+
+  // == PARTICIPANTS ==
   participantsList: {
     flex: 1,
   },
@@ -165,24 +183,87 @@ export default StyleSheet.create({
     color: theme.colors.textPrimary,
     fontSize: 12,
   },
+
+  // == CHAT ==
   chatBox: {
     justifyContent: "flex-start",
   },
-  boxTitle: {
-    color: theme.colors.textPrimary,
-    backgroundColor: theme.colors.backgroundOpaque35,
-    borderTopStartRadius: theme.radius.xl,
-    borderTopEndRadius: theme.radius.xl,
-    padding: theme.spacing.xs,
+  chatInner: {
+    flex: 1,
+    marginTop: 8,
   },
-  boxDesc: {
-    ...theme.typography.base,
-    color: theme.colors.textSecondary,
-    backgroundColor: theme.colors.backgroundOpaque35,
-    borderBottomStartRadius: theme.radius.xl,
-    borderBottomEndRadius: theme.radius.xl,
-    padding: theme.spacing.xs,
-    paddingBottom: theme.spacing.md,
+  chatList: {
+    flex: 1,
+  },
+  chatListContent: {
+    paddingVertical: 6,
+  },
+  msgRow: {
+    marginBottom: 8,
+    maxWidth: "88%",
+  },
+  msgRowMe: {
+    alignSelf: "flex-end",
+  },
+  msgRowOther: {
+    alignSelf: "flex-start",
+  },
+  msgMeta: {
+    fontSize: 11,
+    color: theme.colors.backgroundWhiteOpaque75,
+    marginBottom: 2,
+  },
+  msgBubble: {
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+  },
+  msgBubbleMe: {
+    backgroundColor: "rgba(255,255,255,0.16)",
+  },
+  msgBubbleOther: {
+    backgroundColor: "rgba(0,0,0,0.18)",
+  },
+  msgText: {
+    color: "#fff",
+    fontSize: 13,
+  },
+  chatInputRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: 10,
+    marginTop: 8,
+  },
+  chatInput: {
+    flex: 1,
+    minHeight: 38,
+    maxHeight: 92,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+    backgroundColor: "rgba(0,0,0,0.18)",
+    color: "#fff",
+    fontSize: 13,
+  },
+  sendBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+    backgroundColor: "rgba(255,255,255,0.16)",
+  },
+  sendBtnDisabled: {
+    opacity: 0.6,
+  },
+  sendBtnText: {
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: "600",
   },
 
   // == BUTTONS ==

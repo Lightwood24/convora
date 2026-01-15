@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Text, View, TouchableOpacity, ImageBackground, Linking, ScrollView, Image } from "react-native";
+import { Text, View, TouchableOpacity, ImageBackground, Linking, ScrollView, Image, Platform, KeyboardAvoidingView, TextInput } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { doc, onSnapshot, collection, query, where, orderBy, limit, getDocs, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, onSnapshot, collection, query, where, orderBy, limit, getDocs, getDoc, setDoc, serverTimestamp, addDoc } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
 import styles from "../style/EventDetailScreen.style";
 import ShareDialog from "./ShareDialog";
@@ -33,6 +33,10 @@ export default function EventDetailScreen() {
   const [participantsProfiles, setParticipantsProfiles] = useState({});
   const [plusOneByUid, setPlusOneByUid] = useState({});
   const [myPlusOne, setMyPlusOne] = useState(false);
+
+  const [messages, setMessages] = useState([]);
+  const [draftMessage, setDraftMessage] = useState("");
+  const [sending, setSending] = useState(false);
 
   const [isShareOpen, setShareOpen] = useState(false);
   const [savedInviteId, setSavedInviteId] = useState(null);
@@ -109,6 +113,36 @@ export default function EventDetailScreen() {
   }, [eventId, currentUid]);
 
   useEffect(() => {
+    if (!eventId) return;
+  
+    if (!isParticipant) {
+      setMessages([]);
+      return;
+    }
+  
+    const q = query(
+      collection(db, "events", eventId, "messages"),
+      orderBy("createdAt", "desc"),
+      limit(60)
+    );
+  
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const list = [];
+        snap.forEach((d) => list.push({ id: d.id, ...d.data() }));
+        setMessages(list);
+      },
+      (err) => {
+        console.error("messages onSnapshot error:", err);
+        setMessages([]);
+      }
+    );
+  
+    return () => unsub();
+  }, [eventId, isParticipant]);
+
+  useEffect(() => {
     let cancelled = false;
   
     const loadParticipantsProfiles = async () => {
@@ -175,8 +209,52 @@ export default function EventDetailScreen() {
   const plusOneCount = useMemo(() => {
     return Object.values(plusOneByUid).filter(Boolean).length;
   }, [plusOneByUid]);
-  
   const participantsDisplayCount = participants.length + plusOneCount;
+
+  const handleSendMessage = async () => {
+    try {
+      const text = (draftMessage || "").trim();
+      if (!text) return;
+  
+      if (!eventId || !currentUid) {
+        alert("You must be logged in to send messages.");
+        return;
+      }
+  
+      if (!isParticipant) {
+        alert("You are not allowed to chat in this event.");
+        return;
+      }
+  
+      if (sending) return;
+      setSending(true);
+  
+      const meProfile = participantsProfiles?.[currentUid];
+      const senderName =
+        meProfile?.displayName ||
+        auth.currentUser?.displayName ||
+        event?.username ||
+        "User";
+  
+      const senderPhotoURL = meProfile?.photoURL || auth.currentUser?.photoURL || "";
+  
+      await addDoc(collection(db, "events", eventId, "messages"), {
+        text,
+        senderId: currentUid,
+        senderName,
+        senderPhotoURL,
+        createdAt: serverTimestamp(),
+      });
+  
+      setDraftMessage("");
+    } catch (e) {
+      console.error("handleSendMessage error:", e);
+      alert("Could not send message. Please try again.");
+    } finally {
+      setSending(false);
+    }
+  };
+  
 
   const openMapForAddress = (address) => {
     const encodedAddress = encodeURIComponent(address);
@@ -300,6 +378,7 @@ export default function EventDetailScreen() {
   
             {/* BODY */}
             <View style={[styles.bodySection, styles.eventCardOverlay]}>
+
               {/* PARTICIPANTS */}
               <View style={[styles.box, styles.participantsBox]}>
                 <Text style={[styles.boxTitle, { fontFamily, fontSize: baseFontSize + 2 }]}>
@@ -329,8 +408,14 @@ export default function EventDetailScreen() {
                         return (
                           <View key={uid} style={styles.participantRow}>
                             <View style={styles.participantRowInner}>
-                              <Image source={{ uri: photoURL }} style={styles.participantAvatar} />
-                      
+                              <Image
+                                source={
+                                  photoURL
+                                    ? { uri: photoURL }
+                                    : require("../../assets/pictures/base_prof_pic.jpg")
+                                }
+                                style={styles.participantAvatar}
+                              />
                               <Text
                                 style={[styles.participantText, { fontFamily, fontSize: baseFontSize }]}
                                 numberOfLines={1}
@@ -375,6 +460,67 @@ export default function EventDetailScreen() {
                 <Text style={[styles.boxTitle, { fontFamily, fontSize: baseFontSize }]}>
                   Chat
                 </Text>
+                  <View style={styles.chatInner}>
+                    {/* Messages */}
+                    <ScrollView
+                      style={styles.chatList}
+                      contentContainerStyle={styles.chatListContent}
+                      keyboardShouldPersistTaps="handled"
+                      showsVerticalScrollIndicator
+                    >
+                      {[...messages].reverse().map((item) => {
+                        const isMeMsg = item?.senderId === currentUid;
+                        const name = item?.senderName || "User";
+                        const text = item?.text || "";
+
+                        return (
+                          <View
+                            key={item.id}
+                            style={[styles.msgRow, isMeMsg ? styles.msgRowMe : styles.msgRowOther]}
+                          >
+                            {!isMeMsg && (
+                              <Text style={[styles.msgMeta, { fontFamily }]} numberOfLines={1}>
+                                {name}
+                              </Text>
+                            )}
+
+                            <View style={[styles.msgBubble, isMeMsg ? styles.msgBubbleMe : styles.msgBubbleOther]}>
+                              <Text style={[styles.msgText, { fontFamily }]}>{text}</Text>
+                            </View>
+                          </View>
+                        );
+                      })}
+                    </ScrollView>
+
+                    {/* Input */}
+                    <KeyboardAvoidingView
+                      behavior={Platform.OS === "ios" ? "padding" : undefined}
+                      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+                    >
+                      <View style={styles.chatInputRow}>
+                        <TextInput
+                          value={draftMessage}
+                          onChangeText={setDraftMessage}
+                          placeholder="Type a message…"
+                          placeholderTextColor="rgba(255,255,255,0.6)"
+                          style={[styles.chatInput, { fontFamily }]}
+                          multiline
+                          maxLength={800}
+                        />
+
+                        <TouchableOpacity
+                          onPress={handleSendMessage}
+                          style={[styles.sendBtn, sending && styles.sendBtnDisabled]}
+                          activeOpacity={0.85}
+                          disabled={sending}
+                        >
+                          <Text style={[styles.sendBtnText, { fontFamily }]}>
+                            {sending ? "…" : "Send"}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </KeyboardAvoidingView>
+                  </View>
               </View>
   
               {/* MAP */}
