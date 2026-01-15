@@ -3,7 +3,8 @@ import { Text, ScrollView, View, TouchableOpacity, ImageBackground } from "react
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { auth, db } from "../services/firebase";
-import { collection, query, where, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, query, where, orderBy, onSnapshot, doc, getDoc, updateDoc, arrayUnion, setDoc, serverTimestamp } from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import background from "../../assets/pictures/background.jpg";
 import styles from "../style/HomeScreen.style";
 import theme from "../style/Theme";
@@ -28,6 +29,95 @@ export default function HomeScreen() {
     setIsAtTop(offset <= 2);
   };
 
+  async function consumePendingInvite() {
+    const inviteId = await AsyncStorage.getItem("pendingInviteId");
+    console.log("[INVITE] pendingInviteId:", inviteId);
+  
+    if (!inviteId) return null;
+  
+    const user = auth.currentUser;
+    console.log("[INVITE] currentUser:", user?.uid);
+  
+    if (!user) return null;
+  
+    try {
+      // 1) Invite doc
+      const inviteSnap = await getDoc(doc(db, "invites", inviteId));
+      console.log("[INVITE] invite exists:", inviteSnap.exists());
+  
+      if (!inviteSnap.exists()) {
+        await AsyncStorage.removeItem("pendingInviteId");
+        return null;
+      }
+  
+      const invite = inviteSnap.data() || {};
+      const eventId = invite.eventId;
+      const expiresAt = invite.expiresAt;
+  
+      console.log("[INVITE] eventId:", eventId);
+      console.log("[INVITE] expiresAt:", expiresAt?.toDate ? expiresAt.toDate().toISOString() : expiresAt);
+  
+      if (!eventId) {
+        await AsyncStorage.removeItem("pendingInviteId");
+        return null;
+      }
+  
+      // 2) Expiry check
+      if (expiresAt?.toDate) {
+        const exp = expiresAt.toDate();
+        if (exp.getTime() < Date.now()) {
+          console.log("[INVITE] expired");
+          await AsyncStorage.removeItem("pendingInviteId");
+          return null;
+        }
+      }
+  
+      // 3) Add user to event participants
+      console.log("[INVITE] updating event participants...");
+      await updateDoc(doc(db, "events", eventId), {
+        participants: arrayUnion(user.uid),
+        updatedAt: serverTimestamp(),
+      });
+      console.log("[INVITE] event participants updated OK");
+  
+      // 4) Ensure attendees doc exists
+      console.log("[INVITE] ensuring attendees doc...");
+      await setDoc(
+        doc(db, "events", eventId, "attendees", user.uid),
+        { plusOne: false, updatedAt: serverTimestamp() },
+        { merge: true }
+      );
+      console.log("[INVITE] attendees doc OK");
+  
+      // 5) cleanup
+      await AsyncStorage.removeItem("pendingInviteId");
+      console.log("[INVITE] pendingInviteId cleared");
+  
+      return eventId;
+    } catch (e) {
+      console.log("[INVITE] ERROR:", e?.code, e?.message, e);
+      // fontos: ne töröld ki a pendingInviteId-t, ha fail, különben elveszik a meghívó
+      // await AsyncStorage.removeItem("pendingInviteId");
+      return null;
+    }
+  }
+  
+
+  useEffect(() => {
+    const unsub = auth.onAuthStateChanged(async (user) => {
+      if (!user) return;
+  
+      try {
+        const joinedEventId = await consumePendingInvite();
+        if (joinedEventId) navigation.navigate("EventDetail", { eventId: joinedEventId });
+      } catch (e) {
+        console.error("consumePendingInvite error:", e);
+      }
+    });
+  
+    return () => unsub();
+  }, []);
+  
   // adatbázis adatokok kezelése
   useEffect(() => {
     const user = auth.currentUser;

@@ -19,7 +19,6 @@
       --border:rgba(255,255,255,0.12);
       --btn:#152846;
       --btnText:#fff;
-      --btnDisabled:rgba(255,255,255,0.10);
     }
     *{box-sizing:border-box}
     body{
@@ -35,9 +34,7 @@
       justify-content:center;
       padding:24px;
     }
-    .wrap{
-      width:min(520px, 100%);
-    }
+    .wrap{ width:min(520px, 100%); }
     .card{
       background: rgba(15,26,46,0.92);
       border: 1px solid var(--border);
@@ -72,9 +69,7 @@
       text-align:center;
       padding:18px;
     }
-    .content{
-      padding:18px 18px 16px 18px;
-    }
+    .content{ padding:18px 18px 16px 18px; }
     h1{
       font-size: 18px;
       margin: 0 0 8px 0;
@@ -104,13 +99,9 @@
       text-align:center;
       text-decoration:none;
       user-select:none;
+      display:inline-block;
     }
     .btn:active{ transform: translateY(1px); }
-    .btn.disabled{
-      background: var(--btnDisabled);
-      color: rgba(255,255,255,0.55);
-      cursor: not-allowed;
-    }
     .footerNote{
       margin-top: 12px;
       font-size: 12px;
@@ -129,24 +120,16 @@
   <div class="wrap">
     <div class="card">
       <div class="hero" id="hero">
-        <div class="skeleton" id="skeleton">
-          Loading invitation…
-        </div>
+        <div class="skeleton" id="skeleton">Loading invitation…</div>
       </div>
 
       <div class="content">
         <h1>Open or download the app for details</h1>
-        <p>
-          You’re viewing an invitation preview. To see full event details and respond, open the app.
-        </p>
+        <p>You’re viewing an invitation preview. To see full event details open the app.</p>
 
         <div class="btnRow">
-          <a id="openBtn" class="btn disabled" href="javascript:void(0)">
-            Open app (TODO)
-          </a>
-          <a id="dlBtn" class="btn">
-            Download app
-          </a>
+          <a id="openBtn" class="btn" href="javascript:void(0)">Open app</a>
+          <a id="dlBtn" class="btn" href="javascript:void(0)">Download app</a>
         </div>
 
         <div class="footerNote" id="inviteMeta"></div>
@@ -158,25 +141,18 @@
   <script>
     function getStoreSearchUrl(appName) {
       const term = encodeURIComponent(appName);
-
       const ua = navigator.userAgent || navigator.vendor || window.opera;
 
-      // iOS: App Store search
       if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
         return `https://apps.apple.com/us/search?term=${term}`;
       }
-
-      // Android: Play Store search
       if (/android/i.test(ua)) {
         return `https://play.google.com/store/search?q=${term}&c=apps`;
       }
-
-      // Desktop fallback
       return `https://play.google.com/store/search?q=${term}&c=apps`;
     }
 
     function getInviteIdFromPath() {
-      // expected: /i/<inviteId>  (with SPA rewrite)
       const parts = window.location.pathname.split("/").filter(Boolean);
       if (parts.length >= 2 && parts[0] === "i") return parts[1];
       return null;
@@ -196,9 +172,11 @@
     }
 
     document.addEventListener("DOMContentLoaded", async () => {
+      // Buttons
       const dlBtn = document.getElementById("dlBtn");
       dlBtn.href = getStoreSearchUrl("Convora");
       dlBtn.target = "_blank";
+      dlBtn.rel = "noopener";
 
       const inviteId = getInviteIdFromPath();
       if (!inviteId) {
@@ -209,10 +187,36 @@
 
       document.getElementById("inviteMeta").textContent = `Invite: ${inviteId}`;
 
+      // Open app (Expo Go)
+      const EXPO_DEV_URL = "exp://192.168.1.22:8081";
+      const openUrl = `${EXPO_DEV_URL}/--/invite/${inviteId}`;
+
+      const openBtn = document.getElementById("openBtn");
+      // Make the anchor itself the primary mechanism
+      openBtn.href = openUrl;
+
+      // JS "assist" + fallback
+      openBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        const t0 = Date.now();
+        // Attempt to open
+        window.location.assign(openUrl);
+
+        // If still on page after ~1s, show a hint (browser likely blocked it)
+        setTimeout(() => {
+          const dt = Date.now() - t0;
+          // If we’re still here, we assume it didn't switch apps
+          alert(
+            "If the app didn’t open: make sure Expo Go is installed and you opened this page on the same phone running Expo Go.\n\nYou can also try opening the link manually:\n" +
+            openUrl
+          );
+        }, 1100);
+      });
+
+      // Load invite image
       try {
-        // wait for firebase init.js to set up firebase
         if (!window.firebase || !firebase.apps || !firebase.apps.length) {
-          // small wait loop
           for (let i = 0; i < 40; i++) {
             await new Promise(r => setTimeout(r, 50));
             if (window.firebase && firebase.apps && firebase.apps.length) break;
@@ -232,7 +236,7 @@
         const imageUrl = data.imageUrl;
 
         if (!imageUrl) {
-          setError("Invite has no imageUrl yet (TODO).");
+          setError("Invite has no imageUrl yet.");
           document.getElementById("skeleton").textContent = "No invite image yet";
           return;
         }

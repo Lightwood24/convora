@@ -93,7 +93,7 @@ export default StyleSheet.create({
 
   // == BODY ==
   box: {
-    height: 300,
+    height: 350,
     width: "100%",
     backgroundColor: theme.colors.backgroundOpaque35,
     borderRadius: theme.radius.lg,
