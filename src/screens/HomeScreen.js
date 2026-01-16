@@ -89,19 +89,22 @@ export default function HomeScreen() {
       );
       console.log("[INVITE] attendees doc OK");
   
-      // 5) cleanup
+      // 5) invite uses subcollection
+      await setDoc(
+        doc(db, "invites", inviteId, "uses", auth.currentUser.uid),
+        { usedAt: serverTimestamp() },
+        { merge: false }
+      );
+
+      // 7) pendingInvite törlése
       await AsyncStorage.removeItem("pendingInviteId");
-      console.log("[INVITE] pendingInviteId cleared");
-  
+        
       return eventId;
     } catch (e) {
       console.log("[INVITE] ERROR:", e?.code, e?.message, e);
-      // fontos: ne töröld ki a pendingInviteId-t, ha fail, különben elveszik a meghívó
-      // await AsyncStorage.removeItem("pendingInviteId");
       return null;
     }
   }
-  
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async (user) => {

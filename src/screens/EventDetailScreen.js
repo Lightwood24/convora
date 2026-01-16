@@ -254,7 +254,6 @@ export default function EventDetailScreen() {
       setSending(false);
     }
   };
-  
 
   const openMapForAddress = (address) => {
     const encodedAddress = encodeURIComponent(address);
@@ -313,7 +312,7 @@ export default function EventDetailScreen() {
   }, [event?.templateId]);
 
   const fontFamily = event?.fontFamily || "Anta";
-  const baseFontSize = fontFamily === "Tangerine" ? 25 : fontFamily === "Caveat" ? 19 : 15;
+  const baseFontSize = fontFamily === "Tangerine" ? 25 : fontFamily === "Caveat" ? 19 : 12
 
   if (errorMsg) {
     return (

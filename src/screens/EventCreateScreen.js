@@ -209,11 +209,8 @@ export default function EventCreateScreen() {
       const inviteRef = await addDoc(collection(db, "invites"), {
         eventId,
         createdBy: user.uid,
-        status: "pending",
         createdAt: serverTimestamp(),
         expiresAt,
-        usedBy: null,
-        usedAt: null,
         imageUrl: null,
       });
   
