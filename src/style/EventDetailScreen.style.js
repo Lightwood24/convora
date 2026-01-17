@@ -76,12 +76,6 @@ export default StyleSheet.create({
     marginTop: theme.spacing.md,
     textAlign: "center",
   },
-  primaryActionsRow: {
-    width: "86%",
-    flexDirection: "row",
-    columnGap: 80,
-    alignSelf: "center",
-  },
   eventDate: {
     color: theme.colors.textSecondary,
     paddingLeft: theme.spacing.md,
@@ -266,12 +260,24 @@ export default StyleSheet.create({
     fontWeight: "600",
   },
 
-  // == BUTTONS ==
+  // == INPUT / BUTTONS ==
   actionsRow: {
     width: "86%",              
     flexDirection: "row",
     columnGap: theme.spacing.sm,             
     marginTop: theme.spacing.lg,
+    alignSelf: "center",
+  },
+  primaryActionsRow: {
+    width: "86%",
+    flexDirection: "row",
+    columnGap: 80,
+    alignSelf: "center",
+  },
+  secondaryActionRow: {          
+    flexDirection: "row",
+    columnGap: theme.spacing.sm,             
+    marginTop: theme.spacing.xs,
     alignSelf: "center",
   },
   button: {
@@ -295,7 +301,7 @@ export default StyleSheet.create({
   },
   actionButton: {
     height: 44,
-    width: "100%",
+    width: "48.5%",
     borderRadius: theme.radius.md,
     borderColor: theme.colors.borderWhite,
     borderWidth: 1,
@@ -303,6 +309,9 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: theme.spacing.sm,
+  },
+  dangerButton: {
+    backgroundColor: "rgba(255, 0, 0, 0.75)",
   },
   actionButtonText: {
     color: theme.colors.textPrimary,

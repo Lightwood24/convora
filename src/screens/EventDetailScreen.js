@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Text, View, TouchableOpacity, ImageBackground, Linking, ScrollView, Image, Platform, KeyboardAvoidingView, TextInput } from "react-native";
+import { Text, View, TouchableOpacity, ImageBackground, Linking, ScrollView, Image, Platform, KeyboardAvoidingView, TextInput, Alert } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { doc, onSnapshot, collection, query, where, orderBy, limit, getDocs, getDoc, setDoc, serverTimestamp, addDoc } from "firebase/firestore";
+import { doc, onSnapshot, collection, query, where, orderBy, limit, getDocs, getDoc, setDoc, serverTimestamp, addDoc, updateDoc, arrayRemove, deleteDoc, } from "firebase/firestore";
 import { auth, db } from "../services/firebase";
 import styles from "../style/EventDetailScreen.style";
 import ShareDialog from "./ShareDialog";
@@ -41,7 +41,25 @@ export default function EventDetailScreen() {
   const [isShareOpen, setShareOpen] = useState(false);
   const [savedInviteId, setSavedInviteId] = useState(null);
 
-  // event betöltése az adatbázisból
+  const bgSource = useMemo(() => {
+    const id = event?.templateId ?? "party";
+    return TEMPLATE_BACKGROUNDS[id] || TEMPLATE_BACKGROUNDS.party;
+  }, [event?.templateId]);
+
+  const fontFamily = event?.fontFamily || "Anta";
+  const baseFontSize = fontFamily === "Tangerine" ? 25 : fontFamily === "Caveat" ? 19 : 12;
+
+  const startAtLabel = useMemo(() => {
+    if (!event?.startAt) return "";
+    const d = event.startAt?.toDate ? event.startAt.toDate() : new Date(event.startAt);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mi = String(d.getMinutes()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+  }, [event?.startAt]);
+
   useEffect(() => {
     if (!eventId) {
       setEvent(null);
@@ -293,26 +311,90 @@ export default function EventDetailScreen() {
   
       alert("Could not load invite for sharing. Please try again.");
     }
-  };  
+  };
 
-  const startAtLabel = useMemo(() => {
-    if (!event?.startAt) return "";
-    const d = event.startAt?.toDate ? event.startAt.toDate() : new Date(event.startAt);
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    const hh = String(d.getHours()).padStart(2, "0");
-    const mi = String(d.getMinutes()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
-  }, [event?.startAt]);
+  const handleLeave = () => {
+    Alert.alert(
+      "Leave event",
+      "This will permanently remove you from the event. Continue?",
+      [
+        { text: "Cancle", style: "cancle" },
+        {
+          text: "Leave",
+          style:"destructive",
+          onPress: async () => {
+            try {
+              const user = auth.currentUser;
+              if (!user || ! eventId) return;
 
-  const bgSource = useMemo(() => {
-    const id = event?.templateId ?? "party";
-    return TEMPLATE_BACKGROUNDS[id] || TEMPLATE_BACKGROUNDS.party;
-  }, [event?.templateId]);
+              const uid = user.uid;
 
-  const fontFamily = event?.fontFamily || "Anta";
-  const baseFontSize = fontFamily === "Tangerine" ? 25 : fontFamily === "Caveat" ? 19 : 12
+              // 1) remove from participants
+              await updateDoc(doc(db, "events", eventId), {
+                participants: arrayRemove(uid),
+                updatedAt: serverTimestamp(),
+              });
+
+              // 2) delete attendee doc (ignore if missing)
+              try {
+                await deleteDoc(doc(db, "events", eventId, "attendees", uid));
+              } catch (_) {}
+
+              goToTab("Home");
+            } catch (e) {
+              console.error("handleLeave error:", e);
+              Alert.alert("Leave failed", e?.message ?? "Unknown error");
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDeleteEvent = () => {
+    Alert.alert(
+      "Delete event",
+      "This will permanently delete the event. Continue?",
+      [
+        { text: "Cancle", style: "cancle" },
+        {
+          text: "Delete",
+          style:"destructive",
+          onPress: async () => {
+            try {
+              const user = auth.currentUser;
+              if (!user || ! eventId) return;
+
+              if (event?.ownerId !== user.uid) {
+                Alert.alert("Permission denied", "Only the event owner can delete this event.");
+                return;
+              }
+
+              // 1) Invite lekérése az eventhez
+              const invitesQ = query(
+                collection(db, "invites"),
+                where("eventId", "==", eventId)
+              );
+              const invitesSnap = await getDocs(invitesQ);
+
+              // 2) Invite törlése
+              for (const d of invitesSnap.docs) {
+                await deleteDoc(d.ref);
+              }
+
+              // 3) Event törlése
+              await deleteDoc(doc(db, "events", eventId));
+
+              goToTab("Home");
+            } catch (e) {
+              console.error("handleLeave error:", e);
+              Alert.alert("Delete failed", e?.message ?? "Unknown error");
+            }
+          },
+        },
+      ]
+    );
+  }
 
   if (errorMsg) {
     return (
@@ -524,7 +606,7 @@ export default function EventDetailScreen() {
   
               {/* MAP */}
               <TouchableOpacity 
-                style={styles.actionButton} 
+                style={[styles.actionButton, {width: "100%"}]} 
                 onPress={() => openMapForAddress(event?.location)}
               >
                 <Text style={[styles.actionButtonText, { fontFamily, fontSize: baseFontSize }]}>
@@ -532,17 +614,44 @@ export default function EventDetailScreen() {
                 </Text>
               </TouchableOpacity>
 
-              {/* Share */}
-              {isOwner && (
+              <View style={styles.secondaryActionRow}>  
+                {/* SHARE */}
+                {isOwner && (
+                  <TouchableOpacity
+                    style={styles.actionButton}
+                    onPress={handleShare}
+                  >
+                    <Text style={[styles.actionButtonText, { fontFamily, fontSize: baseFontSize }]}>
+                      Share
+                    </Text>
+                  </TouchableOpacity>
+                )}
+
+                {/* DELETE EVENT */}
+                {isOwner && (
+                  <TouchableOpacity
+                    style={[styles.actionButton, styles.dangerButton]}
+                    onPress={handleDeleteEvent}
+                  >
+                    <Text style={[styles.actionButtonText, { fontFamily, fontSize: baseFontSize }]}>
+                      Delete event
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {/* LEAVE */}
+              {!isOwner && (
                 <TouchableOpacity
-                  style={styles.actionButton}
-                  onPress={handleShare}
+                  style={[styles.actionButton, styles.dangerButton]}
+                  onPress={handleLeave}
                 >
                   <Text style={[styles.actionButtonText, { fontFamily, fontSize: baseFontSize }]}>
-                    Share
+                    Leave event
                   </Text>
                 </TouchableOpacity>
               )}
+
             </View>
             
           </KeyboardAwareScrollView>
