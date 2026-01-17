@@ -177,6 +177,20 @@ export default StyleSheet.create({
     color: theme.colors.textPrimary,
     fontSize: 12,
   },
+  kickBtn: {
+    marginLeft: "auto",
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 6,
+    borderRadius: theme.radius.sm,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+    backgroundColor: "rgba(255, 0, 0, 0.75)",
+  },
+  kickBtnText: {
+    color: theme.colors.textPrimary,
+    fontSize: 12,
+    fontWeight: "600",
+  },
 
   // == CHAT ==
   chatBox: {

@@ -396,6 +396,45 @@ export default function EventDetailScreen() {
     );
   }
 
+  const handleKickParticipant = (targetUid) => {
+    if (!isOwner) return;
+    if (!eventId) return;
+  
+    // extra védelem: owner ne tudja magát / ownerId-t kickelni
+    if (targetUid === currentUid || targetUid === event?.ownerId) return;
+  
+    const name = participantsProfiles?.[targetUid]?.displayName || "this user";
+  
+    Alert.alert(
+      "Remove participant",
+      `This will remove ${name} from the event. Continue?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Kick",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // 1) kiveszi a participants listából
+              await updateDoc(doc(db, "events", eventId), {
+                participants: arrayRemove(targetUid),
+                updatedAt: serverTimestamp(),
+              });
+  
+              // 2) törli az attendee docot (+1 reset)
+              try {
+                await deleteDoc(doc(db, "events", eventId, "attendees", targetUid));
+              } catch (_) {}
+            } catch (e) {
+              console.error("handleKickParticipant error:", e);
+              Alert.alert("Kick failed", e?.message ?? "Unknown error");
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (errorMsg) {
     return (
       <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
@@ -527,6 +566,18 @@ export default function EventDetailScreen() {
                                   </Text>
                                 </TouchableOpacity>
                               )}
+
+                              {/* Kick (owner only) */}
+                              {isOwner && uid !== currentUid && uid !== event?.ownerId && (
+                                <TouchableOpacity
+                                  onPress={() => handleKickParticipant(uid)}
+                                  style={[styles.kickBtn]}
+                                  activeOpacity={0.85}
+                                >
+                                  <Text style={[styles.kickBtnText, { fontFamily }]}>Kick</Text>
+                                </TouchableOpacity>
+                              )}
+                              
                             </View>
                           </View>
                         );
