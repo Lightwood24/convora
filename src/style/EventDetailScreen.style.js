@@ -16,6 +16,7 @@ export default StyleSheet.create({
   headerSection: {
     flexGrow: 0,
     alignItems: "center",
+    height: 250, 
     marginTop: 60,
   },
   bodySection: {
@@ -50,9 +51,9 @@ export default StyleSheet.create({
   eventCardOverlay: {
     flex: 1,
     backgroundColor: theme.colors.backgroundOpaque55,
-    padding: theme.spacing.xl,
+    padding: theme.spacing.lg,
     margin: theme.spacing.md,
-    borderRadius: theme.radius.xxl,
+    borderRadius: theme.radius.lg,
     justifyContent: "center",
   },
   eventScrollContent: {
@@ -60,21 +61,10 @@ export default StyleSheet.create({
   },
 
   // == HEADER ==
-  header: {
-    alignItems: "center",
-    marginBottom: theme.spacing.md,
-    paddingHorizontal: theme.spacing.lg,
-  },
   eventTitle: {
     color: theme.colors.textPrimary,
     marginBottom: theme.spacing.xs,
     width: "100%",
-    height: "35%",
-  },
-  eventDescription: {
-    color: theme.colors.textSecondary,
-    marginTop: theme.spacing.md,
-    textAlign: "center",
   },
   eventDate: {
     color: theme.colors.textSecondary,
@@ -83,6 +73,21 @@ export default StyleSheet.create({
   eventOwner: {
     color: theme.colors.textPrimary,
     paddingRight: theme.spacing.md,
+  },
+  eventDescriptionScroll: {
+    width: "100%",
+    flex: 1,
+    marginTop: theme.spacing.md,
+    backgroundColor: theme.colors.backgroundOpaque25,
+    borderRadius: theme.radius.lg,
+    padding: theme.spacing.sm,
+  },
+  eventDescriptionContent: {
+    paddingBottom: theme.spacing.sm,
+  },
+  eventDescription: {
+    color: theme.colors.textSecondary,
+    textAlign: "center",
   },
 
   // == BODY ==
@@ -135,7 +140,7 @@ export default StyleSheet.create({
   participantAvatar: {
     width: 18,
     height: 18,
-    borderRadius: 9,
+    borderRadius: theme.radius.xxl,
     borderWidth: 1,
     borderColor: theme.colors.borderWhite,
   },
@@ -285,7 +290,7 @@ export default StyleSheet.create({
   primaryActionsRow: {
     width: "86%",
     flexDirection: "row",
-    columnGap: 80,
+    justifyContent: "space-between",
     alignSelf: "center",
   },
   secondaryActionRow: {          

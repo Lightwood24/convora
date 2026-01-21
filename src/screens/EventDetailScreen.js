@@ -467,33 +467,50 @@ export default function EventDetailScreen() {
           >
             {/* HEADER */}
             <View style={[styles.headerSection, styles.eventCardOverlay]}>
-              <View style={styles.header}>
-                {/* EVENT TITLE */}
-                <Text style={[styles.eventTitle, { fontFamily, fontSize: baseFontSize + 15 }]}>
+              {/* EVENT TITLE */}
+              <View>
+                <Text
+                  style={[styles.eventTitle, { fontFamily, fontSize: baseFontSize + 15 }]}
+                >
                   {event?.title}
                 </Text>
-  
-                <View style={styles.primaryActionsRow}>
-                  {/* EVENT DATE */}
-                  <Text
-                    style={[styles.eventDate, { fontFamily, fontSize: baseFontSize }]}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {startAtLabel}
-                  </Text>
+              </View>
 
-                  {/* EVENT OWNER */}
-                  <Text style={[styles.eventOwner, { fontFamily, fontSize: baseFontSize }]}>
-                    {event?.username}
-                  </Text>
-                </View>
-  
-                {/* EVENT DESCRIPTION */}
-                <Text style={[styles.eventDescription, { fontFamily, fontSize: baseFontSize + 6 }]}>
-                  {event?.description}
+              {/* DATE + OWNER */}
+              <View style={styles.primaryActionsRow}>
+                <Text
+                  style={[styles.eventDate, { fontFamily, fontSize: baseFontSize }]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {startAtLabel}
+                </Text>
+                <Text
+                  style={[styles.eventOwner, { fontFamily, fontSize: baseFontSize }]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {event?.username}
                 </Text>
               </View>
+
+              {/* EVENT DESCRIPTION */}
+              <ScrollView
+                style={styles.eventDescriptionScroll}
+                contentContainerStyle={styles.eventDescriptionContent}
+                showsVerticalScrollIndicator={false}
+              >
+                <View>
+                  <Text
+                    style={[
+                      styles.eventDescription,
+                      { fontFamily, fontSize: baseFontSize + 6 },
+                    ]}
+                  >
+                    {event?.description}
+                  </Text>
+                </View>
+              </ScrollView>
             </View>
   
             {/* BODY */}
