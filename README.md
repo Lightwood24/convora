@@ -39,12 +39,12 @@ npm run start
 ## 📂 Project Structure
 ```
 Convora/
-├─ App.js
-├─ app.json
-├─ index.js
 ├─ assets/
-│  ├─ pictures/
-│  └─ fonts/
+│  ├─ fonts/
+│  ├─ icons/
+│  └─ pictures/
+├─ public/
+│  └─ index.html
 ├─ src/
 │  ├─ navigation/
 │  │  ├─ AppNavigator.js 
@@ -63,8 +63,13 @@ Convora/
 │  │  └─ Theme.js
 ├─ test/
 │  └─ testFirestore.js                      
-├─ .env             
+├─ .env       
+├─ .firebaserc     
 ├─ .gitignore
+├─ App.js
+├─ app.json
+├─ firebase.json
+├─ index.js
 ├─ package-lock.json
 ├─ package.json   
 ├─ README.md 
@@ -80,6 +85,8 @@ Convora/
   - custom background images
   - template-specific font families
 - Automatic owner binding (ownerId, username)
+- Real-time event updates using Firestore listeners
+- Google Maps integration for event locations
 
 ### 🔐 Authentication System
 - Email + password login
@@ -117,6 +124,7 @@ Convora/
 - Clean iOS-focused design
 
 ## 📜 Changelog
+- v1.4.0: Implemented invite-based onboarding with web landing page, deep linking via Expo, automatic event joining after login/registration, participant management with +1 support, real-time event chat, event leave and delete functionality, and expanded Firestore security rules
 - v1.3.0: Added Home screen with real-time event listing, unified background imagery across screens, implemented Event Detail screen with map integration and error handling
 - v1.2.0: Implemented full event flow (create → list → detail), added event templates with dynamic backgrounds and fonts, integrated Firestore-backed event loading, improved navigation animations
 - v1.1.0: Added user registration / login logic, implemented profile edit / delete and sign out option, added navigation between main screens, implemented a global theme
