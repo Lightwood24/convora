@@ -187,26 +187,20 @@
 
       document.getElementById("inviteMeta").textContent = `Invite: ${inviteId}`;
 
-      // Open app (Expo Go)
       const EXPO_DEV_URL = "exp://192.168.1.22:8081";
       const openUrl = `${EXPO_DEV_URL}/--/invite/${inviteId}`;
 
       const openBtn = document.getElementById("openBtn");
-      // Make the anchor itself the primary mechanism
       openBtn.href = openUrl;
 
-      // JS "assist" + fallback
       openBtn.addEventListener("click", (e) => {
         e.preventDefault();
 
         const t0 = Date.now();
-        // Attempt to open
         window.location.assign(openUrl);
 
-        // If still on page after ~1s, show a hint (browser likely blocked it)
         setTimeout(() => {
           const dt = Date.now() - t0;
-          // If we’re still here, we assume it didn't switch apps
           alert(
             "If the app didn’t open: make sure Expo Go is installed and you opened this page on the same phone running Expo Go.\n\nYou can also try opening the link manually:\n" +
             openUrl

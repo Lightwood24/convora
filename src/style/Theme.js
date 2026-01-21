@@ -5,7 +5,6 @@ const colors = {
     backgroundOpaque35: "rgba(0,0,0,0.35)",
     backgroundOpaque55: "rgba(0,0,0,0.55)",
     backgroundOpaque75: "rgba(0,0,0,0.75)",
-    backgroundWhiteOpaque75: "rgba(255,255,255,0.75)",
     secondaryBackground: "#111827",
     avatarBackground: "#e5e5e5",
     avatarPlaceholderBackground: "#d4d4d4",
@@ -36,6 +35,7 @@ const colors = {
   };
   
   const spacing = {
+    xxs: 2,
     xs: 4,
     sm: 8,
     md: 12,

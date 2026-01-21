@@ -31,19 +31,16 @@ export default function HomeScreen() {
 
   async function consumePendingInvite() {
     const inviteId = await AsyncStorage.getItem("pendingInviteId");
-    console.log("[INVITE] pendingInviteId:", inviteId);
   
     if (!inviteId) return null;
   
     const user = auth.currentUser;
-    console.log("[INVITE] currentUser:", user?.uid);
   
     if (!user) return null;
   
     try {
       // 1) Invite doc
       const inviteSnap = await getDoc(doc(db, "invites", inviteId));
-      console.log("[INVITE] invite exists:", inviteSnap.exists());
   
       if (!inviteSnap.exists()) {
         await AsyncStorage.removeItem("pendingInviteId");
@@ -54,9 +51,6 @@ export default function HomeScreen() {
       const eventId = invite.eventId;
       const expiresAt = invite.expiresAt;
   
-      console.log("[INVITE] eventId:", eventId);
-      console.log("[INVITE] expiresAt:", expiresAt?.toDate ? expiresAt.toDate().toISOString() : expiresAt);
-  
       if (!eventId) {
         await AsyncStorage.removeItem("pendingInviteId");
         return null;
@@ -66,28 +60,24 @@ export default function HomeScreen() {
       if (expiresAt?.toDate) {
         const exp = expiresAt.toDate();
         if (exp.getTime() < Date.now()) {
-          console.log("[INVITE] expired");
+          console.error("invite expired");
           await AsyncStorage.removeItem("pendingInviteId");
           return null;
         }
       }
   
       // 3) Add user to event participants
-      console.log("[INVITE] updating event participants...");
       await updateDoc(doc(db, "events", eventId), {
         participants: arrayUnion(user.uid),
         updatedAt: serverTimestamp(),
       });
-      console.log("[INVITE] event participants updated OK");
   
       // 4) Ensure attendees doc exists
-      console.log("[INVITE] ensuring attendees doc...");
       await setDoc(
         doc(db, "events", eventId, "attendees", user.uid),
         { plusOne: false, updatedAt: serverTimestamp() },
         { merge: true }
       );
-      console.log("[INVITE] attendees doc OK");
   
       // 5) invite uses subcollection
       await setDoc(
@@ -101,7 +91,7 @@ export default function HomeScreen() {
         
       return eventId;
     } catch (e) {
-      console.log("[INVITE] ERROR:", e?.code, e?.message, e);
+      console.error("invite error", e?.code, e?.message, e);
       return null;
     }
   }

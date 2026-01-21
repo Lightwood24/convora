@@ -177,7 +177,7 @@ export default function EventCreateScreen() {
     try {
       const startAt = new Date(`${eventDate}T${eventTime}:00`);
   
-      // 1) event
+      // 1) event mezők
       const eventRef = await addDoc(collection(db, "events"), {
         title: eventTitle.trim(),
         description: eventDescription.trim(),
@@ -194,7 +194,7 @@ export default function EventCreateScreen() {
   
       const eventId = eventRef.id;
 
-      // 1.5) attendee doc (default +1 = false)
+      // 1.5) attendee subcollection
       await setDoc(
         doc(db, "events", eventId, "attendees", user.uid),
         {
@@ -204,7 +204,7 @@ export default function EventCreateScreen() {
         { merge: true }
       );
   
-      // 2) invite
+      // 2) invite mezők
       const expiresAt = Timestamp.fromDate(new Date(Date.now() + 48 * 60 * 60 * 1000));
       const inviteRef = await addDoc(collection(db, "invites"), {
         eventId,

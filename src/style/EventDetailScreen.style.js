@@ -149,14 +149,13 @@ export default StyleSheet.create({
   },
   participantEmpty: {
     color: theme.colors.textMuted,
-    fontSize: 12,
     textAlign: "center",
     marginTop: theme.spacing.sm,
   },
   plusOneBadge: {
     marginLeft: theme.spacing.sm,
     paddingHorizontal: theme.spacing.sm,
-    paddingVertical: 2,
+    paddingVertical: theme.spacing.xxs,
     borderRadius: theme.radius.sm,
     borderWidth: 1,
     borderColor: theme.colors.borderWhite,
@@ -164,12 +163,12 @@ export default StyleSheet.create({
   },
   plusOneBadgeText: {
     color: theme.colors.textPrimary,
-    fontSize: 11,
+    fontSize: 10,
   },
   plusOneToggle: {
     marginLeft: "auto",
     paddingHorizontal: theme.spacing.sm,
-    paddingVertical: 6,
+    paddingVertical: theme.spacing.xs,
     borderRadius: theme.radius.sm,
     borderWidth: 1,
     borderColor: theme.colors.borderWhite,
@@ -185,7 +184,7 @@ export default StyleSheet.create({
   kickBtn: {
     marginLeft: "auto",
     paddingHorizontal: theme.spacing.sm,
-    paddingVertical: 6,
+    paddingVertical: theme.spacing.xs,
     borderRadius: theme.radius.sm,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.12)",
@@ -203,16 +202,16 @@ export default StyleSheet.create({
   },
   chatInner: {
     flex: 1,
-    marginTop: 8,
+    marginTop: theme.spacing.md,
   },
   chatList: {
     flex: 1,
   },
   chatListContent: {
-    paddingVertical: 6,
+    paddingVertical: theme.spacing.xs,
   },
   msgRow: {
-    marginBottom: 8,
+    marginBottom: theme.spacing.sm,
     maxWidth: "88%",
   },
   msgRowMe: {
@@ -222,14 +221,13 @@ export default StyleSheet.create({
     alignSelf: "flex-start",
   },
   msgMeta: {
-    fontSize: 11,
-    color: theme.colors.backgroundWhiteOpaque75,
-    marginBottom: 2,
+    fontSize: 12,
+    color: "rgba(255,255,255,0.75)",
+    marginBottom: theme.spacing.xxs,
   },
   msgBubble: {
-    borderRadius: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
+    borderRadius: theme.radius.md,
+    padding: theme.spacing.sm,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.12)",
   },
@@ -241,31 +239,30 @@ export default StyleSheet.create({
   },
   msgText: {
     color: "#fff",
-    fontSize: 13,
+    fontSize: 14,
   },
   chatInputRow: {
     flexDirection: "row",
     alignItems: "flex-end",
-    gap: 10,
+    gap: theme.spacing.md,
     marginTop: 8,
   },
   chatInput: {
     flex: 1,
     minHeight: 38,
     maxHeight: 92,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderRadius: 12,
+    padding: theme.spacing.sm,
+    borderRadius: theme.radius.lg,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.12)",
     backgroundColor: "rgba(0,0,0,0.18)",
     color: "#fff",
-    fontSize: 13,
+    fontSize: 14,
   },
   sendBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 12,
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.radius.md,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.12)",
     backgroundColor: "rgba(255,255,255,0.16)",
@@ -275,7 +272,7 @@ export default StyleSheet.create({
   },
   sendBtnText: {
     color: "#fff",
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "600",
   },
 
@@ -315,7 +312,6 @@ export default StyleSheet.create({
   },
   naviButtonText: {
     color: theme.colors.textPrimary,
-    fontWeight: "600",
     fontFamily: "Anta", 
   },
   actionButton: {

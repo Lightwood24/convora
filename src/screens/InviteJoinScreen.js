@@ -8,14 +8,8 @@ export default function InviteJoinScreen() {
   const route = useRoute();
   const navigation = useNavigation();
   const inviteId = route?.params?.inviteId ?? null;
-
-
   
   useEffect(() => {
-    console.log("[INVITE] InviteJoinScreen route params:", route?.params);
-    console.log("[INVITE] InviteJoinScreen inviteId:", inviteId);
-    console.log("[JOIN] InviteJoinScreen mounted, inviteId:", inviteId);
-  
     const run = async () => {
       if (!inviteId) {
         navigation.navigate("AppTabs", { screen: "Home" });

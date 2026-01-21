@@ -120,7 +120,6 @@ export default StyleSheet.create({
   },
   templateItemTextSelected: {
     color: theme.colors.primaryMuted,
-    fontWeight: "600",
   },
 
   // == EVENT CARD ==
@@ -233,7 +232,6 @@ export default StyleSheet.create({
   },
   buttonText: {
     color: theme.colors.textPrimary,
-    fontWeight: "600",
     fontFamily: "Anta",
   },
 

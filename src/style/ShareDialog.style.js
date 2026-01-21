@@ -10,17 +10,14 @@ export default StyleSheet.create({
     alignItems: "center",
     padding: theme.spacing.lg,
   },
-
   centerWrap: {
     width: "100%",
     maxWidth: 420,
     alignItems: "center",
   },
-
   kav: {
     width: "100%",
   },
-
   card: {
     width: "100%",
     height: 300,
@@ -42,18 +39,15 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-
   title: {
     ...theme.typography.h2,
     color: theme.colors.textPrimary,
   },
-
   closeBtn: {
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: theme.spacing.xs,
     borderRadius: theme.radius.md,
   },
-
   closeText: {
     ...theme.typography.base,
     color: theme.colors.textSecondary,
@@ -64,18 +58,14 @@ export default StyleSheet.create({
     flexGrow: 0,
     height: "80%",
   },
-
   bodyContent: {
     padding: theme.spacing.lg,
     gap: theme.spacing.md,
   },
-
   bodyTitle: {
     ...theme.typography.base,
     color: theme.colors.textSecondary,
-    lineHeight: 20,
   },
-
   bodyText: {
     ...theme.typography.small,
     color: theme.colors.textSecondary,
@@ -85,7 +75,7 @@ export default StyleSheet.create({
     minHeight: 48,
     borderWidth: 1,
     borderColor: theme.colors.borderMuted,
-    borderRadius: theme.radius?.lg ?? 12,
+    borderRadius: theme.radius.lg,
     paddingHorizontal: theme.spacing.lg,
     justifyContent: "center",
     backgroundColor: theme.colors.secondaryBackground,

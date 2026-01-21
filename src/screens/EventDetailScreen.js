@@ -288,7 +288,6 @@ export default function EventDetailScreen() {
         return;
       }
   
-      // legutóbbi invite az eventhez
       const q = query(
         collection(db, "invites"),
         where("eventId", "==", eventId),
@@ -335,7 +334,7 @@ export default function EventDetailScreen() {
                 updatedAt: serverTimestamp(),
               });
 
-              // 2) delete attendee doc (ignore if missing)
+              // 2) delete attendee doc
               try {
                 await deleteDoc(doc(db, "events", eventId, "attendees", uid));
               } catch (_) {}
@@ -400,9 +399,6 @@ export default function EventDetailScreen() {
     if (!isOwner) return;
     if (!eventId) return;
   
-    // extra védelem: owner ne tudja magát / ownerId-t kickelni
-    if (targetUid === currentUid || targetUid === event?.ownerId) return;
-  
     const name = participantsProfiles?.[targetUid]?.displayName || "this user";
   
     Alert.alert(
@@ -415,13 +411,13 @@ export default function EventDetailScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              // 1) kiveszi a participants listából
+              // 1) remove from participants
               await updateDoc(doc(db, "events", eventId), {
                 participants: arrayRemove(targetUid),
                 updatedAt: serverTimestamp(),
               });
   
-              // 2) törli az attendee docot (+1 reset)
+              // 2) attendee doc törlése (+1 reset)
               try {
                 await deleteDoc(doc(db, "events", eventId, "attendees", targetUid));
               } catch (_) {}
@@ -502,10 +498,7 @@ export default function EventDetailScreen() {
               >
                 <View>
                   <Text
-                    style={[
-                      styles.eventDescription,
-                      { fontFamily, fontSize: baseFontSize + 6 },
-                    ]}
+                    style={[styles.eventDescription, { fontFamily, fontSize: baseFontSize + 6 }]}
                   >
                     {event?.description}
                   </Text>
@@ -615,7 +608,6 @@ export default function EventDetailScreen() {
                       style={styles.chatList}
                       contentContainerStyle={styles.chatListContent}
                       keyboardShouldPersistTaps="handled"
-                      showsVerticalScrollIndicator
                     >
                       {[...messages].reverse().map((item) => {
                         const isMeMsg = item?.senderId === currentUid;
@@ -682,7 +674,8 @@ export default function EventDetailScreen() {
                 </Text>
               </TouchableOpacity>
 
-              <View style={styles.secondaryActionRow}>  
+              <View style={styles.secondaryActionRow}>
+
                 {/* SHARE */}
                 {isOwner && (
                   <TouchableOpacity
@@ -719,9 +712,7 @@ export default function EventDetailScreen() {
                   </Text>
                 </TouchableOpacity>
               )}
-
             </View>
-            
           </KeyboardAwareScrollView>
         </ImageBackground>
 
