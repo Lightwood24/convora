@@ -100,7 +100,7 @@ export default StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: theme.spacing.sm,
-    paddingHorizontal: 2,
+    paddingHorizontal: theme.spacing.xxs,
   },
   dayName: {
     width: `${100 / 7}%`,
@@ -108,14 +108,37 @@ export default StyleSheet.create({
     color: theme.colors.textMuted,
     ...theme.typography.small,
   },
-  grid: {
+  weekRow: {
     flexDirection: "row",
-    flexWrap: "wrap",
+  },
+  dayNumSelected: {
+    borderColor: theme.colors.textPrimary,
+    backgroundColor: theme.colors.backgroundOpaque55,
+  },
+  expandedRow: {
+    width: "100%",
+    marginTop: theme.spacing.xs,
+    marginBottom: theme.spacing.sm,
+    padding: theme.spacing.md,
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.backgroundOpaque55,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  expandedTitle: {
+    color: theme.colors.textPrimary,
+    ...theme.typography.base,
+    marginBottom: theme.spacing.xs,
+  },
+  expandedHint: {
+    color: theme.colors.textMuted,
+    ...theme.typography.small,
+    lineHeight: 30
   },
   dayCell: {
     width: `${100 / 7}%`,
     aspectRatio: 1,
-    padding: 4,
+    padding: theme.spacing.xs,
   },
   dayCellOut: {
     opacity: 0.45,
@@ -126,8 +149,7 @@ export default StyleSheet.create({
     textAlign: "center",
     textAlignVertical: "center",
     color: theme.colors.textPrimary,
-    fontFamily: "Anta",
-    fontSize: 14,
+    ...theme.typography.base,
     backgroundColor: theme.colors.backgroundOpaque25,
     borderWidth: 1,
     borderColor: theme.colors.border,

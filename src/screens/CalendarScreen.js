@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import {Text, ScrollView, View, TouchableOpacity, ImageBackground} from "react-native";
+import { Text, ScrollView, View, TouchableOpacity, ImageBackground } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import background from  "../../assets/pictures/background.jpg"
 import styles from "../style/CalendarScreen.style";
@@ -42,22 +42,27 @@ export default function CalendarScreen() {
     return new Date(now.getFullYear(), now.getMonth(), 1);
   });
 
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [openWeekIndex, setOpenWeekIndex] = useState(null);
+
   const goPrev = () => {
     setCursor((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    setSelectedDate(null);
+    setOpenWeekIndex(null);
   };
 
   const goNext = () => {
     setCursor((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+    setSelectedDate(null);
+    setOpenWeekIndex(null);
   };
 
   const monthTitle = useMemo(() => formatMonthTitle(cursor), [cursor]);
 
-  // 42 cell (6 weeks) grid
   const grid = useMemo(() => {
     const start = startOfMonth(cursor);
     const end = endOfMonth(cursor);
 
-    // gridStart
     const startOffset = mondayIndex(start.getDay());
     const gridStart = new Date(start);
     gridStart.setDate(start.getDate() - startOffset);
@@ -68,13 +73,34 @@ export default function CalendarScreen() {
       d.setDate(gridStart.getDate() + i);
 
       const inMonth = d.getMonth() === cursor.getMonth();
-      cells.push({ key: `${d.toISOString()}`, date: d, inMonth });
+      cells.push({ key: d.toISOString(), date: d, inMonth });
     }
 
     return { start, end, cells };
   }, [cursor]);
 
+  const weeks = useMemo(() => {
+    const w = [];
+    for (let i = 0; i < 6; i++) {
+      w.push(grid.cells.slice(i * 7, i * 7 + 7));
+    }
+    return w;
+  }, [grid.cells]);
+
   const today = useMemo(() => new Date(), []);
+
+  const onPressCell = (cell, weekIndex) => {
+    // ha ugyanarra a napra nyomjuk újra zárjuk be
+    if (selectedDate && sameDay(cell.date, selectedDate) && openWeekIndex === weekIndex) {
+      setSelectedDate(null);
+      setOpenWeekIndex(null);
+      return;
+    }
+  
+    // különben mindig nyitva marad
+    setSelectedDate(cell.date);
+    setOpenWeekIndex(weekIndex);
+  };
 
   return (
     <ImageBackground source={background} style={styles.background} resizeMode="cover">
@@ -120,30 +146,51 @@ export default function CalendarScreen() {
               </View>
 
               {/* Grid */}
-              <View style={styles.grid}>
-                {grid.cells.map((cell) => {
-                  const isToday = sameDay(cell.date, today);
+              <View>
+                {weeks.map((weekCells, weekIndex) => (
+                  <View key={`week-${weekIndex}`}>
+                    {/* week row */}
+                    <View style={styles.weekRow}>
+                      {weekCells.map((cell) => {
+                        const isToday = sameDay(cell.date, today);
+                        const isSelected = selectedDate && sameDay(cell.date, selectedDate);
 
-                  return (
-                    <View
-                      key={cell.key}
-                      style={[
-                        styles.dayCell,
-                        !cell.inMonth && styles.dayCellOut,
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.dayNum,
-                          !cell.inMonth && styles.dayNumOut,
-                          isToday && styles.dayNumToday,
-                        ]}
-                      >
-                        {cell.date.getDate()}
-                      </Text>
+                        return (
+                          <TouchableOpacity
+                            key={cell.key}
+                            style={[styles.dayCell, !cell.inMonth && styles.dayCellOut]}
+                            activeOpacity={0.85}
+                            onPress={() => onPressCell(cell, weekIndex)}
+                          >
+                            <Text
+                              style={[
+                                styles.dayNum,
+                                !cell.inMonth && styles.dayNumOut,
+                                isToday && styles.dayNumToday,
+                                isSelected && styles.dayNumSelected,
+                              ]}
+                            >
+                              {cell.date.getDate()}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
                     </View>
-                  );
-                })}
+
+                    {/* expandable */}
+                    {openWeekIndex === weekIndex && (
+                      <View style={styles.expandedRow}>
+                        <Text style={styles.expandedTitle}>
+                          {selectedDate ? selectedDate.toDateString() : "Selected day"}
+                        </Text>
+
+                        <Text style={styles.expandedHint}>
+                          (Events)
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                ))}
               </View>
             </View>
           </View>
