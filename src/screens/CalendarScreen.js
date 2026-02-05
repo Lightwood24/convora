@@ -6,6 +6,15 @@ import styles from "../style/CalendarScreen.style";
 
 const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+const TEMPLATE_BACKGROUNDS = {
+  grim: require("../../assets/pictures/grim_card.png"),
+  love: require("../../assets/pictures/love_card.png"),
+  nature: require("../../assets/pictures/nature_card.png"),
+  office: require("../../assets/pictures/office_card.png"),
+  party: require("../../assets/pictures/party_card.png"),
+  theatre: require("../../assets/pictures/theatre_card.png"),
+};
+
 function startOfMonth(date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
