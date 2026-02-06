@@ -1,7 +1,9 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Text, ScrollView, View, TouchableOpacity, ImageBackground } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import background from  "../../assets/pictures/background.jpg"
+import { auth, db } from "../services/firebase";
+import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import background from "../../assets/pictures/background.jpg";
 import styles from "../style/CalendarScreen.style";
 
 const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -42,8 +44,24 @@ function formatMonthTitle(date) {
   return `${m} ${y}`;
 }
 
+function dayKey(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function toJsDate(maybeTs) {
+  if (!maybeTs) return null;
+  if (maybeTs?.toDate) return maybeTs.toDate();
+  const d = new Date(maybeTs);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
 export default function CalendarScreen() {
   const navigation = useNavigation();
+
+  const currentUid = auth.currentUser?.uid ?? null;
 
   // Cursor - a jelenlegi hónap
   const [cursor, setCursor] = useState(() => {
@@ -53,6 +71,58 @@ export default function CalendarScreen() {
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [openWeekIndex, setOpenWeekIndex] = useState(null);
+
+  // Events
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (!user) {
+      setEvents([]);
+      return;
+    }
+
+    const q = query(
+      collection(db, "events"),
+      where("participants", "array-contains", user.uid),
+      orderBy("startAt", "asc")
+    );
+
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        setEvents(list);
+      },
+      (err) => {
+        console.error("Calendar events onSnapshot error:", err);
+        setEvents([]);
+      }
+    );
+
+    return () => unsub();
+  }, [currentUid]);
+
+  const eventsByDay = useMemo(() => {
+    const map = {};
+    for (const ev of events) {
+      const start = toJsDate(ev.startAt);
+      if (!start) continue;
+
+      const k = dayKey(start);
+      if (!map[k]) map[k] = [];
+      map[k].push(ev);
+    }
+
+    Object.keys(map).forEach((k) => {
+      map[k].sort((a, b) => {
+        const da = toJsDate(a.startAt)?.getTime?.() ?? 0;
+        const dbb = toJsDate(b.startAt)?.getTime?.() ?? 0;
+        return da - dbb;
+      });
+    });
+    return map;
+  }, [events]);
 
   const goPrev = () => {
     setCursor((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
@@ -90,26 +160,28 @@ export default function CalendarScreen() {
 
   const weeks = useMemo(() => {
     const w = [];
-    for (let i = 0; i < 6; i++) {
-      w.push(grid.cells.slice(i * 7, i * 7 + 7));
-    }
+    for (let i = 0; i < 6; i++) w.push(grid.cells.slice(i * 7, i * 7 + 7));
     return w;
   }, [grid.cells]);
 
   const today = useMemo(() => new Date(), []);
 
   const onPressCell = (cell, weekIndex) => {
-    // ha ugyanarra a napra nyomjuk újra zárjuk be
-    if (selectedDate && sameDay(cell.date, selectedDate) && openWeekIndex === weekIndex) {
-      setSelectedDate(null);
-      setOpenWeekIndex(null);
-      return;
-    }
-  
-    // különben mindig nyitva marad
-    setSelectedDate(cell.date);
-    setOpenWeekIndex(weekIndex);
+    setOpenWeekIndex((prevWeek) => {
+      const isSame = selectedDate && sameDay(cell.date, selectedDate);
+
+      if (isSame && prevWeek === weekIndex) {
+        setSelectedDate(cell.date);
+        return null;
+      }
+
+      setSelectedDate(cell.date);
+      return weekIndex;
+    });
   };
+
+  const selectedKey = selectedDate ? dayKey(selectedDate) : null;
+  const selectedEvents = selectedKey ? eventsByDay[selectedKey] || [] : [];
 
   return (
     <ImageBackground source={background} style={styles.background} resizeMode="cover">
@@ -123,7 +195,7 @@ export default function CalendarScreen() {
           {/* HEADER */}
           <View style={styles.headerSection}>
             <View style={styles.header}>
-              <Text style={styles.screenTitle}>Calendar</Text>
+              <Text style={styles.screenTitle}>Calendar Screen</Text>
             </View>
           </View>
 
@@ -164,6 +236,15 @@ export default function CalendarScreen() {
                         const isToday = sameDay(cell.date, today);
                         const isSelected = selectedDate && sameDay(cell.date, selectedDate);
 
+                        const k = dayKey(cell.date);
+                        const dayEvents = eventsByDay[k] || [];
+                        const firstEvent = dayEvents.length > 0 ? dayEvents[0] : null;
+
+                        const bgSource =
+                          firstEvent?.templateId && TEMPLATE_BACKGROUNDS[firstEvent.templateId]
+                            ? TEMPLATE_BACKGROUNDS[firstEvent.templateId]
+                            : null;
+
                         return (
                           <TouchableOpacity
                             key={cell.key}
@@ -171,31 +252,85 @@ export default function CalendarScreen() {
                             activeOpacity={0.85}
                             onPress={() => onPressCell(cell, weekIndex)}
                           >
-                            <Text
-                              style={[
-                                styles.dayNum,
-                                !cell.inMonth && styles.dayNumOut,
-                                isToday && styles.dayNumToday,
-                                isSelected && styles.dayNumSelected,
-                              ]}
-                            >
-                              {cell.date.getDate()}
-                            </Text>
+                            <View style={styles.dayCellInner}>
+                              {bgSource ? (
+                                <ImageBackground
+                                  source={bgSource}
+                                  style={styles.dayBg}
+                                  imageStyle={styles.dayBgImage}
+                                >
+                                  <View style={styles.dayBgOverlay}>
+                                    <Text
+                                      style={[
+                                        styles.dayNumOnImage,
+                                        !cell.inMonth && styles.dayNumOut,
+                                        isToday && styles.dayNumToday,
+                                      ]}
+                                    >
+                                      {cell.date.getDate()}
+                                    </Text>
+                                  </View>
+                                </ImageBackground>
+                              ) : (
+                                <Text
+                                  style={[
+                                    styles.dayNum,
+                                    !cell.inMonth && styles.dayNumOut,
+                                    isToday && styles.dayNumToday,
+                                    isSelected && styles.dayNumSelected,
+                                  ]}
+                                >
+                                  {cell.date.getDate()}
+                                </Text>
+                              )}
+                            </View>
                           </TouchableOpacity>
                         );
                       })}
                     </View>
 
-                    {/* expandable */}
+                    {/* expandable row */}
                     {openWeekIndex === weekIndex && (
                       <View style={styles.expandedRow}>
                         <Text style={styles.expandedTitle}>
                           {selectedDate ? selectedDate.toDateString() : "Selected day"}
                         </Text>
 
-                        <Text style={styles.expandedHint}>
-                          (Events)
-                        </Text>
+                        {selectedEvents.length === 0 ? (
+                          <Text style={styles.expandedHint}>(No events)</Text>
+                        ) : (
+                          <View style={styles.expandedEventsList}>
+                            {selectedEvents.map((ev) => {
+                              const bgSource = TEMPLATE_BACKGROUNDS[ev.templateId];
+
+                              return (
+                                <TouchableOpacity
+                                  key={ev.id}
+                                  activeOpacity={0.85}
+                                  onPress={() => navigation.navigate("EventDetail", { eventId: ev.id })}
+                                >
+                                  <View>
+                                    <ImageBackground
+                                      source={bgSource}
+                                      style={styles.expandedEventBg}
+                                      imageStyle={styles.expandedEventBgImage}
+                                    >
+                                      <View style={styles.expandedEventBgOverlay}>
+                                        <Text
+                                          style={styles.expandedEventTitleOnBg}
+                                          numberOfLines={1}
+                                          ellipsizeMode="tail"
+                                        >
+                                          {ev.title || "Untitled event"}
+                                        </Text>
+                                      </View>
+                                    </ImageBackground>
+                                  </View>
+                                </TouchableOpacity>
+                              );
+                            })}
+                          </View>
+                        )}
                       </View>
                     )}
                   </View>

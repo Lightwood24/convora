@@ -1,6 +1,7 @@
 const colors = {
     // base
     background: "#0d0d0d",
+    backgroundOpaque15: "rgba(0,0,0,0.15)",
     backgroundOpaque25: "rgba(0,0,0,0.25)",
     backgroundOpaque35: "rgba(0,0,0,0.35)",
     backgroundOpaque55: "rgba(0,0,0,0.55)",
@@ -64,13 +65,13 @@ const colors = {
       fontSize: 20,
       fontWeight: "300",
     },
-    small: {
-      fontFamily: "Anta",
-      fontSize: 12,
-    },
     base: {
       fontFamily: "Anta",
       fontSize: 15,
+    },
+    small: {
+      fontFamily: "Anta",
+      fontSize: 12,
     },
   };
   

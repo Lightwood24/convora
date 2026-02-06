@@ -74,7 +74,6 @@ export default StyleSheet.create({
     marginBottom: theme.spacing.sm,
   },
   monthTitle: {
-    flex: 1,
     textAlign: "center",
     color: theme.colors.textPrimary,
     ...theme.typography.h2,
@@ -92,9 +91,7 @@ export default StyleSheet.create({
   },
   monthNavText: {
     color: theme.colors.textPrimary,
-    fontSize: 22,
-    fontFamily: "Anta",
-    lineHeight: 22,
+    ...theme.typography.h2,
   },
   dayNamesRow: {
     flexDirection: "row",
@@ -111,10 +108,53 @@ export default StyleSheet.create({
   weekRow: {
     flexDirection: "row",
   },
-  dayNumSelected: {
-    borderColor: theme.colors.textPrimary,
-    backgroundColor: theme.colors.backgroundOpaque55,
+  dayCell: {
+    width: `${100 / 7}%`,
+    aspectRatio: 1,
+    padding: theme.spacing.xs,
   },
+  dayCellOut: {
+    opacity: 0.45,
+  },
+  dayNum: {
+    flex: 1,
+    borderRadius: theme.radius.md,
+    textAlign: "center",
+    color: theme.colors.textPrimary,
+    ...theme.typography.base,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  dayNumOut: {
+    color: theme.colors.textMuted,
+  },
+  dayNumToday: {
+    borderColor: theme.colors.navigation,
+  },
+  dayCellInner: {
+    flex: 1,
+  },
+  dayBg: {
+    flex: 1,
+    borderRadius: theme.radius.md,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  dayBgImage: {
+    resizeMode: "cover",
+  },
+  dayBgOverlay: {
+    flex: 1,
+    backgroundColor: theme.colors.backgroundOpaque15,
+  },
+  dayNumOnImage: {
+    color: theme.colors.textPrimary,
+    ...theme.typography.base,
+    textAlign: "center",
+  },
+
+  // --- expandable row ---
   expandedRow: {
     width: "100%",
     marginTop: theme.spacing.xs,
@@ -133,33 +173,29 @@ export default StyleSheet.create({
   expandedHint: {
     color: theme.colors.textMuted,
     ...theme.typography.small,
-    lineHeight: 30
   },
-  dayCell: {
-    width: `${100 / 7}%`,
-    aspectRatio: 1,
-    padding: theme.spacing.xs,
+  expandedEventsList: {
+    width: "100%",
+    marginTop: theme.spacing.xs,
+    rowGap: theme.spacing.xs,
   },
-  dayCellOut: {
-    opacity: 0.45,
+  expandedEventBg: {
+    height: 36,
   },
-  dayNum: {
-    flex: 1,
+  expandedEventBgImage: {
     borderRadius: theme.radius.md,
-    textAlign: "center",
-    textAlignVertical: "center",
+    resizeMode: "cover",
+  },
+  expandedEventBgOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: theme.spacing.md,
+    backgroundColor: theme.colors.backgroundOpaque35,
+  },
+
+  expandedEventTitleOnBg: {
     color: theme.colors.textPrimary,
-    ...theme.typography.base,
-    backgroundColor: theme.colors.backgroundOpaque25,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-  },
-  dayNumOut: {
-    color: theme.colors.textMuted,
-  },
-  dayNumToday: {
-    borderColor: theme.colors.navigation,
-    backgroundColor: theme.colors.backgroundOpaque55,
+    ...theme.typography.small,
   },
 
   // == INPUT / BUTTONS ==
