@@ -230,6 +230,24 @@ export default StyleSheet.create({
     color: theme.colors.textPrimary,
     ...theme.typography.small,
   },
+  
+  // --- calendar button ---
+  calendarButtonContainer: {
+    width: "100%",
+    marginTop: theme.spacing.lg,
+  },
+  calendarButton: {
+    backgroundColor: theme.colors.primary,
+    height: 48,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: theme.radius.md,
+    backgroundColor: theme.colors.primary,
+  },
+  calendarButtonText: {
+    color: theme.colors.textPrimary,
+    ...theme.typography.base,
+  },
 
   // == INPUT / BUTTONS ==
   actionsRow: {

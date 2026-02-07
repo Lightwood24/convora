@@ -302,7 +302,7 @@ export default function CalendarScreen() {
                       })}
                     </View>
 
-                    {/* expandable row */}
+                    {/* Expandable Row */}
                     {openWeekIndex === weekIndex && (
                       <View style={styles.expandedRow}>
                         <Text style={styles.expandedTitle}>
@@ -371,6 +371,18 @@ export default function CalendarScreen() {
                   </View>
                 ))}
               </View>
+            </View>
+
+            {/* Calendar Button */}
+            <View style={styles.calendarButtonContainer}>
+              <TouchableOpacity
+                style={styles.calendarButton}
+                onPress={() => {}}
+              >
+                <Text style={styles.calendarButtonText}>
+                  Open Calendar
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
 
