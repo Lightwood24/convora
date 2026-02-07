@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Text, ScrollView, View, TouchableOpacity, ImageBackground } from "react-native";
+import { Text, ScrollView, View, TouchableOpacity, ImageBackground, Alert, ActivityIndicator, } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import * as Calendar from "expo-calendar";
 import { auth, db } from "../services/firebase";
-import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query, where, doc, getDoc, setDoc, serverTimestamp, } from "firebase/firestore";
 import background from "../../assets/pictures/background.jpg";
 import styles from "../style/CalendarScreen.style";
 import theme from "../style/Theme";
@@ -78,6 +79,7 @@ export default function CalendarScreen() {
 
   // Events
   const [events, setEvents] = useState([]);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -195,6 +197,81 @@ export default function CalendarScreen() {
   const handleExpandedScroll = (e) => {
     const offset = e.nativeEvent.contentOffset?.y ?? 0;
     setExpandedAtTop(offset <= 2);
+  }
+
+  async function getDefaultCalendarId() {
+    const perm = await Calendar.requestCalendarPermissionsAsync();
+    if (perm.status !== "granted") return null;
+
+    try {
+      const def = await Calendar.getDefaultCalendarAsync();
+      if (def?.id) return def.id;
+    } catch (_) {}
+  }
+
+  const handleImportToCalendar = async () => {
+    try {
+      const user = auth.currentUser;
+
+      if (syncing) return;
+      setSyncing(true);
+
+      const calendarId = await getDefaultCalendarId();
+      if (!calendarId) {
+        Alert.alert(
+          "Calendar permission needed",
+          "Please allow Calendar access in iOS Settings to import events."
+        );
+        return;
+      }
+
+      let imported = 0;
+      let skipped = 0;
+
+      for (const ev of events) {
+        const start = toJsDate(ev.startAt);
+        if (!start) continue;
+
+        // mapping - users/{uid}/calendarMappings/{eventId}
+        const mapRef = doc(db, "users", user.uid, "calendarMappings", ev.id);
+        const mapSnap = await getDoc(mapRef);
+
+        if (mapSnap.exists()) {
+          skipped++;
+          continue;
+        }
+
+        const end = new Date(start.getTime() + 60 * 60 * 1000);
+
+        const details = {
+          title: ev.title || "Untitled event",
+          startDate: start,
+          endDate: end,
+          notes: ev.description || "",
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        };
+
+        const nativeEventId = await Calendar.createEventAsync(calendarId, details);
+
+        await setDoc(mapRef, {
+          nativeEventId,
+          importedAt: serverTimestamp(),
+          eventStartAt: ev.startAt ?? null,
+        });
+
+        imported++;
+      }
+
+      Alert.alert(
+        "Import complete",
+        `Imported: ${imported}\nSkipped (already imported): ${skipped}`
+      );
+    } catch (e) {
+      console.error("handleImportToCalendar error:", e);
+      Alert.alert("Import failed", e?.message ?? "Unknown error");
+    } finally {
+      setSyncing(false);
+    }
   };
 
   return (
@@ -371,18 +448,22 @@ export default function CalendarScreen() {
                   </View>
                 ))}
               </View>
-            </View>
 
-            {/* Calendar Button */}
-            <View style={styles.calendarButtonContainer}>
-              <TouchableOpacity
-                style={styles.calendarButton}
-                onPress={() => {}}
-              >
-                <Text style={styles.calendarButtonText}>
-                  Open Calendar
-                </Text>
-              </TouchableOpacity>
+              {/* Calendar Button */}
+              <View style={styles.calendarButtonContainer}>
+                <TouchableOpacity
+                  style={styles.calendarButton}
+                  onPress={handleImportToCalendar}
+                  activeOpacity={0.85}
+                  disabled={syncing}
+                >
+                  {syncing ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.calendarButtonText}>Import events to Calendar</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
 
