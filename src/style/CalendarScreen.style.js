@@ -174,13 +174,47 @@ export default StyleSheet.create({
     color: theme.colors.textMuted,
     ...theme.typography.small,
   },
-  expandedEventsList: {
+  expandedEventsContainer: {
     width: "100%",
     marginTop: theme.spacing.xs,
+    borderRadius: theme.radius.md,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    position: "relative",
+    maxHeight: 2 * 36 + theme.spacing.sm * 2,
+  },
+  expandedEventsScroll: {
+    width: "100%",
+  },
+  expandedEventsScrollContent: {
+    padding: theme.spacing.sm,
     rowGap: theme.spacing.xs,
+  },
+  expandedFadeTop: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 18,
+    zIndex: 5,
+  },
+  expandedFadeBottom: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 18,
+    zIndex: 5,
+  },
+  expandedEventRow: {
+    width: "100%",
+    borderRadius: theme.radius.md,
+    overflow: "hidden",
   },
   expandedEventBg: {
     height: 36,
+    overflow: "hidden",
   },
   expandedEventBgImage: {
     borderRadius: theme.radius.md,
@@ -192,7 +226,6 @@ export default StyleSheet.create({
     paddingHorizontal: theme.spacing.md,
     backgroundColor: theme.colors.backgroundOpaque35,
   },
-
   expandedEventTitleOnBg: {
     color: theme.colors.textPrimary,
     ...theme.typography.small,

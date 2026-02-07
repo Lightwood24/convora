@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Text, ScrollView, View, TouchableOpacity, ImageBackground } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import { auth, db } from "../services/firebase";
 import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import background from "../../assets/pictures/background.jpg";
 import styles from "../style/CalendarScreen.style";
+import theme from "../style/Theme";
 
 const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -72,6 +74,8 @@ export default function CalendarScreen() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [openWeekIndex, setOpenWeekIndex] = useState(null);
 
+  const [expandedAtTop, setExpandedAtTop] = useState(true);
+
   // Events
   const [events, setEvents] = useState([]);
 
@@ -121,6 +125,7 @@ export default function CalendarScreen() {
         return da - dbb;
       });
     });
+
     return map;
   }, [events]);
 
@@ -128,12 +133,14 @@ export default function CalendarScreen() {
     setCursor((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
     setSelectedDate(null);
     setOpenWeekIndex(null);
+    setExpandedAtTop(true);
   };
 
   const goNext = () => {
     setCursor((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
     setSelectedDate(null);
     setOpenWeekIndex(null);
+    setExpandedAtTop(true);
   };
 
   const monthTitle = useMemo(() => formatMonthTitle(cursor), [cursor]);
@@ -172,16 +179,23 @@ export default function CalendarScreen() {
 
       if (isSame && prevWeek === weekIndex) {
         setSelectedDate(cell.date);
+        setExpandedAtTop(true);
         return null;
       }
 
       setSelectedDate(cell.date);
+      setExpandedAtTop(true);
       return weekIndex;
     });
   };
 
   const selectedKey = selectedDate ? dayKey(selectedDate) : null;
   const selectedEvents = selectedKey ? eventsByDay[selectedKey] || [] : [];
+
+  const handleExpandedScroll = (e) => {
+    const offset = e.nativeEvent.contentOffset?.y ?? 0;
+    setExpandedAtTop(offset <= 2);
+  };
 
   return (
     <ImageBackground source={background} style={styles.background} resizeMode="cover">
@@ -277,7 +291,6 @@ export default function CalendarScreen() {
                                     styles.dayNum,
                                     !cell.inMonth && styles.dayNumOut,
                                     isToday && styles.dayNumToday,
-                                    isSelected && styles.dayNumSelected,
                                   ]}
                                 >
                                   {cell.date.getDate()}
@@ -299,17 +312,33 @@ export default function CalendarScreen() {
                         {selectedEvents.length === 0 ? (
                           <Text style={styles.expandedHint}>(No events)</Text>
                         ) : (
-                          <View style={styles.expandedEventsList}>
-                            {selectedEvents.map((ev) => {
-                              const bgSource = TEMPLATE_BACKGROUNDS[ev.templateId];
+                          <View style={styles.expandedEventsContainer}>
+                            {!expandedAtTop && (
+                              <LinearGradient
+                                colors={[theme.colors.background, "transparent"]}
+                                style={styles.expandedFadeTop}
+                                pointerEvents="none"
+                              />
+                            )}
 
-                              return (
-                                <TouchableOpacity
-                                  key={ev.id}
-                                  activeOpacity={0.85}
-                                  onPress={() => navigation.navigate("EventDetail", { eventId: ev.id })}
-                                >
-                                  <View>
+                            <ScrollView
+                              style={styles.expandedEventsScroll}
+                              contentContainerStyle={styles.expandedEventsScrollContent}
+                              showsVerticalScrollIndicator={false}
+                              nestedScrollEnabled
+                              onScroll={handleExpandedScroll}
+                              scrollEventThrottle={16}
+                            >
+                              {selectedEvents.map((ev) => {
+                                const bgSource = TEMPLATE_BACKGROUNDS[ev.templateId];
+
+                                return (
+                                  <TouchableOpacity
+                                    key={ev.id}
+                                    style={styles.expandedEventRow}
+                                    activeOpacity={0.85}
+                                    onPress={() => navigation.navigate("EventDetail", { eventId: ev.id })}
+                                  >
                                     <ImageBackground
                                       source={bgSource}
                                       style={styles.expandedEventBg}
@@ -325,10 +354,16 @@ export default function CalendarScreen() {
                                         </Text>
                                       </View>
                                     </ImageBackground>
-                                  </View>
-                                </TouchableOpacity>
-                              );
-                            })}
+                                  </TouchableOpacity>
+                                );
+                              })}
+                            </ScrollView>
+
+                            <LinearGradient
+                              colors={["transparent", theme.colors.background]}
+                              style={styles.expandedFadeBottom}
+                              pointerEvents="none"
+                            />
                           </View>
                         )}
                       </View>
