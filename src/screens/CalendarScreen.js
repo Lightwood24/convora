@@ -284,11 +284,7 @@ export default function CalendarScreen() {
       >
         <View style={styles.content}>
           {/* HEADER */}
-          <View style={styles.headerSection}>
-            <View style={styles.header}>
-              <Text style={styles.screenTitle}>Calendar Screen</Text>
-            </View>
-          </View>
+          <View style={styles.headerSection}></View>
 
           {/* BODY */}
           <View style={styles.bodySection}>
