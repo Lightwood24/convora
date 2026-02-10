@@ -77,7 +77,7 @@ Convora/
 ```
 
 ## ✨ Implemented Features
-### 📅 Event System
+### 🎉 Event System
 - Create events with:
   - title, description, date, time & location
   - visual template selection
@@ -87,6 +87,15 @@ Convora/
 - Automatic owner binding (ownerId, username)
 - Real-time event updates using Firestore listeners
 - Google Maps integration for event locations
+
+### 🗓️ Calendar System
+- Built-in monthly calendar view with Monday-based week layout
+- Calendar cells reflect events via event template backgrounds
+- Daily event list inside expandable row:
+  - scrollable list
+  - each event displayed with its visual template background
+  - event titles are touchable and navigate directly to Event Detail Screen
+- Prepared for system calendar synchronization
 
 ### 🔐 Authentication System
 - Email + password login
@@ -124,6 +133,7 @@ Convora/
 - Clean iOS-focused design
 
 ## 📜 Changelog
+- v1.5.0: Implemented the calendar screen, connected the events with the built-in calendar, calendar sync option with the devices default calendar
 - v1.4.0: Implemented invite-based onboarding with web landing page, deep linking via Expo, automatic event joining after login/registration, participant management with +1 support, real-time event chat, event leave and delete functionality, and expanded Firestore security rules
 - v1.3.0: Added Home screen with real-time event listing, unified background imagery across screens, implemented Event Detail screen with map integration and error handling
 - v1.2.0: Implemented full event flow (create → list → detail), added event templates with dynamic backgrounds and fonts, integrated Firestore-backed event loading, improved navigation animations
