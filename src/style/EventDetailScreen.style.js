@@ -129,7 +129,6 @@ export default StyleSheet.create({
     paddingVertical: theme.spacing.xs,
     paddingHorizontal: theme.spacing.sm,
     borderRadius: theme.radius.sm,
-    backgroundColor: theme.colors.backgroundOpaque20,
     marginBottom: theme.spacing.xs,
   },
   participantRowInner: {
@@ -192,8 +191,7 @@ export default StyleSheet.create({
   },
   kickBtnText: {
     color: theme.colors.textPrimary,
-    fontSize: 12,
-    fontWeight: "600",
+    ...theme.typography.small,
   },
 
   // == CHAT ==
@@ -272,8 +270,7 @@ export default StyleSheet.create({
   },
   sendBtnText: {
     color: "#fff",
-    fontSize: 14,
-    fontWeight: "600",
+    ...theme.typography.button,
   },
 
   // == INPUT / BUTTONS ==
@@ -312,7 +309,7 @@ export default StyleSheet.create({
   },
   naviButtonText: {
     color: theme.colors.textPrimary,
-    fontFamily: "Anta", 
+    ...theme.typography.button,
   },
   actionButton: {
     height: 44,
@@ -330,6 +327,7 @@ export default StyleSheet.create({
   },
   actionButtonText: {
     color: theme.colors.textPrimary,
+    ...theme.typography.button,
   },  
   errorText: {
     ...theme.typography.h1,

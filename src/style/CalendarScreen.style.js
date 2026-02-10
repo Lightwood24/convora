@@ -273,7 +273,6 @@ export default StyleSheet.create({
   },
   naviButtonText: {
     color: theme.colors.textPrimary,
-    fontWeight: "600",
-    fontFamily: "Anta",
+    ...theme.typography.button,
   },
 });

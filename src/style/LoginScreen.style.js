@@ -64,7 +64,6 @@ export default StyleSheet.create({
     marginBottom: theme.spacing.md,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    ...theme.shadows.card,
     overflow: "hidden",
   },
   cardHeader: {
@@ -79,7 +78,6 @@ export default StyleSheet.create({
   },
   cardTitle: {
     color: theme.colors.textSecondary,
-    fontWeight: "600",
     ...theme.typography.base,              
   },
   arrow: {
@@ -100,7 +98,7 @@ export default StyleSheet.create({
     color: theme.colors.textPrimary,
     borderWidth: 1,
     borderColor: theme.colors.inputBorder,
-    fontFamily: "Anta",              
+    fontFamily: "Anta",
   },
   passwordIcon: {
     position: "absolute",
@@ -128,7 +126,6 @@ export default StyleSheet.create({
   },
   buttonText: {
     color: theme.colors.textPrimary,
-    fontWeight: "700",
     letterSpacing: 0.3,
     fontFamily: "Anta",              
   },
@@ -138,9 +135,7 @@ export default StyleSheet.create({
     color: theme.colors.textMuted,
     marginTop: theme.spacing.sm,
     marginBottom: theme.spacing.xxxl,
-    fontStyle: "italic",
-    ...theme.typography.small,       
-    fontFamily: "Anta",              
+    ...theme.typography.small,
   },
   
 });

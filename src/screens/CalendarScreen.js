@@ -20,6 +20,7 @@ const TEMPLATE_BACKGROUNDS = {
   theatre: require("../../assets/pictures/theatre_card.png"),
 };
 
+// FÜGGVÉNYEK
 function startOfMonth(date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
@@ -28,7 +29,7 @@ function endOfMonth(date) {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0);
 }
 
-// Monday-based átalakitása Sunday-based-ra
+// Monday-based átalakitása Sunday-based-re
 function mondayIndex(jsDay) {
   return (jsDay + 6) % 7;
 }
@@ -83,10 +84,6 @@ export default function CalendarScreen() {
 
   useEffect(() => {
     const user = auth.currentUser;
-    if (!user) {
-      setEvents([]);
-      return;
-    }
 
     const q = query(
       collection(db, "events"),

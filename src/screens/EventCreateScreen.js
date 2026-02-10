@@ -1,13 +1,12 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import ViewShot from "react-native-view-shot";
-import { storage } from "../services/firebase";
-import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage"
 import { Text, TextInput, View, TouchableOpacity, ImageBackground } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useNavigation } from "@react-navigation/native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { auth, db } from "../services/firebase";
+import ViewShot from "react-native-view-shot";
+import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage"
 import { doc, getDoc, collection, addDoc, updateDoc, serverTimestamp, Timestamp, setDoc } from "firebase/firestore";
+import { auth, db, storage } from "../services/firebase";
 import background from "../../assets/pictures/background.jpg";
 import styles from "../style/EventCreateScreen.style";
 import ShareDialog from "./ShareDialog";
@@ -51,6 +50,7 @@ export default function EventCreateScreen() {
   const selectedBg = selectedTemplate.image;
   const cardFontFamily = selectedTemplate.font || "Anta";
 
+  // FÜGGVÉNYEK
   const handleSelectTemplate = (id) => {
     setSelectedTemplateId(id);
     setTemplatesOpen(false);
@@ -75,31 +75,30 @@ export default function EventCreateScreen() {
   const uploadInviteImageAndGetUrl = async ({ inviteId }) => {
     if (!cardShotRef.current) throw new Error("cardShotRef not ready");
   
-    // 1) capture local file uri
+    // local fájl uri
     const uri = await cardShotRef.current.capture();
   
-    // 2) convert to blob
+    // convert to blob
     const resp = await fetch(uri);
     const blob = await resp.blob();
   
-    // 3) upload to Storage
+    // feltöltés a Storage-ba
     const path = `invites/${inviteId}/invite.jpg`;
     const fileRef = storageRef(storage, path);
   
     await uploadBytes(fileRef, blob, { contentType: "image/jpeg" });
   
-    // 4) download URL (public via token)
+    // URL letöltése
     const url = await getDownloadURL(fileRef);
     return url;
   };
 
-  // username betöltése az adatbázisból
+  // ADATBÁZIS
   useEffect(() => {
     const loadUsername = async () => {
       const user = auth.currentUser;
-      if (!user) return;
 
-      let username = user.displayName || "";
+      let username = user.displayName;
 
       try {
         const snap = await getDoc(doc(db, "users", user.uid));
@@ -177,7 +176,7 @@ export default function EventCreateScreen() {
     try {
       const startAt = new Date(`${eventDate}T${eventTime}:00`);
   
-      // 1) event mezők
+      // event mezők
       const eventRef = await addDoc(collection(db, "events"), {
         title: eventTitle.trim(),
         description: eventDescription.trim(),
@@ -194,7 +193,7 @@ export default function EventCreateScreen() {
   
       const eventId = eventRef.id;
 
-      // 1.5) attendee subcollection
+      // attendee subcollection
       await setDoc(
         doc(db, "events", eventId, "attendees", user.uid),
         {
@@ -204,7 +203,7 @@ export default function EventCreateScreen() {
         { merge: true }
       );
   
-      // 2) invite mezők
+      // invite mezők
       const expiresAt = Timestamp.fromDate(new Date(Date.now() + 48 * 60 * 60 * 1000));
       const inviteRef = await addDoc(collection(db, "invites"), {
         eventId,
@@ -216,13 +215,13 @@ export default function EventCreateScreen() {
   
       const inviteId = inviteRef.id;
   
-      // 3) generate + upload image
+      // generate + upload meghívó
       const imageUrl = await uploadInviteImageAndGetUrl({ inviteId });
   
-      // 4) save imageUrl to invite doc
+      // meghívó elmentése
       await updateDoc(doc(db, "invites", inviteId), { imageUrl });
 
-      // 5) open share dialog
+      // share dialog megnyitása
       setSavedInviteId(inviteId);
       setShareOpen(true);
     } catch (error) {
@@ -231,7 +230,7 @@ export default function EventCreateScreen() {
     }
   };
 
-  // Event kártya
+  // EVENT KÁRTYA
   const renderCardForm = () => (
     <View style={styles.cardContent}>
       <View style={styles.topRow}>

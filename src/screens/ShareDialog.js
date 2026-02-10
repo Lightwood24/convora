@@ -24,6 +24,7 @@ export default function ShareDialog({
     setLandingLink(`${LANDING_BASE_URL}/i/${inviteId}`);
   }, [visible, inviteId]);
 
+  // FÜGGVÉNYEK
   const handleCopyLink = async () => {
     if (!landingLink) return;
     await Clipboard.setStringAsync(landingLink);

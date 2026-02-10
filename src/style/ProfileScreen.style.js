@@ -22,7 +22,6 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     marginTop: 100,
-    
   },
   bodySection: {
     flex: 1,
@@ -74,7 +73,6 @@ export default StyleSheet.create({
     overflow: "hidden",
     borderWidth: 1,
     borderColor: theme.colors.border,
-    ...theme.shadows.card,
   },
   cardBody: {
     padding: theme.spacing.lg,
@@ -82,7 +80,10 @@ export default StyleSheet.create({
   },
 
   // == AVATAR ==
-  avatarBtn: { alignItems: "center", paddingTop: theme.spacing.lg },
+  avatarBtn: {
+    alignItems: "center", 
+    paddingTop: theme.spacing.lg 
+  },
   avatar: {
     width: 96,
     height: 96,
@@ -90,17 +91,15 @@ export default StyleSheet.create({
     overflow: "hidden",
     backgroundColor: theme.colors.avatarBackground,
   },
-  avatarImg: { width: "100%", height: "100%", opacity: 0.85 },
-  avatarPlaceholder: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: theme.colors.avatarPlaceholderBackground,
+  avatarImg: { 
+    width: "100%", 
+    height: "100%", 
+    opacity: 0.85 
   },
-  avatarIcon: { ...theme.typography.h1 }, 
   changePhotoText: {
     color: theme.colors.primaryMuted,
     marginTop: theme.spacing.sm,
+    ...theme.typography.small,
   },
 
   // == INPUT / BUTTONS ==
@@ -112,13 +111,12 @@ export default StyleSheet.create({
     color: theme.colors.textPrimary,
     borderWidth: 1,
     borderColor: theme.colors.inputBorder,
-    fontFamily: "Anta", 
+    ...theme.typography.base,
   },
   disabledInput: {
     opacity: 0.5,    
     backgroundColor: theme.colors.disabledInput, 
   },
-  
   actionsRow: {
     width: "86%",              
     flexDirection: "row",
@@ -152,11 +150,12 @@ export default StyleSheet.create({
   buttonDanger: {
     backgroundColor: theme.colors.danger,
   },
-  buttonDisabled: { opacity: 0.5 },
+  buttonDisabled: {
+    opacity: 0.5 
+  },
   buttonText: {
     color: theme.colors.textPrimary,
-    fontWeight: "600",
-    fontFamily: "Anta", 
+    ...theme.typography.button,
   },
   errorText: {
     color: theme.colors.danger,

@@ -232,7 +232,7 @@ export default StyleSheet.create({
   },
   buttonText: {
     color: theme.colors.textPrimary,
-    fontFamily: "Anta",
+    ...theme.typography.button,
   },
 
   // == FOOTER ==

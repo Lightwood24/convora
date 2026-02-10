@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Text, ScrollView, View, TouchableOpacity, ImageBackground } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { LinearGradient } from "expo-linear-gradient";
-import { auth, db } from "../services/firebase";
-import { collection, query, where, orderBy, onSnapshot, doc, getDoc, updateDoc, arrayUnion, setDoc, serverTimestamp } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
+import { collection, query, where, orderBy, onSnapshot, doc, getDoc, updateDoc, arrayUnion, setDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "../services/firebase";
 import background from "../../assets/pictures/background.jpg";
 import styles from "../style/HomeScreen.style";
 import theme from "../style/Theme";
@@ -29,17 +29,15 @@ export default function HomeScreen() {
     setIsAtTop(offset <= 2);
   };
 
+  // MEGHÍVÓ KEZELÉSE
   async function consumePendingInvite() {
-    const inviteId = await AsyncStorage.getItem("pendingInviteId");
-  
+    const inviteId = await AsyncStorage.getItem("pendingInviteId");  
     if (!inviteId) return null;
   
     const user = auth.currentUser;
   
-    if (!user) return null;
-  
     try {
-      // 1) Invite doc
+      // Invite doc
       const inviteSnap = await getDoc(doc(db, "invites", inviteId));
   
       if (!inviteSnap.exists()) {
@@ -56,7 +54,7 @@ export default function HomeScreen() {
         return null;
       }
   
-      // 2) Expiry check
+      // lejártság ellenőrzés
       if (expiresAt?.toDate) {
         const exp = expiresAt.toDate();
         if (exp.getTime() < Date.now()) {
@@ -66,27 +64,26 @@ export default function HomeScreen() {
         }
       }
   
-      // 3) Add user to event participants
+      // felhasználó hozzáadása a résztvevőkhöz
       await updateDoc(doc(db, "events", eventId), {
         participants: arrayUnion(user.uid),
         updatedAt: serverTimestamp(),
       });
   
-      // 4) Ensure attendees doc exists
       await setDoc(
         doc(db, "events", eventId, "attendees", user.uid),
         { plusOne: false, updatedAt: serverTimestamp() },
         { merge: true }
       );
   
-      // 5) invite uses subcollection
+      // invite doc
       await setDoc(
         doc(db, "invites", inviteId, "uses", auth.currentUser.uid),
         { usedAt: serverTimestamp() },
         { merge: false }
       );
 
-      // 7) pendingInvite törlése
+      // pendingInvite törlése
       await AsyncStorage.removeItem("pendingInviteId");
         
       return eventId;
@@ -111,7 +108,6 @@ export default function HomeScreen() {
     return () => unsub();
   }, []);
   
-  // adatbázis adatokok kezelése
   useEffect(() => {
     const user = auth.currentUser;
     if (!user) {
@@ -140,6 +136,7 @@ export default function HomeScreen() {
     return () => unsubscribe();
   }, []);
 
+  //SEGÉD FÜGGVÉNYEK
   const formatDateLabel = (startAt) => {
     if (!startAt) return "";
     const d = startAt.toDate ? startAt.toDate() : new Date(startAt);

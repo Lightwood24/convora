@@ -85,7 +85,6 @@ export default StyleSheet.create({
   },
   inputText: {
     color: theme.colors.textPrimary,
-    fontFamily: "Anta",
     ...theme.typography.small,
   },
   actionsRow: {
@@ -127,7 +126,7 @@ export default StyleSheet.create({
     backgroundColor: theme.colors.secondary,
   },
   footerBtnText: {
-    ...theme.typography.base,
+    ...theme.typography.button,
     color: theme.colors.textSecondary,
   },
 

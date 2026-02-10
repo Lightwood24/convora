@@ -93,7 +93,7 @@ export default StyleSheet.create({
   },
   eventCardOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: theme.colors.backgroundOpaque35,
     padding: theme.spacing.sm,
     borderRadius: theme.radius.md,
     justifyContent: "center",
@@ -159,7 +159,7 @@ export default StyleSheet.create({
   },
   naviButtonText: {
     color: theme.colors.textPrimary,
-    fontFamily: "Anta",
+    ...theme.typography.button,
   },
   newEventButton: {
     width: "60%",
@@ -172,10 +172,8 @@ export default StyleSheet.create({
     ...theme.shadows.card,
   },
   newEventButtonText: {
-    ...theme.typography.base,
+    ...theme.typography.button,
     color: theme.colors.textPrimary,
-    fontFamily: "Anta",
-    fontWeight: "600",
   },
   
 });

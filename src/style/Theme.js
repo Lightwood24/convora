@@ -58,16 +58,18 @@ const colors = {
     h1: {
       fontFamily: "Anta",
       fontSize: 25,
-      fontWeight: "400",
     },
     h2: {
       fontFamily: "Anta",
       fontSize: 20,
-      fontWeight: "300",
     },
     base: {
       fontFamily: "Anta",
       fontSize: 15,
+    },
+    button: {
+      fontFamily: "Anta",
+      fontSize: 14,
     },
     small: {
       fontFamily: "Anta",

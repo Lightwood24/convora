@@ -18,12 +18,10 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const headerOffset = useRef(new Animated.Value(0)).current;
 
-  // login konstansok
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  // register konstansok
   const [regName, setRegName] = useState("");
   const [regEmail, setRegEmail] = useState("");
   const [regPassword, setRegPassword] = useState("");
@@ -42,7 +40,7 @@ export default function LoginScreen() {
     }).start();
   }, [activeCard, headerOffset]);
 
-  // == VALIDATION ==
+  // == VALIDÁTOROK ==
   const [regNameError, setRegNameError] = useState("");
   const [regEmailError, setRegEmailError] = useState("");
   const [regPasswordError, setRegPasswordError] = useState("");
@@ -88,7 +86,7 @@ export default function LoginScreen() {
     }
   };
 
-  // == REGISTER ==
+  // == REGISZTRÁCIÓ ==
   const onRegister = async () => {
     try {
       setLoading(true);

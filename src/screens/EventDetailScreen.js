@@ -21,12 +21,12 @@ export default function EventDetailScreen() {
   const goToTab = (tabName) => navigation.navigate("AppTabs", { screen: tabName });
 
   const route = useRoute();
-  const eventId = route?.params?.eventId ?? null;
+  const eventId = route.params.eventId;
 
   const [event, setEvent] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const currentUid = auth.currentUser?.uid ?? null;
+  const currentUid = auth.currentUser.uid;
   const participants = Array.isArray(event?.participants) ? event.participants : [];
   const isOwner = !!currentUid && event?.ownerId === currentUid;
   const isParticipant = !!currentUid && (participants.includes(currentUid) || isOwner);
@@ -60,13 +60,8 @@ export default function EventDetailScreen() {
     return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
   }, [event?.startAt]);
 
+  // ADATBÁZIS
   useEffect(() => {
-    if (!eventId) {
-      setEvent(null);
-      setErrorMsg("Missing event id. Please open the event from the Home screen.");
-      return;
-    }
-
     setErrorMsg("");
 
     const ref = doc(db, "events", eventId);
@@ -92,8 +87,6 @@ export default function EventDetailScreen() {
   }, [eventId]);
 
   useEffect(() => {
-    if (!eventId) return;
-  
     const ref = collection(db, "events", eventId, "attendees");
     const unsub = onSnapshot(
       ref,
@@ -115,8 +108,6 @@ export default function EventDetailScreen() {
   }, [eventId]);
 
   useEffect(() => {
-    if (!eventId || !currentUid) return;
-  
     const ref = doc(db, "events", eventId, "attendees", currentUid);
     const unsub = onSnapshot(
       ref,
@@ -131,8 +122,6 @@ export default function EventDetailScreen() {
   }, [eventId, currentUid]);
 
   useEffect(() => {
-    if (!eventId) return;
-  
     if (!isParticipant) {
       setMessages([]);
       return;
@@ -178,8 +167,8 @@ export default function EventDetailScreen() {
               if (snap.exists()) {
                 const data = snap.data() || {};
                 results[uid] = {
-                  displayName: data.displayName || "Unknown user",
-                  photoURL: data.photoURL || "",
+                  displayName: data.displayName,
+                  photoURL: data.photoURL,
                 };
               } else {
                 results[uid] = { displayName: "Unknown user", photoURL: "" };
@@ -204,10 +193,9 @@ export default function EventDetailScreen() {
     };
   }, [event?.participants]);
 
+  // FÜGGVÉNYEK
   const handleTogglePlusOne = async () => {
     try {
-      if (!eventId || !currentUid) return;
-  
       const next = !myPlusOne;
 
       await setDoc(
@@ -233,16 +221,6 @@ export default function EventDetailScreen() {
     try {
       const text = (draftMessage || "").trim();
       if (!text) return;
-  
-      if (!eventId || !currentUid) {
-        alert("You must be logged in to send messages.");
-        return;
-      }
-  
-      if (!isParticipant) {
-        alert("You are not allowed to chat in this event.");
-        return;
-      }
   
       if (sending) return;
       setSending(true);
@@ -281,12 +259,6 @@ export default function EventDetailScreen() {
 
   const handleShare = async () => {
     try {
-      if (!eventId) return;
-  
-      if (!isOwner) {
-        alert("Only the event owner can share this event.");
-        return;
-      }
   
       const q = query(
         collection(db, "invites"),
@@ -328,13 +300,13 @@ export default function EventDetailScreen() {
 
               const uid = user.uid;
 
-              // 1) remove from participants
+              // törlés a résztvevőkből
               await updateDoc(doc(db, "events", eventId), {
                 participants: arrayRemove(uid),
                 updatedAt: serverTimestamp(),
               });
 
-              // 2) delete attendee doc
+              // attendee doc törlése
               try {
                 await deleteDoc(doc(db, "events", eventId, "attendees", uid));
               } catch (_) {}
@@ -369,19 +341,19 @@ export default function EventDetailScreen() {
                 return;
               }
 
-              // 1) Invite lekérése az eventhez
+              // Invite lekérése az eventhez
               const invitesQ = query(
                 collection(db, "invites"),
                 where("eventId", "==", eventId)
               );
               const invitesSnap = await getDocs(invitesQ);
 
-              // 2) Invite törlése
+              // Invite törlése
               for (const d of invitesSnap.docs) {
                 await deleteDoc(d.ref);
               }
 
-              // 3) Event törlése
+              // Event törlése
               await deleteDoc(doc(db, "events", eventId));
 
               goToTab("Home");
@@ -396,9 +368,6 @@ export default function EventDetailScreen() {
   }
 
   const handleKickParticipant = (targetUid) => {
-    if (!isOwner) return;
-    if (!eventId) return;
-  
     const name = participantsProfiles?.[targetUid]?.displayName || "this user";
   
     Alert.alert(
@@ -411,13 +380,13 @@ export default function EventDetailScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              // 1) remove from participants
+              // törlés a résztvevőkből
               await updateDoc(doc(db, "events", eventId), {
                 participants: arrayRemove(targetUid),
                 updatedAt: serverTimestamp(),
               });
   
-              // 2) attendee doc törlése (+1 reset)
+              // attendee doc törlése, +1 reset
               try {
                 await deleteDoc(doc(db, "events", eventId, "attendees", targetUid));
               } catch (_) {}
@@ -676,7 +645,7 @@ export default function EventDetailScreen() {
 
               <View style={styles.secondaryActionRow}>
 
-                {/* SHARE */}
+                {/* SHARE (owner only) */}
                 {isOwner && (
                   <TouchableOpacity
                     style={styles.actionButton}
@@ -688,7 +657,7 @@ export default function EventDetailScreen() {
                   </TouchableOpacity>
                 )}
 
-                {/* DELETE EVENT */}
+                {/* DELETE EVENT (owner only) */}
                 {isOwner && (
                   <TouchableOpacity
                     style={[styles.actionButton, styles.dangerButton]}
@@ -701,7 +670,7 @@ export default function EventDetailScreen() {
                 )}
               </View>
 
-              {/* LEAVE */}
+              {/* LEAVE (participant only) */}
               {!isOwner && (
                 <TouchableOpacity
                   style={[styles.actionButton, styles.dangerButton]}

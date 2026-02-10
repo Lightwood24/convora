@@ -37,7 +37,7 @@ export default function ProfileScreen() {
     return true;
   }
 
-  // adatbázis adatok kezelése
+  // ADATBÁZIS
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -77,6 +77,7 @@ export default function ProfileScreen() {
     return unsub;
   }, []);
 
+  // FÜGGVÉNYEK
   async function uploadAvatarIfNeeded(uri, uid) {
     if (!uri) return null;
 
@@ -148,11 +149,6 @@ export default function ProfileScreen() {
       setSaving(true);
 
       const user = auth.currentUser;
-      if (!user) {
-        Alert.alert("Not signed in", "Please log in again.");
-        return;
-      }
-
       const uid = user.uid;
 
       const nameAvailable = await isUsernameAvailableForUpdate(trimmedName, uid);
