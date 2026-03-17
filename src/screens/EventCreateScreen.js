@@ -197,7 +197,8 @@ export default function EventCreateScreen() {
       await setDoc(
         doc(db, "events", eventId, "attendees", user.uid),
         {
-          plusOne: false,
+          plusPerson: false,
+          plusPersonCount: 0,
           updatedAt: serverTimestamp(),
         },
         { merge: true }

@@ -72,7 +72,11 @@ export default function HomeScreen() {
   
       await setDoc(
         doc(db, "events", eventId, "attendees", user.uid),
-        { plusOne: false, updatedAt: serverTimestamp() },
+        {
+          plusPerson: false,
+          plusPersonCount: 0,
+          updatedAt: serverTimestamp(),
+        },
         { merge: true }
       );
   

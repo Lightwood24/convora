@@ -31,8 +31,9 @@ export default function EventDetailScreen() {
   const isOwner = !!currentUid && event?.ownerId === currentUid;
   const isParticipant = !!currentUid && (participants.includes(currentUid) || isOwner);
   const [participantsProfiles, setParticipantsProfiles] = useState({});
-  const [plusOneByUid, setPlusOneByUid] = useState({});
-  const [myPlusOne, setMyPlusOne] = useState(false);
+  const [plusPersonByUid, setPlusPersonByUid] = useState({});
+  const [myPlusPerson, setMyPlusPerson] = useState(false);
+  const [myPlusPersonCount, setMyPlusPersonCount] = useState(0);
 
   const [messages, setMessages] = useState([]);
   const [draftMessage, setDraftMessage] = useState("");
@@ -94,13 +95,16 @@ export default function EventDetailScreen() {
         const next = {};
         snap.forEach((d) => {
           const data = d.data() || {};
-          next[d.id] = !!data.plusOne;
+          next[d.id] = {
+            plusPerson: !!data.plusPerson,
+            plusPersonCount: Number(data.plusPersonCount || 0),
+          };
         });
-        setPlusOneByUid(next);
+        setPlusPersonByUid(next);
       },
       (err) => {
         console.error("attendees onSnapshot error:", err);
-        setPlusOneByUid({});
+        setPlusPersonByUid({});
       }
     );
   
@@ -113,7 +117,8 @@ export default function EventDetailScreen() {
       ref,
       (snap) => {
         const data = snap.exists() ? snap.data() : {};
-        setMyPlusOne(!!data?.plusOne);
+        setMyPlusPerson(!!data?.plusPerson);
+        setMyPlusPersonCount(Number(data?.plusPersonCount || 0));
       },
       (err) => console.error("my attendee onSnapshot error:", err)
     );
@@ -194,28 +199,32 @@ export default function EventDetailScreen() {
   }, [event?.participants]);
 
   // FÜGGVÉNYEK
-  const handleTogglePlusOne = async () => {
+  const handleSetPlusPersonCount = async (count) => {
     try {
-      const next = !myPlusOne;
-
+      const safeCount = Math.max(0, count);
+  
       await setDoc(
         doc(db, "events", eventId, "attendees", currentUid),
         {
-          plusOne: next,
+          plusPerson: safeCount > 0,
+          plusPersonCount: safeCount,
           updatedAt: serverTimestamp(),
         },
         { merge: true }
       );
     } catch (e) {
-      console.error("toggle +1 error:", e);
-      alert("Could not update +1. Please try again.");
+      console.error("set plusPersonCount error:", e);
+      alert("Could not update extra guests. Please try again.");
     }
   };
 
-  const plusOneCount = useMemo(() => {
-    return Object.values(plusOneByUid).filter(Boolean).length;
-  }, [plusOneByUid]);
-  const participantsDisplayCount = participants.length + plusOneCount;
+  const plusPersonCountTotal = useMemo(() => {
+    return Object.values(plusPersonByUid).reduce((sum, item) => {
+      return sum + Number(item?.plusPersonCount || 0);
+    }, 0);
+  }, [plusPersonByUid]);
+  
+  const participantsDisplayCount = participants.length + plusPersonCountTotal;
 
   const handleSendMessage = async () => {
     try {
@@ -484,7 +493,7 @@ export default function EventDetailScreen() {
                   Participants - ({participantsDisplayCount})
                 </Text>                
                 <Text style={[styles.boxDesc, { fontFamily}]}>
-                  Click on "+1" if you wanna bring someone with you
+                  Use + / - to set how many extra guests you want to bring.
                 </Text>
 
                 <View style={styles.participantsList}>
@@ -501,7 +510,9 @@ export default function EventDetailScreen() {
                         const profile = participantsProfiles[uid];
                         const name = profile?.displayName || "Loading…";
                         const photoURL = profile?.photoURL || "";
-                        const hasPlusOne = !!plusOneByUid[uid];
+                        const attendeeMeta = plusPersonByUid[uid] || { plusPerson: false, plusPersonCount: 0 };
+                        const hasPlusPerson = attendeeMeta.plusPerson;
+                        const plusCount = attendeeMeta.plusPersonCount;
                         const isMe = uid === currentUid;
                       
                         return (
@@ -524,26 +535,37 @@ export default function EventDetailScreen() {
                               </Text>
                       
                               {/* +1 badge */}
-                              {hasPlusOne && (
+                              {hasPlusPerson && plusCount > 0 && (
                                 <View style={styles.plusOneBadge}>
-                                  <Text style={[styles.plusOneBadgeText, { fontFamily }]}>+1</Text>
+                                  <Text style={[styles.plusOneBadgeText, { fontFamily }]}>
+                                    +{plusCount}
+                                  </Text>
                                 </View>
                               )}
                       
                               {/* +1 toggle */}
                               {isMe && (
-                                <TouchableOpacity
-                                  onPress={handleTogglePlusOne}
-                                  style={[
-                                    styles.plusOneToggle,
-                                    myPlusOne && styles.plusOneToggleOn,
-                                  ]}
-                                  activeOpacity={0.85}
-                                >
-                                  <Text style={[styles.plusOneToggleText, { fontFamily }]}>
-                                    +1
+                                <View style={{ marginLeft: "auto", flexDirection: "row", alignItems: "center", gap: 8 }}>
+                                  <TouchableOpacity
+                                    onPress={() => handleSetPlusPersonCount(myPlusPersonCount - 1)}
+                                    style={styles.plusOneToggle}
+                                    activeOpacity={0.85}
+                                  >
+                                    <Text style={[styles.plusOneToggleText, { fontFamily }]}>-</Text>
+                                  </TouchableOpacity>
+
+                                  <Text style={[styles.participantText, { fontFamily, fontSize: baseFontSize }]}>
+                                    {myPlusPersonCount}
                                   </Text>
-                                </TouchableOpacity>
+
+                                  <TouchableOpacity
+                                    onPress={() => handleSetPlusPersonCount(myPlusPersonCount + 1)}
+                                    style={[styles.plusOneToggle, myPlusPerson && styles.plusOneToggleOn]}
+                                    activeOpacity={0.85}
+                                  >
+                                    <Text style={[styles.plusOneToggleText, { fontFamily }]}>+</Text>
+                                  </TouchableOpacity>
+                                </View>
                               )}
 
                               {/* Kick (owner only) */}
